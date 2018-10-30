@@ -1,0 +1,11 @@
+{% if list %}
+	{% for supply in list %}
+		Name: {{supply.name}}<br>
+		Category: {{supply.category}}<br>
+		Description: {{supply.description}}<br>
+		Image: {{supply.image}}<br>
+		<a href="/asp/{{supply.pk}}/detail/"> Detail </a><br><br>
+	{% endfor %}
+{% else %}
+	<p>No supply available</p>
+{% endif %}
