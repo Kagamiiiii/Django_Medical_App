@@ -10,6 +10,7 @@ class Supply(models.Model):
 	description = models.CharField(max_length=200)
 	detail = models.CharField(max_length=200)
 	image = models.CharField(max_length=200)
+	weight = models.FloatField()
 	def __str__(self):
 		return self.name
 
@@ -19,8 +20,13 @@ class Order(models.Model):
 	orderedDatetime = models.DateTimeField()
 	dispatchedDatetime = models.DateTimeField()
 	deliveredDatetime = models.DateTimeField()
+	weight = models.FloatField()
 	def __str__(self):
-		return "Order " + str(self.pk)
+		temp = str(self.pk)
+		string = "Order "
+		for i in range(8-len(temp)):
+			string = string + "0"
+		return string + temp
 
 class Location(models.Model):
 	name = models.CharField(max_length=200)
