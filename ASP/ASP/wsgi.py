@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+# 幫助Django應用和網絡服務器間的通訊。你可以把這個當作模板。
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ASP.settings')
 
 application = get_wsgi_application()

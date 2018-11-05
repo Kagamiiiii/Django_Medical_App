@@ -49,6 +49,29 @@ class Account(models.Model):
 	def __str__(self):
 		return self.lastname + self.firstname
 
+class CMAccount(models.Model):
+	# Clinic Manager Account.
+	account = models.ForeignKey(Account, on_delete=models.CASCADE)
+	location = models.ForeignKey(Location, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.account.__str__() + " from " + self.location.__str__()
+
+class DispatcherAccount(models.Model):
+	account = models.ForeignKey(Account, on_delete=models.CASCADE)
+	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.account.__str__() + " work at " + self.location.__str__()
+
+
+class PackerAccount(models.Model):
+	account = models.ForeignKey(Account, on_delete=models.CASCADE)
+	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.account.__str__() + " work at " + self.location.__str__()
+
 #record supply in an order
 #different supply in the same order should divide into several records in this table
 class Include(models.Model):
@@ -68,27 +91,9 @@ class OrderTo(models.Model):
 #who order the supply
 class OrderBy(models.Model):
 	order = models.ForeignKey(Order, on_delete=models.CASCADE)
-	account = models.ForeignKey(Account, on_delete=models.CASCADE)
+	account = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 	def __str__(self):
 		return "Order " + str(self.order.__str__()) + " by " + self.account.__str__()
- 
-class HAAccount(models.Model):
-	account = models.ForeignKey(Account, on_delete=models.CASCADE)
-	location = models.ForeignKey(Location, on_delete=models.CASCADE)
-	def __str__(self):
-		return self.account.__str__() + " from " + self.location.__str__()
-		
-class DispatcherAccount(models.Model):
-	account = models.ForeignKey(Account, on_delete=models.CASCADE)
-	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
-	def __str__(self):
-		return self.account.__str__() + " work at "+ self.location.__str__()
-		
-class PackerAccount(models.Model):
-	account = models.ForeignKey(Account, on_delete=models.CASCADE)
-	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
-	def __str__(self):
-		return self.account.__str__() + " work at " + self.location.__str__()
 	
 
 class Distance(models.Model):
