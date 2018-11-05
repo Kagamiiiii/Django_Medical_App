@@ -59,15 +59,15 @@ class CMAccount(models.Model):
 
 class DispatcherAccount(models.Model):
 	account = models.ForeignKey(Account, on_delete=models.CASCADE)
-	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
+	warehouse = 1
 
 	def __str__(self):
 		return self.account.__str__() + " work at " + self.location.__str__()
 
 
-class PackerAccount(models.Model):
+class WHPAccount(models.Model):
 	account = models.ForeignKey(Account, on_delete=models.CASCADE)
-	warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
+	warehouse = 1
 
 	def __str__(self):
 		return self.account.__str__() + " work at " + self.location.__str__()
