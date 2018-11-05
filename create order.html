@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Create Order</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+        <script>
+
+            let items = null;
+            let cart = [];
+
+            function showMainPart() {
+                $('#category_part').show();
+            }
+
+            function showItemSelectionPart() {
+                $('#items_section').show();
+            }
+
+            function hideMainPart() {
+                $('#category_part').hide();
+            }
+
+            function hideItemSelectionPart() {
+                $('#items_section').hide();
+            }
+
+            function start() {
+
+                hideMainPart();
+                hideItemSelectionPart();
+
+            }
+
+            function deleteItemFromCart(id) {
+                for (let i = 0; i < cart.length; i++) {
+                    if (cart[i].item_id == id) {
+                        cart.splice(i, 1);
+                    }
+                }
+            }
+
+            function editItemsInCart(item_id) {
+
+                for (let i = 0; i < cart.length; i++) {
+                    if (cart[i].item_id == item_id) {
+
+                        let quantity = $('#' + item_id + '_quantity').val();
+
+                        cart[i].quantity = quantity;
+                        updateCart();
+                        return;
+                    }
+                }
+
+                let cart_item = {
+                    item_id: item_id,
+                    name: items[item_id].name,
+                    quantity: $('#' + item_id + '_quantity').val()
+                };
+
+                cart.push(cart_item);
+                updateCart();
+
+            }
+
+            function quantity_toggle(item_id) {
+
+                let quantity_id = item_id + '_quantity';
+
+                if ($("#" + quantity_id).prop('disabled')) {
+                    if ($("#" + quantity_id).val() === '') {
+                        $("#" + quantity_id).val(1);
+                        editItemsInCart(item_id);
+                        updateCart();
+                    }
+                    $("#" + quantity_id).prop('disabled', false);
+                } else {
+                    $("#" + quantity_id).val(0);
+
+                    deleteItemFromCart(item_id);
+                    updateCart();
+                    $("#" + quantity_id).val('');
+                    $("#" + quantity_id).prop('disabled', true);
+                }
+
+            }
+
+            function updateCart() {
+
+                if (cart.length === 0) {
+                    $('#cart').html('No items in cart');
+                    return;
+                }
+
+                $('#cart').html('');
+
+                for (let i = 0; i < cart.length; i++) {
+                    $('#cart').html($('#cart').html() + '<br />Name: ' + cart[i].name + '    Quantity: ' + cart[i].quantity);
+                }
+            }
+
+            function loadItemsList() {
+
+                $('#cart').html('No items in cart');
+                $('#item_list').html('');
+
+                for (let item_id in items) {
+
+                    let item_row = document.createElement('div');
+                    item_row.id = item_id;
+
+                    let item_row_html_string = '<img src=' + items[item_id].image_link + ' width="140" height="140" />';
+                    item_row_html_string += items[item_id].description;
+                    item_row_html_string += '<input type="button" value="Addition Details" />';
+                    item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
+                    item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + item_id + '_quantity" disabled onchange="editItemsInCart(' + item_id + ')" />';
+
+                    item_row.innerHTML = item_row_html_string;
+
+                    $('#item_list').append(item_row);
+
+                }
+            }
+
+            function search() {
+
+                showItemSelectionPart();
+
+                let selected_category = $('#category_selected').val();
+
+                items = {
+
+                    '1': {
+                        name: 'Normal Saline',
+                        description: 'description - Normal Saline',
+                        details: 'details - Normal Saline',
+                        image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1'
+                    },
+
+                    '2': {
+                        name: 'Lactated Ringer’s',
+                        description: 'description - Lactated Ringer’s',
+                        details: 'details - Lactated Ringer’s',
+                        image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg'
+                    }
+
+                };
+
+                loadItemsList('');
+
+//                $.get('put url here ?category=' + selected_category, function (response) {
+//                    
+//                    items = JSON.parse(response);
+//                    loadItemsList();
+//
+//                })
+
+            }
+
+            function createOrder() {
+                let order = {
+                    priority: $('#priority').val(),
+                    cart: cart
+                }
+
+                $.post('url here', order, function (response) {
+                    $('#item_list').html('');
+                    $('#items_section').hide();
+                    cart = [];
+                    $('#message').html('Success');
+                })
+            }
+
+        </script>
+    </head>
+    <body onload='start();'>
+
+        <input type='button' value='Browse Supplies by Category' id='test' onclick="showMainPart();"/>
+
+        <div id='category_part'>
+
+            <br />
+            <br />Menu for creating order
+
+            <br />
+            <br />Browse Supplies by Category
+
+            <br />
+            <br />Supplying hospital: {{ hospital_name_here }}
+
+            <br />
+            <br />Category: 
+            <select id='category_selected'>
+                <!--Put Django code here to replace these categories-->
+                <option value='intravenous (IV) fluids'>intravenous (IV) fluids</option>
+                <!-- -->
+            </select>
+
+            <input type='button' value='Search' onclick='search();'>
+
+        </div>
+
+        <div id='message'></div>
+
+        <div id='items_section'>
+
+            <br />
+            <br /><input type='button' value='Create Order' onclick='createOrder();'/> 
+            <br />
+            <br />Cart: <span id='cart'></span>
+            <br />
+            <br />Priority: 
+            <select id='priority'>
+                <option value='High'>High</option>
+                <option value='Medium'>Medium</option>
+                <option value='Low'>Low</option>
+            </select>
+
+            <br />
+            <br />
+            Supply list:
+
+            <br />
+            <br />
+            <div id='item_list'>
+
+            </div>
+
+        </div>
+
+    </body>
+</html>
