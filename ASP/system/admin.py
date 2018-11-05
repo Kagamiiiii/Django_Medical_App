@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Supply,Order,Location,Account,Include,OrderTo,OrderBy,HAAccount,DispatcherAccount,PackerAccount,Distance
+from .models import Supply,Order,Location,Account,Include,OrderTo,OrderBy,WHPAccount,DispatcherAccount,CMAccount,Distance
 
 #this affects the view of record in database at django admin page
 #an admin user should be created 
@@ -27,13 +27,13 @@ class OrderToAdmin(admin.ModelAdmin):
 class OrderByAdmin(admin.ModelAdmin):
     list_display = ('order','account')
 	
-class HAAccountAdmin(admin.ModelAdmin):
+class CMAccountAdmin(admin.ModelAdmin):
     list_display = ('account','location')
 	
 class DispatcherAccountAdmin(admin.ModelAdmin):
     list_display = ('account','warehouse')
 	
-class PackerAccountAdmin(admin.ModelAdmin):
+class WHPAccountAdmin(admin.ModelAdmin):
     list_display = ('account','warehouse')
 	
 class DistanceAdmin(admin.ModelAdmin):
@@ -47,7 +47,7 @@ admin.site.register(Account,AccountAdmin)
 admin.site.register(Include,IncludeAdmin)
 admin.site.register(OrderTo,OrderToAdmin)
 admin.site.register(OrderBy,OrderByAdmin)
-admin.site.register(HAAccount,HAAccountAdmin)
+admin.site.register(CMAccount,CMAccountAdmin)
 admin.site.register(DispatcherAccount,DispatcherAccountAdmin)
-admin.site.register(PackerAccount,PackerAccountAdmin)
+admin.site.register(WHPAccount,WHPAccountAdmin)
 admin.site.register(Distance,DistanceAdmin)
