@@ -55,15 +55,19 @@ class DispatchUpdate(generic.ListView):
 
     # def createItinerary(self):
         # create itinerary file
->>>>>>> 1f15150a7a3653b35660a04339d9e7e1d4aeef8d
+
 
 
 # if not use generic view, use render to call html
 # cat is the category name
 def displayByCategory(request, cat):
-	supply = Supply.objects.filter(category=cat)
-	list = {'supply' : supply}
-	return render(request, "system/displayByCategory.html", list)
+    supply = Supply.objects.filter(category=cat)
+    list = {}
+    count = 0
+    for item in supply:
+        list.append({count: item})
+        count += 1
+    return render(request, "system/displayByCategory.html", list)
 
 
 # detail of specific order
@@ -84,7 +88,6 @@ def createOrder(request):
 
 
 def createOrder2(request):
-<<<<<<< HEAD
 	query = request.POST.get('order')
 	try:
 		query = int(query)
@@ -103,25 +106,4 @@ def createOrder2(request):
 	else:
 		result = None
 	return render(request, "system/createOrder.html", {"result": result, })
-=======
-    query = request.POST.get('order')
-    try:
-        query = int(query)
-    except ValueError:
-        query = None
-    if query:
-        obj = json.loads(query)
-        clinic = obj['clinic']
-        dateTime = timezone.now()
-        priority = obj['priority']
-        items = obj['cart']
-        weight = obj['weight']
-        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
-        resultOrder.save()
-        result = "success"
-    else:
-        result = None
-    return render(request, "system/createOrder.html", {"result": result, })
 
-
->>>>>>> 1f15150a7a3653b35660a04339d9e7e1d4aeef8d
