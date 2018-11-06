@@ -59,7 +59,7 @@ class Order(models.Model):
     dispatchedDatetime = models.DateTimeField()
     deliveredDatetime = models.DateTimeField()
     weight = models.FloatField()
-    items = models.JSONField()
+    items = models.TextField()
     def __str__(self):
         # returns an order ID of length 8
         # the order starts from 00000001.
