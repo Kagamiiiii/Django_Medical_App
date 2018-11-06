@@ -155,34 +155,34 @@ and open the template in the editor.
 
             let selected_category = $('#category_selected').val();
 
+            $.get('localhost:8000/' + selected_category, function (response) {
+
+                items = JSON.parse(response);
+                loadItemsList();
+
+            })
+/*
             items = {
 
                 '1': {
                     name: 'Normal Saline',
                     description: 'description - Normal Saline',
-                    details: 'details - Normal Saline',
-                    image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
+                    detail: 'details - Normal Saline',
+                    image: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
                     weight: 10
                 },
 
                 '2': {
                     name: 'Lactated Ringer’s',
                     description: 'description - Lactated Ringer’s',
-                    details: 'details - Lactated Ringer’s',
-                    image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
+                    detail: 'details - Lactated Ringer’s',
+                    image: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
                     weight: 20
                 }
 
             };
-
-            loadItemsList('');
-
-//                $.get('put url here ?category=' + selected_category, function (response) {
-//
-//                    items = JSON.parse(response);
-//                    loadItemsList();
-//
-//                })
+*/
+            
 
         }
 
@@ -241,9 +241,9 @@ and open the template in the editor.
     <br/>
     <br/>Category:
     <select id='category_selected'>
-        <!--Put Django code here to replace these categories-->
-        <option value='intravenous (IV) fluids'>intravenous (IV) fluids</option>
-        <!-- -->
+        {% for list in list %}
+			<option value='{{list.category}}'>{{list.category}}</option>
+		{% endfor %}
     </select>
 
     <input type='button' value='Search' onclick='search();'>
