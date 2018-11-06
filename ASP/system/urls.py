@@ -23,4 +23,6 @@ urlpatterns = [
     path('dispatch', views.DispatchView.as_view(), name='dispatch'),
     path('<str:cat>', views.displayByCategory, name='displayByCategory'),
     path('<int:orderID>/order', views.orderView, name='order'),
+    path('clinic_manager/create_order', views.createOrder2, name='create_order'),
+    path('dispatcher/dispatchUpdate', views.DispatchView.dispatchUpdate(), name='dispatch_update'),
 ]
