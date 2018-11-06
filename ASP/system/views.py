@@ -60,14 +60,16 @@ def createOrder2(request):
 		query = int(query)
 	except ValueError:
 		query = None
-		result = None
 	if query:
-		result = "success"
 		clinic = request.GET.get('clinicID')
 		dateTime = timezone.now()
 		priority = request.GET.get('priority')
 		items = request.GET.get('items')
-		resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic)
+		weight = request.GET.get('weight')
+		resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
 		resultOrder.save()
+		result = "success"
+	else:
+		result = None
 	context = RequestContext(request)
 	return render_to_response("system/createOrder.html", {"result": result, }, context_instance=context)
