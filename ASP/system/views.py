@@ -53,3 +53,21 @@ def createOrder(request):
     # redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
     # but in django templates is default and it's omitted. don't add templates in from of directory.
 	return render(request, "system/createOrder.html")
+
+def createOrder2(request):
+	query = request.GET.get('query')
+	try:
+		query = int(query)
+	except ValueError:
+		query = None
+		result = None
+	if query:
+		result = "success"
+		clinic = request.GET.get('clinicID')
+		dateTime = timezone.now()
+		priority = request.GET.get('priority')
+		items = request.GET.get('items')
+		resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic)
+		resultOrder.save()
+	context = RequestContext(request)
+	return render_to_response("system/createOrder.html", {"result": result, }, context_instance=context)
