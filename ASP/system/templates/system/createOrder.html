@@ -136,7 +136,7 @@ and open the template in the editor.
                 let item_row = document.createElement('div');
                 item_row.id = item_id;
 
-                let item_row_html_string = '<img src=' + items[item_id].image_link + ' width="140" height="140" />';
+                let item_row_html_string = '<img src=' + items[item_id].image + ' width="140" height="140" />';
                 item_row_html_string += items[item_id].description;
                 item_row_html_string += '<input type="button" value="Addition Details" />';
                 item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
