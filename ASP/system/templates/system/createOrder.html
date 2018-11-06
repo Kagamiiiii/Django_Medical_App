@@ -199,7 +199,7 @@ and open the template in the editor.
                 weight: total_weight
             };
 
-            $.post('url here', order, function (response) {
+            $.post('localhost:8000/createOrder2', order, function (response) {
                 $('#item_list').html('');
                 $('#items_section').hide();
                 cart = [];
