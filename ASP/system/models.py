@@ -43,38 +43,6 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-
-class Order(models.Model):
-    # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
-    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
-                                                      (' Processing by Warehouse', ' Processing by Warehouse'),
-                                                      ('Queued for Dispatched', 'Queued for Dispatched'),
-                                                      ('Dispatched', 'Dispatched'),
-                                                      ('Delivered', 'Delivered')), default='Queued for Processing')
-    priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
-                                default='Low')
-    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
-    # This defines some DateTimeField type objects in SQLite 3
-    orderedDatetime = models.DateTimeField()
-    dispatchedDatetime = models.DateTimeField()
-    deliveredDatetime = models.DateTimeField()
-    weight = models.FloatField()
-    items = models.TextField()
-    def __str__(self):
-        # returns an order ID of length 8
-        # the order starts from 00000001.
-        temp = str(self.pk)
-        string = "Order "
-        for i in range(8 - len(temp)):
-            string += "0"
-        return string + temp
-
-    @classmethod
-    def create(cls, priority, items, ODatetime, cid, weight):
-        order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
-        return order
-
-
 class Account(models.Model):
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
@@ -111,6 +79,41 @@ class WHPAccount(models.Model):
 
     def __str__(self):
         return self.account.__str__() + " work at " + self.location.__str__()
+
+
+class Order(models.Model):
+    # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
+    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
+                                                      (' Processing by Warehouse', ' Processing by Warehouse'),
+                                                      ('Queued for Dispatched', 'Queued for Dispatched'),
+                                                      ('Dispatched', 'Dispatched'),
+                                                      ('Delivered', 'Delivered')), default='Queued for Processing')
+    priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
+                                default='Low')
+    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
+    # This defines some DateTimeField type objects in SQLite 3
+    orderedDatetime = models.DateTimeField()
+    dispatchedDatetime = models.DateTimeField()
+    deliveredDatetime = models.DateTimeField()
+    weight = models.FloatField()
+    items = models.TextField()
+    CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+    def __str__(self):
+        # returns an order ID of length 8
+        # the order starts from 00000001.
+        temp = str(self.pk)
+        string = "Order "
+        for i in range(8 - len(temp)):
+            string += "0"
+        return string + temp
+
+    @classmethod
+    def create(cls, priority, items, ODatetime, cid, weight):
+        order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+        return order
+
+
+
 
 
 class Include(models.Model):
