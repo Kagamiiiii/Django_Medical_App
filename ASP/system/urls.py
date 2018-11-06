@@ -14,7 +14,6 @@ app_name = "system"
 urlpatterns = [
     # path('', views.index, name='index'),
 	#to use generic view, only primary key can be included in the url
-	path('', views.createOrder, name='createOrder'),
 	path('<int:pk>/detail/', views.DetailView.as_view(), name='detail'),
     # noted there maybe some requests with parameters in the link,
     # for example 4/detail. In this case, the <int:pk> clause matches the integer

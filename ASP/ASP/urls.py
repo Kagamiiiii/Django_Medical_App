@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+import system.urls as system_app
+
 # 定義了網站url到view的映射。雖然這裡可以包含所有的url，但是更常見的做法是把應用相關的url包含在相關應用中，你可以在接下來的教程裡看到。
 
 urlpatterns = [
 	# path('asp/', include('system.urls')),
-    path('createOrder/', include('system.urls')),
+    path('createOrder/', system_app.views.createOrder, name='createOrderPage'),
+    path('createOrder2/', system_app.views.createOrder2, name='createOrderSubmit'),
     path('admin/', admin.site.urls),
 ]

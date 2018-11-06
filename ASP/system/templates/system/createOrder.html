@@ -40,7 +40,7 @@ and open the template in the editor.
 
             function deleteItemFromCart(id) {
                 for (let i = 0; i < cart.length; i++) {
-                    if (cart[i].item_id == id) {
+                    if (cart[i].item_id === id) {
                         cart.splice(i, 1);
                     }
                 }
@@ -65,7 +65,7 @@ and open the template in the editor.
                 }
 
                 for (let i = 0; i < cart.length; i++) {
-                    if (cart[i].item_id == item_id) {
+                    if (cart[i].item_id === item_id) {
 
                         let quantity = $('#' + item_id + '_quantity').val();
 
@@ -187,27 +187,29 @@ and open the template in the editor.
             }
 
             function createOrder() {
-                let order = {
-                    priority: $('#priority').val(),
-                    cart: cart
-                }
 
                 let total_weight = getWeight();
                 if(total_weight > $('#drone_capacity').html()){
                     return;
                 }
 
+                let order = {
+                    priority: $('#priority').val(),
+                    cart: cart,
+                    weight: total_weight
+                };
+
                 $.post('url here', order, function (response) {
                     $('#item_list').html('');
                     $('#items_section').hide();
                     cart = [];
                     $('#message').html('Success');
-                })
+                });
             }
 
             function getWeight(){
                 let package_weight = $('#package_weight').html();
-                let total_weight = 0
+                let total_weight = 0;
                 for (let i = 0; i < cart.length; i++){
                     total_weight += items[cart[i].item_id].weight * cart[i].quantity;
                 }
