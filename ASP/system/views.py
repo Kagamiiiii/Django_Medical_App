@@ -63,7 +63,7 @@ def createOrder(request):
 
 
 def createOrder2(request):
-    query = request.GET.get('order')
+    query = request.POST.get('order')
     try:
         query = int(query)
     except ValueError:

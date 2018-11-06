@@ -199,6 +199,7 @@ and open the template in the editor.
                 weight: total_weight,
                 clinic: 1
             };
+
             $.post('localhost:8000/createOrder2', order, function (response) {
                 $('#item_list').html('');
                 $('#items_section').hide();
