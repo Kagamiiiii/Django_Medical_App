@@ -50,6 +50,11 @@ class Order(models.Model):
 			string += "0"
 		return string + temp
 
+	@classmethod
+	def create(cls, priority, items, ODatetime):
+		order = cls(priority=priority, items=items, orderedDatetime=ODatetime)
+		return order
+
 class Location(models.Model):
 	# Location information.
 	name = models.CharField(max_length=200)
