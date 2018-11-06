@@ -20,5 +20,6 @@ from django.urls import include,path
 
 urlpatterns = [
 	path('asp/', include('system.urls')),
+    path('createOrder/', include('system.urls')),
     path('admin/', admin.site.urls),
 ]

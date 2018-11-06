@@ -39,4 +39,6 @@ def orderView(request,orderID):
 	supply = Include.objects.filter(order_id=orderID)
 	list = {'order':order,'supplyList':supply}
 	return render(request,"system/order.html",list)
-	
+
+def createOrder(request):
+	return render(request, "system/createOrder.html")
