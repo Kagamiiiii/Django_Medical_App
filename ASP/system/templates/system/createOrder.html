@@ -196,9 +196,9 @@ and open the template in the editor.
             let order = {
                 priority: $('#priority').val(),
                 cart: cart,
-                weight: total_weight
+                weight: total_weight,
+                clinic: 1
             };
-
             $.post('localhost:8000/createOrder2', order, function (response) {
                 $('#item_list').html('');
                 $('#items_section').hide();
