@@ -41,7 +41,7 @@ class DispatchView(generic.ListView):
 
 class DispatchUpdate(generic.ListView):
 	context_object_name = 'orderList'
-	tempplate_name = "system/dispatch.html"
+	template_name = "system/dispatch.html"
     
 	def dispatchUpdate(self):
         # update status and dispatch datetime of all selected orders
@@ -49,6 +49,7 @@ class DispatchUpdate(generic.ListView):
         orderList.objects.update(status="Queued for Dispatched")
         dateTime = timezone.now()
         orderList.objects.update(dispatchedDatetime=dateTime)
+		orderList.save()
 
     # def createItinerary(self):
         # create itinerary file
