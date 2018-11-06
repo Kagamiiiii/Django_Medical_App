@@ -44,9 +44,25 @@ and open the template in the editor.
                         cart.splice(i, 1);
                     }
                 }
+                let total_weight = getWeight();
+                showWeight(total_weight);
+
+                if(total_weight > $('#drone_capacity').html()){
+                    $('#message').html('Overweight => Order cannot be created.');
+                }else{
+                    $('#message').html('');
+                }
+
             }
 
             function editItemsInCart(item_id) {
+
+                let total_weight = getWeight();
+                showWeight(total_weight);
+
+                if(total_weight > $('#drone_capacity').html()){
+                    $('#message').html('Overweight => Order cannot be created.');
+                }
 
                 for (let i = 0; i < cart.length; i++) {
                     if (cart[i].item_id == item_id) {
@@ -55,6 +71,8 @@ and open the template in the editor.
 
                         cart[i].quantity = quantity;
                         updateCart();
+                        total_weight = getWeight();
+                        showWeight(total_weight);
                         return;
                     }
                 }
@@ -67,6 +85,8 @@ and open the template in the editor.
 
                 cart.push(cart_item);
                 updateCart();
+                total_weight = getWeight();
+                showWeight(total_weight);
 
             }
 
@@ -141,14 +161,16 @@ and open the template in the editor.
                         name: 'Normal Saline',
                         description: 'description - Normal Saline',
                         details: 'details - Normal Saline',
-                        image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1'
+                        image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
+                        weight: 10
                     },
 
                     '2': {
                         name: 'Lactated Ringer’s',
                         description: 'description - Lactated Ringer’s',
                         details: 'details - Lactated Ringer’s',
-                        image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg'
+                        image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
+                        weight: 20
                     }
 
                 };
@@ -156,7 +178,7 @@ and open the template in the editor.
                 loadItemsList('');
 
 //                $.get('put url here ?category=' + selected_category, function (response) {
-//                    
+//
 //                    items = JSON.parse(response);
 //                    loadItemsList();
 //
@@ -170,12 +192,30 @@ and open the template in the editor.
                     cart: cart
                 }
 
+                let total_weight = getWeight();
+                if(total_weight > $('#drone_capacity').html()){
+                    return;
+                }
+
                 $.post('url here', order, function (response) {
                     $('#item_list').html('');
                     $('#items_section').hide();
                     cart = [];
                     $('#message').html('Success');
                 })
+            }
+
+            function getWeight(){
+                let package_weight = $('#package_weight').html();
+                let total_weight = 0
+                for (let i = 0; i < cart.length; i++){
+                    total_weight += items[cart[i].item_id].weight * cart[i].quantity;
+                }
+                return total_weight;
+            }
+
+            function showWeight(total_weight){
+                $('#total_weight').html(total_weight);
             }
 
         </script>
@@ -196,7 +236,7 @@ and open the template in the editor.
             <br />Supplying hospital: {{ hospital_name_here }}
 
             <br />
-            <br />Category: 
+            <br />Category:
             <select id='category_selected'>
                 <!--Put Django code here to replace these categories-->
                 <option value='intravenous (IV) fluids'>intravenous (IV) fluids</option>
@@ -205,18 +245,26 @@ and open the template in the editor.
 
             <input type='button' value='Search' onclick='search();'>
 
+            <br />
+            <br />
+            Each order package Weight: <div id="package_weight">1</div>
+            Drone max load capacity: <div id="drone_capacity">30</div>
+            Total Weight of order(including order package): <div id="total_weight">0</div>
+
         </div>
+
+
 
         <div id='message'></div>
 
         <div id='items_section'>
 
             <br />
-            <br /><input type='button' value='Create Order' onclick='createOrder();'/> 
+            <br /><input type='button' value='Create Order' onclick='createOrder();'/>
             <br />
             <br />Cart: <span id='cart'></span>
             <br />
-            <br />Priority: 
+            <br />Priority:
             <select id='priority'>
                 <option value='High'>High</option>
                 <option value='Medium'>Medium</option>
@@ -229,9 +277,7 @@ and open the template in the editor.
 
             <br />
             <br />
-            <div id='item_list'>
-
-            </div>
+            <div id='item_list'></div>
 
         </div>
 

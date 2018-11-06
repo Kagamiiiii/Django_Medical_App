@@ -28,6 +28,15 @@ class Supply(models.Model):
 		# this function return a human readable string about this data model upon call.
 		return self.name
 
+class Location(models.Model):
+	# Location information.
+	name = models.CharField(max_length=200)
+	latitude = models.FloatField()
+	longitude = models.FloatField()
+	altitude = models.FloatField()
+	def __str__(self):
+		return self.name
+
 class Order(models.Model):
 	# This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 	status = models.CharField(max_length=30,choices=(('Queued for Processing','Queued for Processing'),
@@ -55,15 +64,6 @@ class Order(models.Model):
 	def create(cls, priority, items, ODatetime, cid):
 		order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid)
 		return order
-
-class Location(models.Model):
-	# Location information.
-	name = models.CharField(max_length=200)
-	latitude = models.FloatField()
-	longitude = models.FloatField()
-	altitude = models.FloatField()
-	def __str__(self):
-		return self.name
 
 class Account(models.Model):
 	username = models.CharField(max_length=200)
