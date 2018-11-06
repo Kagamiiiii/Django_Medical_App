@@ -13,14 +13,14 @@ app_name = "system"
 
 urlpatterns = [
     # path('', views.index, name='index'),
-	#to use generic view, only primary key can be included in the url
-	path('<int:pk>/detail/', views.DetailView.as_view(), name='detail'),
+    # to use generic view, only primary key can be included in the url
+    path('<int:pk>/detail/', views.DetailView.as_view(), name='detail'),
     # noted there maybe some requests with parameters in the link,
     # for example 4/detail. In this case, the <int:pk> clause matches the integer
     # and passes that as an argument to the function DetailView in views.py so they can handle them.
     # the name option, however, is the assign a name for such redirection, so in other files you can
     # use that abbreviation to represent this.
-	path('dispatch',views.DispatchView.as_view(),name ='dispatch'),
-	path('<str:cat>',views.displayByCategory,name='displayByCategory'),
-	path('<int:orderID>/order',views.orderView,name='order'),
+    path('dispatch', views.DispatchView.as_view(), name='dispatch'),
+    path('<str:cat>', views.displayByCategory, name='displayByCategory'),
+    path('<int:orderID>/order', views.orderView, name='order'),
 ]

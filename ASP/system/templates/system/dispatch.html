@@ -1,7 +1,7 @@
 {% if orderList %}
-	{% for order in orderList %}
-		<a href="/asp/{{order.pk}}/order">Order {{order.pk}}</a><br><br>
-	{% endfor %}
+    {% for order in orderList %}
+        <a href="/asp/{{ order.pk }}/order">Order {{ order.pk }}</a><br><br>
+    {% endfor %}
 {% else %}
-	<p>No order available</p>
+    <p>No order available</p>
 {% endif %}

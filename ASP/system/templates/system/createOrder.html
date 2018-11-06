@@ -5,177 +5,177 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <title>Create Order</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-        <script>
+<head>
+    <title>Create Order</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script>
 
-            let items = null;
-            let cart = [];
+        let items = null;
+        let cart = [];
 
-            function showMainPart() {
-                $('#category_part').show();
-            }
+        function showMainPart() {
+            $('#category_part').show();
+        }
 
-            function showItemSelectionPart() {
-                $('#items_section').show();
-            }
+        function showItemSelectionPart() {
+            $('#items_section').show();
+        }
 
-            function hideMainPart() {
-                $('#category_part').hide();
-            }
+        function hideMainPart() {
+            $('#category_part').hide();
+        }
 
-            function hideItemSelectionPart() {
-                $('#items_section').hide();
-            }
+        function hideItemSelectionPart() {
+            $('#items_section').hide();
+        }
 
-            function start() {
+        function start() {
 
-                hideMainPart();
-                hideItemSelectionPart();
+            hideMainPart();
+            hideItemSelectionPart();
 
-            }
+        }
 
-            function deleteItemFromCart(id) {
-                for (let i = 0; i < cart.length; i++) {
-                    if (cart[i].item_id === id) {
-                        cart.splice(i, 1);
-                    }
+        function deleteItemFromCart(id) {
+            for (let i = 0; i < cart.length; i++) {
+                if (cart[i].item_id === id) {
+                    cart.splice(i, 1);
                 }
-                let total_weight = getWeight();
-                showWeight(total_weight);
+            }
+            let total_weight = getWeight();
+            showWeight(total_weight);
 
-                if(total_weight > $('#drone_capacity').html()){
-                    $('#message').html('Overweight => Order cannot be created.');
-                }else{
-                    $('#message').html('');
-                }
-
+            if (total_weight > $('#drone_capacity').html()) {
+                $('#message').html('Overweight => Order cannot be created.');
+            } else {
+                $('#message').html('');
             }
 
-            function editItemsInCart(item_id) {
+        }
 
-                let total_weight = getWeight();
-                showWeight(total_weight);
+        function editItemsInCart(item_id) {
 
-                if(total_weight > $('#drone_capacity').html()){
-                    $('#message').html('Overweight => Order cannot be created.');
-                }
+            let total_weight = getWeight();
+            showWeight(total_weight);
 
-                for (let i = 0; i < cart.length; i++) {
-                    if (cart[i].item_id === item_id) {
-
-                        let quantity = $('#' + item_id + '_quantity').val();
-
-                        cart[i].quantity = quantity;
-                        updateCart();
-                        total_weight = getWeight();
-                        showWeight(total_weight);
-                        return;
-                    }
-                }
-
-                let cart_item = {
-                    item_id: item_id,
-                    name: items[item_id].name,
-                    quantity: $('#' + item_id + '_quantity').val()
-                };
-
-                cart.push(cart_item);
-                updateCart();
-                total_weight = getWeight();
-                showWeight(total_weight);
-
+            if (total_weight > $('#drone_capacity').html()) {
+                $('#message').html('Overweight => Order cannot be created.');
             }
 
-            function quantity_toggle(item_id) {
+            for (let i = 0; i < cart.length; i++) {
+                if (cart[i].item_id === item_id) {
 
-                let quantity_id = item_id + '_quantity';
+                    let quantity = $('#' + item_id + '_quantity').val();
 
-                if ($("#" + quantity_id).prop('disabled')) {
-                    if ($("#" + quantity_id).val() === '') {
-                        $("#" + quantity_id).val(1);
-                        editItemsInCart(item_id);
-                        updateCart();
-                    }
-                    $("#" + quantity_id).prop('disabled', false);
-                } else {
-                    $("#" + quantity_id).val(0);
-
-                    deleteItemFromCart(item_id);
+                    cart[i].quantity = quantity;
                     updateCart();
-                    $("#" + quantity_id).val('');
-                    $("#" + quantity_id).prop('disabled', true);
-                }
-
-            }
-
-            function updateCart() {
-
-                if (cart.length === 0) {
-                    $('#cart').html('No items in cart');
+                    total_weight = getWeight();
+                    showWeight(total_weight);
                     return;
                 }
-
-                $('#cart').html('');
-
-                for (let i = 0; i < cart.length; i++) {
-                    $('#cart').html($('#cart').html() + '<br />Name: ' + cart[i].name + '    Quantity: ' + cart[i].quantity);
-                }
             }
 
-            function loadItemsList() {
+            let cart_item = {
+                item_id: item_id,
+                name: items[item_id].name,
+                quantity: $('#' + item_id + '_quantity').val()
+            };
 
+            cart.push(cart_item);
+            updateCart();
+            total_weight = getWeight();
+            showWeight(total_weight);
+
+        }
+
+        function quantity_toggle(item_id) {
+
+            let quantity_id = item_id + '_quantity';
+
+            if ($("#" + quantity_id).prop('disabled')) {
+                if ($("#" + quantity_id).val() === '') {
+                    $("#" + quantity_id).val(1);
+                    editItemsInCart(item_id);
+                    updateCart();
+                }
+                $("#" + quantity_id).prop('disabled', false);
+            } else {
+                $("#" + quantity_id).val(0);
+
+                deleteItemFromCart(item_id);
+                updateCart();
+                $("#" + quantity_id).val('');
+                $("#" + quantity_id).prop('disabled', true);
+            }
+
+        }
+
+        function updateCart() {
+
+            if (cart.length === 0) {
                 $('#cart').html('No items in cart');
-                $('#item_list').html('');
-
-                for (let item_id in items) {
-
-                    let item_row = document.createElement('div');
-                    item_row.id = item_id;
-
-                    let item_row_html_string = '<img src=' + items[item_id].image_link + ' width="140" height="140" />';
-                    item_row_html_string += items[item_id].description;
-                    item_row_html_string += '<input type="button" value="Addition Details" />';
-                    item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
-                    item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + item_id + '_quantity" disabled onchange="editItemsInCart(' + item_id + ')" />';
-
-                    item_row.innerHTML = item_row_html_string;
-
-                    $('#item_list').append(item_row);
-
-                }
+                return;
             }
 
-            function search() {
+            $('#cart').html('');
 
-                showItemSelectionPart();
+            for (let i = 0; i < cart.length; i++) {
+                $('#cart').html($('#cart').html() + '<br />Name: ' + cart[i].name + '    Quantity: ' + cart[i].quantity);
+            }
+        }
 
-                let selected_category = $('#category_selected').val();
+        function loadItemsList() {
 
-                items = {
+            $('#cart').html('No items in cart');
+            $('#item_list').html('');
 
-                    '1': {
-                        name: 'Normal Saline',
-                        description: 'description - Normal Saline',
-                        details: 'details - Normal Saline',
-                        image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
-                        weight: 10
-                    },
+            for (let item_id in items) {
 
-                    '2': {
-                        name: 'Lactated Ringer’s',
-                        description: 'description - Lactated Ringer’s',
-                        details: 'details - Lactated Ringer’s',
-                        image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
-                        weight: 20
-                    }
+                let item_row = document.createElement('div');
+                item_row.id = item_id;
 
-                };
+                let item_row_html_string = '<img src=' + items[item_id].image_link + ' width="140" height="140" />';
+                item_row_html_string += items[item_id].description;
+                item_row_html_string += '<input type="button" value="Addition Details" />';
+                item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
+                item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + item_id + '_quantity" disabled onchange="editItemsInCart(' + item_id + ')" />';
 
-                loadItemsList('');
+                item_row.innerHTML = item_row_html_string;
+
+                $('#item_list').append(item_row);
+
+            }
+        }
+
+        function search() {
+
+            showItemSelectionPart();
+
+            let selected_category = $('#category_selected').val();
+
+            items = {
+
+                '1': {
+                    name: 'Normal Saline',
+                    description: 'description - Normal Saline',
+                    details: 'details - Normal Saline',
+                    image_link: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
+                    weight: 10
+                },
+
+                '2': {
+                    name: 'Lactated Ringer’s',
+                    description: 'description - Lactated Ringer’s',
+                    details: 'details - Lactated Ringer’s',
+                    image_link: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
+                    weight: 20
+                }
+
+            };
+
+            loadItemsList('');
 
 //                $.get('put url here ?category=' + selected_category, function (response) {
 //
@@ -184,104 +184,106 @@ and open the template in the editor.
 //
 //                })
 
+        }
+
+        function createOrder() {
+
+            let total_weight = getWeight();
+            if (total_weight > $('#drone_capacity').html()) {
+                return;
             }
 
-            function createOrder() {
+            let order = {
+                priority: $('#priority').val(),
+                cart: cart,
+                weight: total_weight
+            };
 
-                let total_weight = getWeight();
-                if(total_weight > $('#drone_capacity').html()){
-                    return;
-                }
+            $.post('url here', order, function (response) {
+                $('#item_list').html('');
+                $('#items_section').hide();
+                cart = [];
+                $('#message').html('Success');
+            });
+        }
 
-                let order = {
-                    priority: $('#priority').val(),
-                    cart: cart,
-                    weight: total_weight
-                };
-
-                $.post('url here', order, function (response) {
-                    $('#item_list').html('');
-                    $('#items_section').hide();
-                    cart = [];
-                    $('#message').html('Success');
-                });
+        function getWeight() {
+            let package_weight = $('#package_weight').html();
+            let total_weight = 0;
+            for (let i = 0; i < cart.length; i++) {
+                total_weight += items[cart[i].item_id].weight * cart[i].quantity;
             }
+            return total_weight;
+        }
 
-            function getWeight(){
-                let package_weight = $('#package_weight').html();
-                let total_weight = 0;
-                for (let i = 0; i < cart.length; i++){
-                    total_weight += items[cart[i].item_id].weight * cart[i].quantity;
-                }
-                return total_weight;
-            }
+        function showWeight(total_weight) {
+            $('#total_weight').html(total_weight);
+        }
 
-            function showWeight(total_weight){
-                $('#total_weight').html(total_weight);
-            }
+    </script>
+</head>
+<body onload='start();'>
 
-        </script>
-    </head>
-    <body onload='start();'>
+<input type='button' value='Browse Supplies by Category' id='test' onclick="showMainPart();"/>
 
-        <input type='button' value='Browse Supplies by Category' id='test' onclick="showMainPart();"/>
+<div id='category_part'>
 
-        <div id='category_part'>
+    <br/>
+    <br/>Menu for creating order
 
-            <br />
-            <br />Menu for creating order
+    <br/>
+    <br/>Browse Supplies by Category
 
-            <br />
-            <br />Browse Supplies by Category
+    <br/>
+    <br/>Supplying hospital: {{ hospital_name_here }}
 
-            <br />
-            <br />Supplying hospital: {{ hospital_name_here }}
+    <br/>
+    <br/>Category:
+    <select id='category_selected'>
+        <!--Put Django code here to replace these categories-->
+        <option value='intravenous (IV) fluids'>intravenous (IV) fluids</option>
+        <!-- -->
+    </select>
 
-            <br />
-            <br />Category:
-            <select id='category_selected'>
-                <!--Put Django code here to replace these categories-->
-                <option value='intravenous (IV) fluids'>intravenous (IV) fluids</option>
-                <!-- -->
-            </select>
+    <input type='button' value='Search' onclick='search();'>
 
-            <input type='button' value='Search' onclick='search();'>
+    <br/>
+    <br/>
+    Each order package Weight:
+    <div id="package_weight">1</div>
+    Drone max load capacity:
+    <div id="drone_capacity">30</div>
+    Total Weight of order(including order package):
+    <div id="total_weight">0</div>
 
-            <br />
-            <br />
-            Each order package Weight: <div id="package_weight">1</div>
-            Drone max load capacity: <div id="drone_capacity">30</div>
-            Total Weight of order(including order package): <div id="total_weight">0</div>
-
-        </div>
+</div>
 
 
+<div id='message'></div>
 
-        <div id='message'></div>
+<div id='items_section'>
 
-        <div id='items_section'>
+    <br/>
+    <br/><input type='button' value='Create Order' onclick='createOrder();'/>
+    <br/>
+    <br/>Cart: <span id='cart'></span>
+    <br/>
+    <br/>Priority:
+    <select id='priority'>
+        <option value='High'>High</option>
+        <option value='Medium'>Medium</option>
+        <option value='Low'>Low</option>
+    </select>
 
-            <br />
-            <br /><input type='button' value='Create Order' onclick='createOrder();'/>
-            <br />
-            <br />Cart: <span id='cart'></span>
-            <br />
-            <br />Priority:
-            <select id='priority'>
-                <option value='High'>High</option>
-                <option value='Medium'>Medium</option>
-                <option value='Low'>Low</option>
-            </select>
+    <br/>
+    <br/>
+    Supply list:
 
-            <br />
-            <br />
-            Supply list:
+    <br/>
+    <br/>
+    <div id='item_list'></div>
 
-            <br />
-            <br />
-            <div id='item_list'></div>
+</div>
 
-        </div>
-
-    </body>
+</body>
 </html>
