@@ -13,7 +13,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ('status','priority','weight','orderedDatetime','dispatchedDatetime','deliveredDatetime')
 	
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ('name','latitude','longtitude','altitude')
+    list_display = ('name','latitude','longitude','altitude')
 	
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('username','password','firstname','lastname','email')

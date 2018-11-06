@@ -19,7 +19,7 @@ from django.urls import include,path
 # 定義了網站url到view的映射。雖然這裡可以包含所有的url，但是更常見的做法是把應用相關的url包含在相關應用中，你可以在接下來的教程裡看到。
 
 urlpatterns = [
-	path('asp/', include('system.urls')),
+	# path('asp/', include('system.urls')),
     path('createOrder/', include('system.urls')),
     path('admin/', admin.site.urls),
 ]

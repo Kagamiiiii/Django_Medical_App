@@ -1,3 +1,9 @@
+"""
+This is where the urls.py will redirect to.
+it redirects to one of the functions below.
+Noted that an "request" argument must be presented as the first argument, to handle HTTP stuff (I guess),
+except for Generic view (which I have no idea on)
+"""
 from django.http import HttpResponseRedirect,HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -5,15 +11,17 @@ from django.views import generic
 from django.utils import timezone
 from .models import Supply,Order,Include
 
+
 #temp index page
 def index(request):
+    # this is the simplest form, returning a Response containing the message only.
 	return HttpResponse("index page")
 
 #for generic detail view	
 #use the primary key in the url
 #detail of a supply
 class DetailView(generic.DetailView):
-	model = Supply#where to search for primary key
+	model = Supply #where to search for primary key
 	template_name = "system/detail.html"
 	
 #for generic lsit view
@@ -35,10 +43,13 @@ def displayByCategory(request,cat):
 	
 #detail of specific order
 def orderView(request,orderID):
+    # preforming query for cretain objects.
 	order = Order.objects.get(pk=orderID)
 	supply = Include.objects.filter(order_id=orderID)
 	list = {'order':order,'supplyList':supply}
 	return render(request,"system/order.html",list)
 
 def createOrder(request):
+    # redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
+    # but in django templates is default and it's omitted. don't add templates in from of directory.
 	return render(request, "system/createOrder.html")
