@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from .models import Supply,Order,Include
-
+import json
 
 #temp index page
 def index(request):
@@ -55,20 +55,21 @@ def createOrder(request):
 	return render(request, "system/createOrder.html")
 
 def createOrder2(request):
-	query = request.GET.get('query')
-	try:
-		query = int(query)
-	except ValueError:
-		query = None
-	if query:
-		clinic = request.GET.get('clinicID')
-		dateTime = timezone.now()
-		priority = request.GET.get('priority')
-		items = request.GET.get('items')
-		weight = request.GET.get('weight')
-		resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
-		resultOrder.save()
-		result = "success"
-	else:
-		result = None
-	return render(request, "system/createOrder.html", {"result": result, })
+    query = request.GET.get('order')
+    try:
+        query = int(query)
+    except ValueError:
+        query = None
+    if query:
+        obj = json.loads(query)
+        clinic = obj['clinic']
+        dateTime = timezone.now()
+        priority = obj['priority']
+        items = obj['cart']
+        weight = obj['weight']
+        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
+        resultOrder.save()
+        result = "success"
+    else:
+        result = None
+    return render(request, "system/createOrder.html", {"result": result, })
