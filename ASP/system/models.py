@@ -61,8 +61,8 @@ class Order(models.Model):
 		return string + temp
 
 	@classmethod
-	def create(cls, priority, items, ODatetime, cid):
-		order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid)
+	def create(cls, priority, items, ODatetime, cid, weight):
+		order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
 		return order
 
 class Account(models.Model):
