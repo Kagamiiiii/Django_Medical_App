@@ -35,18 +35,15 @@ class DispatchView(generic.ListView):
 	# {orderList: queryset}
 	template_name = "system/dispatch.html"
 
-<<<<<<< HEAD
+
 	def get_queryset(self):
-		return Order.objects.filter(status="Queued for dispatch").order_by('orderedDatetime')
-=======
-    def get_queryset(self):
-        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+		return Order.objects.filter(status="Queued for dispatch").order_by('priority')
 
 class DispatchUpdate(generic.ListView):
-    context_object_name = 'orderList'
-    tempplate_name = "system/dispatch.html"
+	context_object_name = 'orderList'
+	tempplate_name = "system/dispatch.html"
     
-    def dispatchUpdate(self):
+	def dispatchUpdate(self):
         # update status and dispatch datetime of all selected orders
         orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
         orderList.objects.update(status="Queued for Dispatched")
