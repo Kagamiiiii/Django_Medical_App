@@ -131,22 +131,22 @@ and open the template in the editor.
             $('#cart').html('No items in cart');
             $('#item_list').html('');
 
-            for (let item_id in items) {
+            "{% for item in list %}"
 
                 let item_row = document.createElement('div');
-                item_row.id = item_id;
+                item_row.id = "{{item.pk}}";
 
-                let item_row_html_string = '<img src=' + items[item_id].image + ' width="140" height="140" />';
-                item_row_html_string += items[item_id].description;
+                let item_row_html_string = '<img src=' + "{{item.image}}" + ' width="140" height="140" />';
+                item_row_html_string += "{{item.description}}";
                 item_row_html_string += '<input type="button" value="Addition Details" />';
-                item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
-                item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + item_id + '_quantity" disabled onchange="editItemsInCart(' + item_id + ')" />';
+                item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + "{{item.pk}}" + '\');" />';
+                item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + "{{item.pk}}" + '_quantity" disabled onchange="editItemsInCart(' + "{{item.pk}}" + ')" />';
 
                 item_row.innerHTML = item_row_html_string;
 
                 $('#item_list').append(item_row);
 
-            }
+            "{% endfor %}"
         }
 
         function search() {
@@ -241,8 +241,8 @@ and open the template in the editor.
     <br/>
     <br/>Category:
     <select id='category_selected'>
-        {% for list in list %}
-			<option value='{{list.category}}'>{{list.category}}</option>
+        {% for cat in list %}
+			<option value='{{cat.category}}'>{{cat.category}}</option>
 		{% endfor %}
     </select>
 
