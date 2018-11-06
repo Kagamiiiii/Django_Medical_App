@@ -15,45 +15,45 @@ import json
 
 # temp index page
 def index(request):
-	# this is the simplest form, returning a Response containing the message only.
-	return HttpResponse("index page")
+    # this is the simplest form, returning a Response containing the message only.
+    return HttpResponse("index page")
 
 
 # for generic detail view
 # use the primary key in the url
 # detail of a supply
 class DetailView(generic.DetailView):
-	model = Supply	# where to search for primary key
-	template_name = "system/detail.html"
+    model = Supply  # where to search for primary key
+    template_name = "system/detail.html"
 
 
 # for generic lsit view
 # use def get_queryset and return a list
 class DispatchView(generic.ListView):
-	context_object_name = 'orderList'
-	# equal to pass a list
-	# {orderList: queryset}
-	template_name = "system/dispatch.html"
+    context_object_name = 'orderList'
+    # equal to pass a list
+    # {orderList: queryset}
+    template_name = "system/dispatch.html"
 
+    def get_queryset(self):
+        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
 
-	def get_queryset(self):
-		return Order.objects.filter(status="Queued for dispatch").order_by('priority')
 
 class DispatchUpdate(generic.ListView):
-	context_object_name = 'orderList'
-	template_name = "system/dispatch.html"
-    
-	def dispatchUpdate(self):
-        # update status and dispatch datetime of all selected orders
+    context_object_name = 'orderList'
+    template_name = "system/dispatch.html"
+
+    # update status and dispatch datetime of all selected orders
+    def dispatchUpdate(self):
         orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
         orderList.objects.update(status="Queued for Dispatched")
         dateTime = timezone.now()
         orderList.objects.update(dispatchedDatetime=dateTime)
-		orderList.save()
+        orderList.save()
 
-    # def createItinerary(self):
-        # create itinerary file
 
+# def createItinerary(self):
+# create itinerary file
 
 
 # if not use generic view, use render to call html
@@ -71,37 +71,35 @@ def displayByCategory(request, cat):
 # detail of specific order
 # preforming query for cretain objects.
 def orderView(request, orderID):
-	order = Order.objects.get(pk=orderID)
-	supply = Include.objects.filter(order_id=orderID)
-	list = {'order': order, 'supplyList': supply}
-	return render(request, "system/order.html", list)
+    order = Order.objects.get(pk=orderID)
+    supply = Include.objects.filter(order_id=orderID)
+    list = {'order': order, 'supplyList': supply}
+    return render(request, "system/order.html", list)
 
-
+# redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
+# but in django templates is default and it's omitted. don't add templates in from of directory.
 def createOrder(request):
-	# redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
-	# but in django templates is default and it's omitted. don't add templates in from of directory.
-	category = Supply.objects.all()
-	list = {'list': category}
-	return render(request, "system/createOrder.html",list)
+    category = Supply.objects.all()
+    list = {'list': category}
+    return render(request, "system/createOrder.html", list)
 
 
 def createOrder2(request):
-	query = request.POST.get('order')
-	try:
-		query = int(query)
-	except ValueError:
-		query = None
-	if query:
-		obj = json.loads(query)
-		clinic = obj['clinic']
-		dateTime = timezone.now()
-		priority = obj['priority']
-		items = obj['cart']
-		weight = obj['weight']
-		resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
-		resultOrder.save()
-		result = "success"
-	else:
-		result = None
-	return render(request, "system/createOrder.html", {"result": result, })
-
+    query = request.POST.get('order')
+    try:
+        query = int(query)
+    except ValueError:
+        query = None
+    if query:
+        obj = json.loads(query)
+        clinic = obj['clinic']
+        dateTime = timezone.now()
+        priority = obj['priority']
+        items = obj['cart']
+        weight = obj['weight']
+        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
+        resultOrder.save()
+        result = "success"
+    else:
+        result = None
+    return render(request, "system/createOrder.html", {"result": result, })

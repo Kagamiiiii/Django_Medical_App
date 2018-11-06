@@ -28,13 +28,12 @@ class Supply(models.Model):
     # This is float field. Storing floating point
     weight = models.FloatField()
 
+    # this function return a human readable string about this data model upon call.
     def __str__(self):
-        # this function return a human readable string about this data model upon call.
         return self.name
 
-
+# Location information.
 class Location(models.Model):
-    # Location information.
     name = models.CharField(max_length=200)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -54,8 +53,8 @@ class Account(models.Model):
         return self.lastname + self.firstname
 
 
+# Clinic Manager Account.
 class CMAccount(models.Model):
-    # Clinic Manager Account.
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
@@ -63,8 +62,8 @@ class CMAccount(models.Model):
         return self.account.__str__() + " from " + self.location.__str__()
 
 
+# account for dispatcher
 class DispatcherAccount(models.Model):
-    # account for dispatcher
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
@@ -72,8 +71,8 @@ class DispatcherAccount(models.Model):
         return self.account.__str__() + " work at " + self.location.__str__()
 
 
+# account for warehouse personnel
 class WHPAccount(models.Model):
-    # account for warehouse personnel
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
@@ -81,8 +80,8 @@ class WHPAccount(models.Model):
         return self.account.__str__() + " work at " + self.location.__str__()
 
 
+# This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 class Order(models.Model):
-    # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
     status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
                                                       (' Processing by Warehouse', ' Processing by Warehouse'),
                                                       ('Queued for Dispatched', 'Queued for Dispatched'),
@@ -98,9 +97,9 @@ class Order(models.Model):
     weight = models.FloatField()
     items = models.TextField()
     CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+    # returns an order ID of length 8
+    # the order starts from 00000001.
     def __str__(self):
-        # returns an order ID of length 8
-        # the order starts from 00000001.
         temp = str(self.pk)
         string = "Order "
         for i in range(8 - len(temp)):
@@ -116,9 +115,9 @@ class Order(models.Model):
 
 
 
+# record supply in an order
+# different supply in the same order should divide into several records in this table
 class Include(models.Model):
-    # record supply in an order
-    # different supply in the same order should divide into several records in this table
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
     quantity = models.IntegerField()
@@ -127,8 +126,8 @@ class Include(models.Model):
         return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
 
 
+# records the location the order will be delivered to
 class OrderTo(models.Model):
-    # records the location the order will be delivered to
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
@@ -136,8 +135,8 @@ class OrderTo(models.Model):
         return "Order " + str(self.order.__str__()) + " to " + self.location.__str__()
 
 
+# records which clinic manager has ordered the supply
 class OrderBy(models.Model):
-    # records which clinic manager has ordered the supply
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     account = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
@@ -145,8 +144,8 @@ class OrderBy(models.Model):
         return "Order " + str(self.order.__str__()) + " by " + self.account.__str__()
 
 
+# distance data model, should storing the calculation result of distance data for deliveries.
 class Distance(models.Model):
-    # distance data model, should storing the calculation result of distance data for deliveries.
     distanceFrom = models.ForeignKey(Location, on_delete=models.CASCADE)
     distanceTo = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="distanceTo")
     distance = models.FloatField()
