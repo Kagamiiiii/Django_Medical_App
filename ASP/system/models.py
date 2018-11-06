@@ -36,6 +36,7 @@ class Order(models.Model):
 	('Dispatched','Dispatched'),
 	('Delivered','Delivered')),default='Queued for Processing')
 	priority = models.CharField(max_length=4,choices=(('High','high'),('Medium','mid'),('Low','low'),),default='Low')
+	ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
 	# This defines some DateTimeField type objects in SQLite 3
 	orderedDatetime = models.DateTimeField()
 	dispatchedDatetime = models.DateTimeField()
@@ -51,8 +52,8 @@ class Order(models.Model):
 		return string + temp
 
 	@classmethod
-	def create(cls, priority, items, ODatetime):
-		order = cls(priority=priority, items=items, orderedDatetime=ODatetime)
+	def create(cls, priority, items, ODatetime, cid):
+		order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid)
 		return order
 
 class Location(models.Model):
