@@ -35,8 +35,23 @@ class DispatchView(generic.ListView):
 	# {orderList: queryset}
 	template_name = "system/dispatch.html"
 
+<<<<<<< HEAD
 	def get_queryset(self):
 		return Order.objects.filter(status="Queued for dispatch").order_by('orderedDatetime')
+=======
+    def get_queryset(self):
+        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+
+    def dispatchUpdate(self):
+        # update status and dispatch datetime of all selected orders
+        orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+        orderList.objects.update(status="Queued for Dispatched")
+        dateTime = timezone.now()
+        orderList.objects.update(dispatchedDatetime=dateTime)
+
+    # def createItinerary(self):
+        # create itinerary file
+>>>>>>> 1f15150a7a3653b35660a04339d9e7e1d4aeef8d
 
 
 # if not use generic view, use render to call html
@@ -65,6 +80,7 @@ def createOrder(request):
 
 
 def createOrder2(request):
+<<<<<<< HEAD
 	query = request.POST.get('order')
 	try:
 		query = int(query)
@@ -83,3 +99,25 @@ def createOrder2(request):
 	else:
 		result = None
 	return render(request, "system/createOrder.html", {"result": result, })
+=======
+    query = request.POST.get('order')
+    try:
+        query = int(query)
+    except ValueError:
+        query = None
+    if query:
+        obj = json.loads(query)
+        clinic = obj['clinic']
+        dateTime = timezone.now()
+        priority = obj['priority']
+        items = obj['cart']
+        weight = obj['weight']
+        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
+        resultOrder.save()
+        result = "success"
+    else:
+        result = None
+    return render(request, "system/createOrder.html", {"result": result, })
+
+
+>>>>>>> 1f15150a7a3653b35660a04339d9e7e1d4aeef8d
