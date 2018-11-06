@@ -36,7 +36,17 @@ class DispatchView(generic.ListView):
     template_name = "system/dispatch.html"
 
     def get_queryset(self):
-        return Order.objects.filter(status="Queued for dispatch").order_by('orderedDatetime')
+        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+
+    def dispatchUpdate(self):
+        # update status and dispatch datetime of all selected orders
+        orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+        orderList.objects.update(status="Queued for Dispatched")
+        dateTime = timezone.now()
+        orderList.objects.update(dispatchedDatetime=dateTime)
+
+    # def createItinerary(self):
+        # create itinerary file
 
 
 # if not use generic view, use render to call html
@@ -81,3 +91,5 @@ def createOrder2(request):
     else:
         result = None
     return render(request, "system/createOrder.html", {"result": result, })
+
+
