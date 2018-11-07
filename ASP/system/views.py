@@ -46,7 +46,7 @@ class DispatchUpdate(generic.ListView):
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(self):
         orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
-        orderList.objects.update(status="Queued for Dispatched")
+        orderList.objects.update(status="Dispatched")
         dateTime = timezone.now()
         orderList.objects.update(dispatchedDatetime=dateTime)
         orderList.save()

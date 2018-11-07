@@ -19,15 +19,16 @@ from django.urls import include, path
 import system.urls as system_app
 
 # 定義了網站url到view的映射。雖然這裡可以包含所有的url，但是更常見的做法是把應用相關的url包含在相關應用中，你可以在接下來的教程裡看到。
-
 urlpatterns = [
     # path('asp/', include('system.urls')),
     path('admin/', admin.site.urls),
     # path('register/',),
     path('CM/createOrderPage/', include("createOrderPage.urls")),
     path('CM/view_detail/<int:pk>/', system_app.views.DetailView.as_view(), name='detail'),
+    path('D/dispatchUpdate/', system_app.views.DispatchUpdate.as_view(), name='dispatch_update'),
     path('D/view', system_app.views.DispatchView.as_view(), name='dispatch'),
-    path(r'displayByCategory<slug:cat>/', system_app.views.displayByCategory, name='displayByCategory'),
     path('CM/order/<int:orderID>/', system_app.views.orderView, name='order'),
-    path('dispatcher/dispatchUpdate/', system_app.views.DispatchView.as_view(), name='dispatch_update'),
+    path('displayByCategory<slug:cat>/', system_app.views.displayByCategory, name='displayByCategory'),
+    # hardcode
 ]
+

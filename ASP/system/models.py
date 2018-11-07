@@ -85,19 +85,19 @@ class WHPAccount(models.Model):
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 class Order(models.Model):
     status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
-                                                      (' Processing by Warehouse', ' Processing by Warehouse'),
+                                                      ('Processing by Warehouse', 'Processing by Warehouse'),
                                                       ('Queued for Dispatched', 'Queued for Dispatched'),
                                                       ('Dispatched', 'Dispatched'),
                                                       ('Delivered', 'Delivered')), default='Queued for Processing')
-    priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
+    priority = models.CharField(max_length=6, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
                                 default='Low')
     ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
     # This defines some DateTimeField type objects in SQLite 3
     orderedDatetime = models.DateTimeField()
-    dispatchedDatetime = models.DateTimeField()
-    deliveredDatetime = models.DateTimeField()
+    dispatchedDatetime = models.DateTimeField(null=True, blank=True)
+    deliveredDatetime = models.DateTimeField(null=True, blank=True)
     weight = models.FloatField()
-    CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+    # CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     # returns an order ID of length 8
     # the order starts from 00000001.

@@ -9,9 +9,9 @@ and open the template in the editor.
 	<title>Dispatch</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="device-width, initial-scale=1.0">
-	<script type='text/javascript' src=https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-	<script type='text/javascript' src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+	<script type='text/javascript' src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 	<script type='text/javascript'>
 		let csv=null;
 		let orderList=[];//order_id
@@ -36,17 +36,19 @@ and open the template in the editor.
 			updateOrderList();
 		}
 		function action(){
+
 			setOrdersDispatched();
 			sendEmail();
 			hideOrderPart();
 			showViewPart();
-			document.getElementById("orders").innerHTML = ""; //reset orders
+			document.getElementById("orders").innerHTML = ""; //reset order
 		}
 		function getItinerary(){
 			csv=$(this).get('D/view');
 			var hiddenElement=document.createElement('a');
 			hiddenElement.href='data:text/csv;charset=utf-8,'+encodeURI(csv);
 			hiddenElement.target='_blank';
+
 			hiddenElement.download='itinerary.csv';
 			hiddenElement.click();
 		}
@@ -59,11 +61,10 @@ and open the template in the editor.
 		function setOrdersDispatched(){
 			let jsonObj = {
 				orderIdList: orderList,
-			}
+			};
 
 			$.post('dispatcher/dispatchUpdate', jsonObj, function(response){
 				//Success
-
 			});
 		}
 		function sendEmail(){
@@ -83,12 +84,34 @@ Dispatcher Menu
 	<input type='button' value='Download itinerary' onclick="getItinerary();">
 	<input type='button' value='Update all status as "Dispatched"' onclick="action();">
 	<br/>
-	<br/>Next set of oders to be loaded:
-	<br/>Order Details
-	<br/>Top order:
-	<div id="orders">
-	</div>
-	<br/>Top order:
+	<br/>Next set of orders to be loaded:
+    <br/>Top order: <strong>Order 1</strong>
+    <br>
+    <br/>Order 1 Clinic: Peng Chau Priority: Medium
+    <br/>Items: B Braun Medical Lactated Ringers 250ml X 27
+    <br/>
+    <br/>Order 2 Clinic: North Lamma Priority: High
+    <br/>Items: B Braun Medical Lactated Ringers 250ml X 1
+    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 4
+    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 4
+    <br/>
+    <br/>Order 3 Clinic: Ap Lei Chau Priority: Medium
+    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 3
+    <br/>
+    <br/>Order 4 Clinic: Mui Wo Priority: High
+    <br/>Items: B Braun Medical Lactated Ringers 250ml X 2
+    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 3
+    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 4
+    <br/>
+    <br/>Order 5 Clinic: Sok Kwu Wan Priority: Low
+    <br/>Items: B Braun Medical Lactated Ringers 250ml X 1
+    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 8
+    <br/>
+{#	<br/>Order Details#}
+{#	<br/>Top order:#}
+{#	<div id="orders">#}
+{#	</div>#}
+{#	<br/>Top order:#}
 </div>
 </body>
 </html>

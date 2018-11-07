@@ -13,7 +13,6 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-
 # Create your models here.
 
 
@@ -96,7 +95,7 @@ class Order(models.Model):
     orderedDatetime = models.DateTimeField()
     dispatchedDatetime = models.DateTimeField()
     deliveredDatetime = models.DateTimeField()
-    #weight = models.FloatField()
+    weight = models.FloatField()
     #CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     # returns an order ID of length 8
