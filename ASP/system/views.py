@@ -60,7 +60,7 @@ class DispatchUpdate(generic.ListView):
 # cat is the category name
 def displayByCategory(request, cat):
     supply = Supply.objects.filter(category=cat)
-    list = {'category':supply}
+    list = {'supply':supply}
     return list
 
 
