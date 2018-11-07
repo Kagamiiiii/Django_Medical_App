@@ -75,7 +75,7 @@ class DispatcherAccount(models.Model):
 
 # account for warehouse personnel
 class WHPAccount(models.Model):
-        account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):

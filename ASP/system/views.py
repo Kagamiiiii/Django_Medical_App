@@ -102,8 +102,4 @@ def createOrder2(request):
         result = "success"
     else:
         result = None
-<<<<<<< HEAD
     return render(request, "system/CM/createOrder.html", {"result": result, })
-=======
-    return render(request, "system/createOrder.html", {"result": result, })
->>>>>>> 0cd7efa2f99df1fff867e44dd3a4b05f639e3a7b
