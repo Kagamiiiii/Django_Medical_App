@@ -1,7 +1,110 @@
-{% if orderList %}
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+	<head>
+		<title>Dispatch</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="device-width, initial-scale=1.0">
+		<style media="screen">
+			#view_part{
+				display: block;
+			}
+
+			#order_part{
+				display: none;
+			}
+		</style>
+		<script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	</head>
+
+	<body>
+			Dispatcher Menu
+			<div id="view_part">
+				<input type='button' value='View new set of orders to be dispatched' id='test' onclick="toggleView();">
+			</div>
+
+			<div id="order_part">
+				<br/>
+				<br/>
+
+				<input type='button' value='Download itinerary' onclick="getItinerary();">
+
+				<input type='button' value='Update all status as "Dispatched"' onclick="updateStatus();">
+
+				<br/>
+				<br/>Next set of oders to be loaded:
+				<br/>Order Details
+				<div id="orders" style></div>
+				<br/>Top order:
+			</div>
+
+
+	<script>
+		let itinerary=null;
+		let orderList=[];
+		var shown = false;
+		function hideViewPart(){
+			$('#view_part').hide();
+		}
+
+		function showViewPart(){
+			$('#view_part').show();
+		}
+
+		function hideOrderPart(){
+			$('#order_part').hide();
+		}
+
+		function showOrderPart(){
+			$('#order_part').show();
+		}
+
+		function toggleView(){
+			if (shown == false){
+				hideViewPart();
+				showOrderPart();
+				shown = true;
+			} else {
+				showViewPart();
+				hideOrderPart();
+				shown = false;
+			}
+		}
+
+		function updateStatus(){
+			setOrdersDispatched();
+			sendEmail();
+			hideMainPart();
+			showViewPart();
+		}
+
+		function getItinerary(){
+			// this is gonna getItinerary from server.
+			return null;
+		}
+		function updateOrderList(){
+			return null;
+		}
+		function setOrdersDispatched(){
+			// tell the server that the most recent order has been dispatched.
+			return null;
+		}
+		function sendEmail(){
+			// this is going to send email to the designated place.
+			return null;
+		}
+	</script>
+	</body>
+</html>
+
+<!-- {% if orderList %}
     {% for order in orderList %}
         <a href="/asp/{{ order.pk }}/order">Order {{ order.pk }}</a><br><br>
     {% endfor %}
 {% else %}
     <p>No order available</p>
-{% endif %}
+{% endif %} -->
