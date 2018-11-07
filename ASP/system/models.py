@@ -55,7 +55,7 @@ class Account(models.Model):
 
 # Clinic Manager Account.
 class CMAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -64,7 +64,7 @@ class CMAccount(models.Model):
 
 # account for dispatcher
 class DispatcherAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -73,7 +73,7 @@ class DispatcherAccount(models.Model):
 
 # account for warehouse personnel
 class WHPAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+        account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -114,7 +114,7 @@ class Order(models.Model):
 # record supply in an order
 # different supply in the same order should divide into several records in this table
 class Include(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
@@ -124,7 +124,7 @@ class Include(models.Model):
 
 # records the location the order will be delivered to
 class OrderTo(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -133,7 +133,7 @@ class OrderTo(models.Model):
 
 # records which clinic manager has ordered the supply
 class OrderBy(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     account = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     def __str__(self):
