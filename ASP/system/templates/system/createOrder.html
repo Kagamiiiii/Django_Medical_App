@@ -131,7 +131,7 @@ and open the template in the editor.
             $('#cart').html('No items in cart');
             $('#item_list').html('');
 
-            "{% for item in list %}"
+            "{% for item in category %}"
 
                 let item_row = document.createElement('div');
                 item_row.id = "{{item.pk}}";
@@ -157,7 +157,7 @@ and open the template in the editor.
 
             $.get('localhost:8000/' + selected_category, function (response) {
 
-                items = JSON.parse(response);
+                category = JSON.parse(response);
                 loadItemsList();
 
             })

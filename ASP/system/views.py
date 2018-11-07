@@ -60,8 +60,8 @@ class DispatchUpdate(generic.ListView):
 # cat is the category name
 def displayByCategory(request, cat):
     supply = Supply.objects.filter(category=cat)
-    list = {list:supply}
-    return render(request, "system/displayByCategory.html", list)
+    list = {'category':supply}
+    return list
 
 
 # detail of specific order
