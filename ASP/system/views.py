@@ -72,34 +72,34 @@ def orderView(request, orderID):
     list = {'order': order, 'supplyList': supply}
     return render(request, "system/CM/order.html", list)
 
-# redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
+# redirect to createOrderPage.html and renders it. (noted that the .html files are under .templates/system/)
 # but in django templates is default and it's omitted. don't add templates in from of directory.
-def createOrder(request):
-    category = Supply.objects.all()
-    list = {'list': category}
-    return render(request, "system/CM/createOrder.html", list)
-
-
-def createOrder2(request):
-    query = request.POST.get('order')
-    try:
-        query = int(query)
-    except ValueError:
-        query = None
-    if query:
-        obj = json.loads(query)
-        clinic = obj['clinic']
-        dateTime = timezone.now()
-        priority = obj['priority']
-        items = obj['cart']
-        weight = obj['weight']
-        resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
-        resultOrder.save()
-        itemsinfo = json.loads(items)
-        for item in itemsinfo:
-            orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])
-            orderInclude.save()
-        result = "success"
-    else:
-        result = None
-    return render(request, "system/CM/createOrder.html", {"result": result, })
+# def createOrderPage(request):
+#     category = Supply.objects.all()
+#     list = {'list': category}
+#     return render(request, "system/CM/createOrderPage.html", list)
+#
+#
+# def createOrderPage(request):
+#     query = request.POST.get('order')
+#     try:
+#         query = int(query)
+#     except ValueError:
+#         query = None
+#     if query:
+#         obj = json.loads(query)
+#         clinic = obj['clinic']
+#         dateTime = timezone.now()
+#         priority = obj['priority']
+#         items = obj['cart']
+#         weight = obj['weight']
+#         resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
+#         resultOrder.save()
+#         itemsinfo = json.loads(items)
+#         for item in itemsinfo:
+#             orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])
+#             orderInclude.save()
+#         result = "success"
+#     else:
+#         result = None
+#     return render(request, "system/CM/createOrderPage.html", {"result": result, })

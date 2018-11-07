@@ -40,16 +40,16 @@ and open the template in the editor.
 
         function deleteItemFromCart(id) {
             for (let i = 0; i < cart.length; i++) {
-                if (cart[i].item_id === id) {
+                if (cart[i].item_id == id) {
                     cart.splice(i, 1);
                 }
             }
             let total_weight = getWeight();
             showWeight(total_weight);
 
-            if (total_weight > $('#drone_capacity').html()) {
+            if(total_weight > $('#drone_capacity').html()){
                 $('#message').html('Overweight => Order cannot be created.');
-            } else {
+            }else{
                 $('#message').html('');
             }
 
@@ -60,12 +60,12 @@ and open the template in the editor.
             let total_weight = getWeight();
             showWeight(total_weight);
 
-            if (total_weight > $('#drone_capacity').html()) {
+            if(total_weight > $('#drone_capacity').html()){
                 $('#message').html('Overweight => Order cannot be created.');
             }
 
             for (let i = 0; i < cart.length; i++) {
-                if (cart[i].item_id === item_id) {
+                if (cart[i].item_id == item_id) {
 
                     let quantity = $('#' + item_id + '_quantity').val();
 
@@ -131,22 +131,22 @@ and open the template in the editor.
             $('#cart').html('No items in cart');
             $('#item_list').html('');
 
-            "{% for item in category %}"
+            for (let item_id in items) {
 
                 let item_row = document.createElement('div');
-                item_row.id = "{{item.pk}}";
+                item_row.id = item_id;
 
-                let item_row_html_string = '<img src=' + "{{item.image}}" + ' width="140" height="140" />';
-                item_row_html_string += "{{item.description}}";
+                let item_row_html_string = '<img src=' + items[item_id].image_link + ' width="140" height="140" />';
+                item_row_html_string += items[item_id].description;
                 item_row_html_string += '<input type="button" value="Addition Details" />';
-                item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + "{{item.pk}}" + '\');" />';
-                item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + "{{item.pk}}" + '_quantity" disabled onchange="editItemsInCart(' + "{{item.pk}}" + ')" />';
+                item_row_html_string += '<input type="checkbox" onclick="quantity_toggle(\'' + item_id + '\');" />';
+                item_row_html_string += '<input type="number" style="width: 40px;" min="1" id="' + item_id + '_quantity" disabled onchange="editItemsInCart(' + item_id + ')" />';
 
                 item_row.innerHTML = item_row_html_string;
 
                 $('#item_list').append(item_row);
 
-            "{% endfor %}"
+            }
         }
 
         function search() {
@@ -155,35 +155,43 @@ and open the template in the editor.
 
             let selected_category = $('#category_selected').val();
 
-            $.get('localhost:8000/' + selected_category, function (response) {
+            loadItemsList('');
 
-                category = JSON.parse(response);
-                loadItemsList();
-
-            })
-/*
             items = {
 
                 '1': {
-                    name: 'Normal Saline',
-                    description: 'description - Normal Saline',
-                    detail: 'details - Normal Saline',
-                    image: 'https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1',
-                    weight: 10
+                    name: 'B Braun Medical Lactated Ringers 250ml',
+                    description: 'B Braun Medical Lactated Ringers 250ml',
+                    details: 0.27,
+                    image_link: 'https://i.imgur.com/1WvfGYY.jpg',
+                    weight: 0.27
                 },
 
                 '2': {
-                    name: 'Lactated Ringer’s',
-                    description: 'description - Lactated Ringer’s',
-                    detail: 'details - Lactated Ringer’s',
-                    image: 'http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg',
-                    weight: 20
+                    name: 'ICU Medical Normosol-R Ph 7.4 500ml',
+                    description: 'ICU Medical Normosol-R Ph 7.4 500ml',
+                    details: 0.53,
+                    image_link: 'https://i.imgur.com/eJHdImk.jpg',
+                    weight: 0.53
+                },
+
+                '3': {
+                    name: 'Baxter Dextrose 5%, NaCl  0.33% 1000ml',
+                    description: 'Baxter Dextrose 5%, NaCl  0.33% 1000ml',
+                    details: 1.05,
+                    image_link: 'https://i.imgur.com/RZ9bIgg.jpg',
+                    weight: 1.05
                 }
 
             };
-*/
-            
+            loadItemsList();
 
+/*
+           $.get('displayByCategory?category=' + selected_category, function (response) {
+
+               items = JSON.parse(response);
+               loadItemsList();
+           })*/
         }
 
         function createOrder() {
@@ -200,7 +208,7 @@ and open the template in the editor.
                 clinic: 1
             };
 
-            $.post('localhost:8000/createOrder2', order, function (response) {
+            $.post('/CM/createOrderPage/createOrder', order, function (response) {
                 $('#item_list').html('');
                 $('#items_section').hide();
                 cart = [];
@@ -241,9 +249,10 @@ and open the template in the editor.
     <br/>
     <br/>Category:
     <select id='category_selected'>
-        {% for cat in list %}
-			<option value='{{cat.category}}'>{{cat.category}}</option>
-		{% endfor %}
+{#        {% for cat in list %}#}
+{#			<option value='{{cat.category}}'>{{cat.category}}</option>#}
+{#		{% endfor %}#}
+        <option value="iv_fluid">IV fluids</option>
     </select>
 
     <input type='button' value='Search' onclick='search();'>
