@@ -60,7 +60,7 @@ class DispatchUpdate(generic.ListView):
 # cat is the category name
 def displayByCategory(request, cat):
     supply = Supply.objects.filter(category=cat)
-    list = {'category':supply}
+    list = {'supply':supply}
     return list
 
 
@@ -93,9 +93,17 @@ def createOrder2(request):
         priority = obj['priority']
         items = obj['cart']
         weight = obj['weight']
-        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
+        resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
         resultOrder.save()
+        itemsinfo = json.loads(items)
+        for item in itemsinfo:
+            orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])
+            orderInclude.save()
         result = "success"
     else:
         result = None
+<<<<<<< HEAD
     return render(request, "system/CM/createOrder.html", {"result": result, })
+=======
+    return render(request, "system/createOrder.html", {"result": result, })
+>>>>>>> 0cd7efa2f99df1fff867e44dd3a4b05f639e3a7b

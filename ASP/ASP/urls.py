@@ -22,11 +22,12 @@ import system.urls as system_app
 
 urlpatterns = [
     # path('asp/', include('system.urls')),
-    path('createOrder/', system_app.views.createOrder, name='createOrderPage'),
-    path('createOrder2/', system_app.views.createOrder2, name='createOrderSubmit'),
     path('admin/', admin.site.urls),
-    path('detail/<int:pk>/', system_app.views.DetailView.as_view(), name='detail'),
-    path('dispatch/', system_app.views.DispatchView.as_view(), name='dispatch'),
+    # path('register/',),
+    path('CM/createOrder/', system_app.views.createOrder, name='createOrderPage'),
+    path('CM/createOrder2/', system_app.views.createOrder2, name='createOrderSubmit'),
+    path('CM/view_detail/<int:pk>/', system_app.views.DetailView.as_view(), name='detail'),
+    path('D/view', system_app.views.DispatchView.as_view(), name='dispatch'),
     path('<str:cat>', system_app.views.displayByCategory, name='displayByCategory'),
     path('order/<int:orderID>/', system_app.views.orderView, name='order'),
     path('clinic_manager/create_order/', system_app.views.createOrder2, name='create_order'),

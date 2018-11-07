@@ -57,7 +57,7 @@ class Account(models.Model):
 
 # Clinic Manager Account.
 class CMAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -66,7 +66,7 @@ class CMAccount(models.Model):
 
 # account for dispatcher
 class DispatcherAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -75,7 +75,7 @@ class DispatcherAccount(models.Model):
 
 # account for warehouse personnel
 class WHPAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+        account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
     warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -97,7 +97,6 @@ class Order(models.Model):
     dispatchedDatetime = models.DateTimeField()
     deliveredDatetime = models.DateTimeField()
     weight = models.FloatField()
-    items = models.TextField()
     CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     # returns an order ID of length 8
@@ -111,7 +110,7 @@ class Order(models.Model):
 
     @classmethod
     def create(cls, priority, items, ODatetime, cid, weight):
-        order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
         return order
 
 
@@ -122,13 +121,22 @@ class Include(models.Model):
     supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+    class Meta:
+        # set "order" and "supply" as the primary key
+        unique_together = (("order", "supply"),)
+
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
+
+    @classmethod
+    def create(cls, oid, item_id, quantity):
+        includes = cls(order=oid, supply=item_id, quantity=quantity)
+        return includes
 
 
 # records the location the order will be delivered to
 class OrderTo(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -137,7 +145,7 @@ class OrderTo(models.Model):
 
 # records which clinic manager has ordered the supply
 class OrderBy(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     account = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     def __str__(self):
