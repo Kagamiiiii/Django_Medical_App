@@ -93,8 +93,12 @@ def createOrder2(request):
         priority = obj['priority']
         items = obj['cart']
         weight = obj['weight']
-        resultOrder = Order.create(priority=priority, items=items, ODatetime=dateTime, cid=clinic, weight=weight)
+        resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
         resultOrder.save()
+        itemsinfo = json.loads(items)
+        for item in itemsinfo:
+            orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])
+            orderInclude.save()
         result = "success"
     else:
         result = None
