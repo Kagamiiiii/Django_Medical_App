@@ -95,7 +95,6 @@ class Order(models.Model):
     dispatchedDatetime = models.DateTimeField()
     deliveredDatetime = models.DateTimeField()
     weight = models.FloatField()
-    items = models.TextField()
     CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
     # returns an order ID of length 8
     # the order starts from 00000001.
@@ -108,18 +107,27 @@ class Order(models.Model):
 
     @classmethod
     def create(cls, priority, items, ODatetime, cid, weight):
-        order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
         return order
 
 # record supply in an order
 # different supply in the same order should divide into several records in this table
 class Include(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+    class Meta:
+        # set "order" and "supply" as the primary key
+        unique_together = (("order", "supply"),)
+
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
+
+    @classmethod
+    def create(cls, oid, item_id, quantity):
+        includes = cls(order=oid, supply=item_id, quantity=quantity)
+        return includes
 
 
 # records the location the order will be delivered to
