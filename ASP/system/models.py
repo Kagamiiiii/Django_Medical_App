@@ -111,10 +111,6 @@ class Order(models.Model):
         order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
         return order
 
-
-
-
-
 # record supply in an order
 # different supply in the same order should divide into several records in this table
 class Include(models.Model):
