@@ -32,6 +32,7 @@ class Supply(models.Model):
     def __str__(self):
         return self.name
 
+
 # Location information.
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -41,6 +42,7 @@ class Location(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Account(models.Model):
     username = models.CharField(max_length=200)
@@ -97,6 +99,7 @@ class Order(models.Model):
     weight = models.FloatField()
     items = models.TextField()
     CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+
     # returns an order ID of length 8
     # the order starts from 00000001.
     def __str__(self):
@@ -110,6 +113,7 @@ class Order(models.Model):
     def create(cls, priority, items, ODatetime, cid, weight):
         order = cls(priority=priority, items=items, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
         return order
+
 
 # record supply in an order
 # different supply in the same order should divide into several records in this table
