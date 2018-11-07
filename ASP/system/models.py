@@ -121,8 +121,8 @@ class Include(models.Model):
     supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+    # set "order" and "supply" as the primary key
     class Meta:
-        # set "order" and "supply" as the primary key
         unique_together = (("order", "supply"),)
 
     def __str__(self):
