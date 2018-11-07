@@ -60,11 +60,7 @@ class DispatchUpdate(generic.ListView):
 # cat is the category name
 def displayByCategory(request, cat):
     supply = Supply.objects.filter(category=cat)
-    list = {}
-    count = 0
-    for item in supply:
-        list.append({count: item})
-        count += 1
+    list = {list:supply}
     return render(request, "system/displayByCategory.html", list)
 
 
