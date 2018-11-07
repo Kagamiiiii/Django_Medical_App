@@ -24,7 +24,7 @@ def index(request):
 # detail of a supply
 class DetailView(generic.DetailView):
     model = Supply  # where to search for primary key
-    template_name = "system/detail.html"
+    template_name = "system/CM/detail.html"
 
 
 # for generic lsit view
@@ -33,7 +33,7 @@ class DispatchView(generic.ListView):
     context_object_name = 'orderList'
     # equal to pass a list
     # {orderList: queryset}
-    template_name = "system/dispatch.html"
+    template_name = "system/Dispatcher/dispatch.html"
 
     def get_queryset(self):
         return Order.objects.filter(status="Queued for dispatch").order_by('priority')
@@ -41,7 +41,7 @@ class DispatchView(generic.ListView):
 
 class DispatchUpdate(generic.ListView):
     context_object_name = 'orderList'
-    template_name = "system/dispatch.html"
+    template_name = "system/Dispatcher/dispatch.html"
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(self):
@@ -70,14 +70,14 @@ def orderView(request, orderID):
     order = Order.objects.get(pk=orderID)
     supply = Include.objects.filter(order_id=orderID)
     list = {'order': order, 'supplyList': supply}
-    return render(request, "system/order.html", list)
+    return render(request, "system/CM/order.html", list)
 
 # redirect to createOrder.html and renders it. (noted that the .html files are under .templates/system/)
 # but in django templates is default and it's omitted. don't add templates in from of directory.
 def createOrder(request):
     category = Supply.objects.all()
     list = {'list': category}
-    return render(request, "system/createOrder.html", list)
+    return render(request, "system/CM/createOrder.html", list)
 
 
 def createOrder2(request):
@@ -98,4 +98,4 @@ def createOrder2(request):
         result = "success"
     else:
         result = None
-    return render(request, "system/createOrder.html", {"result": result, })
+    return render(request, "system/CM/createOrder.html", {"result": result, })
