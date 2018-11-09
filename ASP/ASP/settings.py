@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'system.apps.SystemConfig',
-    'createOrderPage.apps.CreateorderpageConfig',
+    'Dispatcher.apps.DispatcherConfig',
+    'ClinicManager.apps.ClinicManagerConfig',
+    'WarehousePersonnel.apps.WarehousepersonnelConfig',
 ]
 
 MIDDLEWARE = [
