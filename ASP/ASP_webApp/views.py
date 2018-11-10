@@ -10,28 +10,52 @@ from .models import Include, Order, Supply
 import json
 
 
-# --------------------------ASP_webApp------------------------------
+# --------------------------ASP_webApp--------------------------------
 # ---------------------------------------------------------------------
+
+"""
+    {
+    "priority" : 'high'
+    "items": {
+          "1": {
+             "name": "Normal Saline",
+             "description": "description - Normal Saline",
+             "details": "details - Normal Saline",
+             "image_link": "https://i1.wp.com/pulmccm.org/wp-content/uploads/2012/11/normal-saline.jpg?resize=160%2C283&ssl=1",
+             "weight": 10
+          },
+          "2": {
+             "name": "Lactated Ringer’s",
+             "description": "description - Lactated Ringer’s",
+             "details": "details - Lactated Ringer’s",
+             "image_link": "http://www.acesurgical.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/9/0/9031087_01.jpg",
+             "weight": 20
+          }
+    }
+}
+"""
+
 class createOrderPage(View):
     def get(self, request, *args, **kwargs):
         return render(request, "CM/createOrderPage.html")
 
     def post(self, request, *args, **kwargs):
         query = request.POST.get('order')
+        # need a verification block here
         if query:
-            obj = json.loads(query)
-            clinic = obj['clinic']
+            orderObject = json.loads(query)
+            clinic = orderObject['clinic']
             dateTime = timezone.now()
-            priority = obj['priority']
-            items = obj['cart']
-            # weight = obj['weight']
-            resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic)  # weight=weight)
-            resultOrder.save()
-            # this line is obviously wrong
-            itemsinfo = json.loads(items)
+            priority = orderObject['priority']
+            items = orderObject['cart']
+            weight = orderObject['weight']
+            resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
+            itemsinfo = orderObject['items']
             for item in itemsinfo:
+                # we need to get item id...
                 orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])
                 orderInclude.save()
+            resultOrder.save()
             result = "success"
         else:
             result = None
