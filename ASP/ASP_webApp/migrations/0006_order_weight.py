@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ClinicManager', '0005_auto_20181107_1752'),
+        ('ASP_webApp', '0005_auto_20181107_1752'),
     ]
 
     operations = [

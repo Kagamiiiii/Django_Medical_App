@@ -73,62 +73,62 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CMAccount',
             fields=[
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ClinicManager.Account')),
-                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ASP_webApp.Account')),
+                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location')),
             ],
         ),
         migrations.CreateModel(
             name='DispatcherAccount',
             fields=[
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ClinicManager.Account')),
-                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ASP_webApp.Account')),
+                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location')),
             ],
         ),
         migrations.CreateModel(
             name='OrderBy',
             fields=[
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ClinicManager.Order')),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.CMAccount')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ASP_webApp.Order')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.CMAccount')),
             ],
         ),
         migrations.CreateModel(
             name='OrderTo',
             fields=[
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ClinicManager.Order')),
-                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ASP_webApp.Order')),
+                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location')),
             ],
         ),
         migrations.CreateModel(
             name='WHPAccount',
             fields=[
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ClinicManager.Account')),
-                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ASP_webApp.Account')),
+                ('warehouse', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location')),
             ],
         ),
         migrations.AddField(
             model_name='order',
             name='ordering_clinic',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location'),
         ),
         migrations.AddField(
             model_name='include',
             name='order',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Order'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Order'),
         ),
         migrations.AddField(
             model_name='include',
             name='supply',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Supply'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Supply'),
         ),
         migrations.AddField(
             model_name='distance',
             name='distanceFrom',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ClinicManager.Location'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ASP_webApp.Location'),
         ),
         migrations.AddField(
             model_name='distance',
             name='distanceTo',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='distanceTo', to='ClinicManager.Location'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='distanceTo', to='ASP_webApp.Location'),
         ),
         migrations.AlterUniqueTogether(
             name='include',

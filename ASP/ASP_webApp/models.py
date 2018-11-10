@@ -84,7 +84,7 @@ class WHPAccount(models.Model):
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 class Order(models.Model):
     status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
-                                                      (' Processing by Warehouse', ' Processing by Warehouse'),
+                                                      ('Processing by Warehouse', 'Processing by Warehouse'),
                                                       ('Queued for Dispatched', 'Queued for Dispatched'),
                                                       ('Dispatched', 'Dispatched'),
                                                       ('Delivered', 'Delivered')), default='Queued for Processing')
