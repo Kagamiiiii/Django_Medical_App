@@ -34,6 +34,7 @@ class IncludeAdmin(admin.ModelAdmin):
 class OrderInfoAdmin(admin.ModelAdmin):
     list_display = ('order', 'location', 'account')
 
+
 class DistanceAdmin(admin.ModelAdmin):
     list_display = ('distanceFrom', 'distanceTo', 'distance')
 
