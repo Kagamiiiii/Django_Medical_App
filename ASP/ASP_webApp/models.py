@@ -160,7 +160,8 @@ class Distance(models.Model):
     distanceTo = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="distanceTo")
     distance = models.FloatField()
 
-    unique_together = (("distanceFrom", "distanceTo"),)
+    class Meta:
+        unique_together = (("distanceFrom", "distanceTo"),)
 
     def __str__(self):
         return self.distanceFrom.__str__() + " to " + self.distanceTo.__str__()
