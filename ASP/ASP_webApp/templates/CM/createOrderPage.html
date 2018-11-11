@@ -248,10 +248,9 @@ and open the template in the editor.
     <br/>
     <br/>Category:
     <select id='category_selected'>
-{#        {% for cat in list %}#}
-{#			<option value='{{cat.category}}'>{{cat.category}}</option>#}
-{#		{% endfor %}#}
-        <option value="iv_fluid">IV fluids</option>
+        {% for cat in list %}
+			<option value='{{cat.category}}'>{{cat.category}}</option>
+		{% endfor %}
     </select>
 
     <input type='button' value='Search' onclick='search();'>

@@ -9,11 +9,11 @@ from django.utils import timezone
 from .models import Include, Order, Supply
 import json
 
-# --------------------------ASP_webApp--------------------------------
+# --------------------------Clinic Manager-----------------------------
 # ---------------------------------------------------------------------
 
 """
-    {
+{
     "priority" : 'high'
     "items": {
           "1": {
@@ -61,7 +61,7 @@ class createOrderPage(View):
             result = None
         return render(request, "CM/createOrderPage.html", {"result": result})
 
-
+# View addition information of that item.
 class DetailView(generic.DetailView):
     model = Supply  # where to search for primary key
     template_name = "CM/detail.html"
@@ -74,6 +74,13 @@ def orderView(request, orderID):
     supply = Include.objects.filter(order_id=orderID)
     list = {'order': order, 'supplyList': supply}
     return render(request, "CM/order.html", list)
+
+# if not use generic view, use render to call html
+# cat is the category name
+def displayByCategory(request, cat):
+    supply = Supply.objects.filter(category=cat).distinct()
+    list = {'supply': supply}
+    return list
 
 
 # -----------------------------Dispatcher------------------------------
@@ -106,13 +113,6 @@ class DispatchUpdate(generic.ListView):
 
 # def createItinerary(self):
 # create itinerary file
-
-# if not use generic view, use render to call html
-# cat is the category name
-def displayByCategory(request, cat):
-    supply = Supply.objects.filter(category=cat)
-    list = {'supply': supply}
-    return list
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
