@@ -100,10 +100,10 @@ class Order(models.Model):
             string += "0"
         return string + temp
 
-    @classmethod
-    def create(cls, priority, ODatetime, cid, weight):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
-        return order
+    # @classmethod
+    # def create(cls, priority, ODatetime, cid, weight):
+    #     order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+    #     return order
 
 
 # record supply in an order
