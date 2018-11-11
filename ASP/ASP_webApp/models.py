@@ -13,6 +13,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+
 # Create your models here.
 
 
@@ -96,7 +97,8 @@ class Order(models.Model):
     dispatchedDatetime = models.DateTimeField()
     deliveredDatetime = models.DateTimeField()
     weight = models.FloatField()
-    #CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+
+    # CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
 
     # returns an order ID of length 8
     # the order starts from 00000001.
@@ -109,7 +111,7 @@ class Order(models.Model):
 
     @classmethod
     def create(cls, priority, items, ODatetime, cid, weight):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid) #, weight=weight)
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid)  # , weight=weight)
         return order
 
 

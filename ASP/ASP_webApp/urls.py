@@ -6,7 +6,7 @@ urlpatterns = [
     # --------------------------Register-----------------------------------
     # path('register/',),
 
-    # --------------------------ASP_webApp------------------------------
+    # --------------------------ASP_webApp---------------------------------
     path('CM/main/', views.createOrderPage.as_view()),
     path('CM/createOrder/', views.createOrderPage.as_view(), name='order'),
     path('CM/view_detail/<int:pk>/', views.DetailView.as_view(), name='detail'),

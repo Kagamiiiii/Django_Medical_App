@@ -9,7 +9,6 @@ from django.utils import timezone
 from .models import Include, Order, Supply
 import json
 
-
 # --------------------------ASP_webApp--------------------------------
 # ---------------------------------------------------------------------
 
@@ -34,6 +33,7 @@ import json
     }
 }
 """
+
 
 class createOrderPage(View):
     def get(self, request, *args, **kwargs):
@@ -60,6 +60,7 @@ class createOrderPage(View):
         else:
             result = None
         return render(request, "CM/createOrderPage.html", {"result": result})
+
 
 class DetailView(generic.DetailView):
     model = Supply  # where to search for primary key
@@ -104,7 +105,7 @@ class DispatchUpdate(generic.ListView):
 
 
 # def createItinerary(self):
-    # create itinerary file
+# create itinerary file
 
 # if not use generic view, use render to call html
 # cat is the category name
