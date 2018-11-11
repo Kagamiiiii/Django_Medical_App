@@ -28,6 +28,10 @@ class Supply(models.Model):
     # This is float field. Storing floating point
     weight = models.FloatField()
 
+    class Meta:
+        verbose_name = 'Supply'
+        verbose_name_plural = 'Supplies'
+
     # this function return a human readable string about this data model upon call.
     def __str__(self):
         return self.name
@@ -39,6 +43,10 @@ class Location(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     altitude = models.FloatField()
+
+    class Meta:
+        verbose_name = 'Location'
+        verbose_name_plural = 'Locations'
 
     def __str__(self):
         return self.name
@@ -55,6 +63,10 @@ class Account(models.Model):
                                                     ('Dispatcher', 'Dispatcher'),
                                                     ('Warehouse personnel', 'Warehouse personnel')))
 
+    class Meta:
+        verbose_name = 'Account'
+        verbose_name_plural = 'Accounts'
+
     def __str__(self):
         return self.lastname + self.firstname
 
@@ -68,14 +80,15 @@ class Order(models.Model):
                                                       ('Delivered', 'Delivered')), default='Queued for Processing')
     priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
                                 default='Low')
-    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
-    # This defines some DateTimeField type objects in SQLite 3
-    orderedDatetime = models.DateTimeField()
-    dispatchedDatetime = models.DateTimeField()
-    deliveredDatetime = models.DateTimeField()
     weight = models.FloatField()
+    orderedDatetime = models.DateTimeField()
+    dispatchedDatetime = models.DateTimeField(blank=True, null=True)
+    deliveredDatetime = models.DateTimeField(blank=True, null=True)
+    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
 
-    # CMid = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
 
     # returns an order ID of length 8
     # the order starts from 00000001.
@@ -100,7 +113,8 @@ class Include(models.Model):
     quantity = models.IntegerField()
 
     class Meta:
-        # set "order" and "supply" as the primary key
+        verbose_name = 'Include'
+        verbose_name_plural = 'Includes'
         unique_together = (("order", "supply"),)
 
     def __str__(self):
@@ -117,6 +131,11 @@ class OrderTo(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = 'Order to'
+        verbose_name_plural = 'Order to'
+        unique_together = (("order", "location"),)
+
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " to " + self.location.__str__()
 
@@ -124,7 +143,12 @@ class OrderTo(models.Model):
 # records which clinic manager has ordered the supply
 class OrderBy(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
-    account = models.ForeignKey(CMAccount, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Order by'
+        verbose_name_plural = 'Order by'
+        unique_together = (("order", "account"),)
 
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " by " + self.account.__str__()
@@ -135,6 +159,8 @@ class Distance(models.Model):
     distanceFrom = models.ForeignKey(Location, on_delete=models.CASCADE)
     distanceTo = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="distanceTo")
     distance = models.FloatField()
+
+    unique_together = (("distanceFrom", "distanceTo"),)
 
     def __str__(self):
         return self.distanceFrom.__str__() + " to " + self.distanceTo.__str__()
