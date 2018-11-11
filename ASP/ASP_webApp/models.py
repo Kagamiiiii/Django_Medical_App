@@ -100,8 +100,8 @@ class Order(models.Model):
         return string + temp
 
     @classmethod
-    def create(cls, priority, items, ODatetime, cid, weight):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid)  # , weight=weight)
+    def create(cls, priority, ODatetime, cid, weight):
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
         return order
 
 
