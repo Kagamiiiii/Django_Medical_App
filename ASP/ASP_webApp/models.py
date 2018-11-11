@@ -85,7 +85,6 @@ class Order(models.Model):
     orderedDatetime = models.DateTimeField()
     dispatchedDatetime = models.DateTimeField(blank=True, null=True)
     deliveredDatetime = models.DateTimeField(blank=True, null=True)
-    # limited choice to
     ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint': False})
 
     class Meta:
@@ -128,32 +127,19 @@ class Include(models.Model):
         return includes
 
 
-# records the location the order will be delivered to
-class OrderTo(models.Model):
+# records the location the order will be delivered to and who ordered it
+class OrderInfo(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Order to'
-        verbose_name_plural = 'Order to'
-        unique_together = (("order", "location"),)
-
-    def __str__(self):
-        return "Order " + str(self.order.__str__()) + " to " + self.location.__str__()
-
-
-# records which clinic manager has ordered the supply
-class OrderBy(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Order by'
-        verbose_name_plural = 'Order by'
-        unique_together = (("order", "account"),)
+        verbose_name = 'Order Information'
+        verbose_name_plural = 'Order Information'
+        unique_together = ("order", "location")
 
     def __str__(self):
-        return "Order " + str(self.order.__str__()) + " by " + self.account.__str__()
+        return "Order " + str(self.order.__str__()) + " to " + self.location.__str__() + " by Account " + self.account.__str__()
 
 
 # distance data model, should storing the calculation result of distance data for deliveries.
@@ -163,6 +149,8 @@ class Distance(models.Model):
     distance = models.FloatField()
 
     class Meta:
+        verbose_name = 'Distance'
+        verbose_name_plural = 'Distances'
         unique_together = (("distanceFrom", "distanceTo"),)
 
     def __str__(self):
