@@ -51,6 +51,7 @@ class createOrderPage(View):
             weight = orderObject['weight']
             resultOrder = Order.create(priority=priority, ODatetime=dateTime, cid=clinic, weight=weight)
             itemsinfo = orderObject['items']
+            # before submitting order to the database we has to check if the required quantity is correct or not
             for item in itemsinfo:
                 # we need to get item id...
                 orderInclude = Include.create(resultOrder.pk, item['item_id'], item['quantity'])

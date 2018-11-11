@@ -43,6 +43,7 @@ class Location(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     altitude = models.FloatField()
+    isStartingPoint = models.BooleanField()
 
     class Meta:
         verbose_name = 'Location'
@@ -84,7 +85,8 @@ class Order(models.Model):
     orderedDatetime = models.DateTimeField()
     dispatchedDatetime = models.DateTimeField(blank=True, null=True)
     deliveredDatetime = models.DateTimeField(blank=True, null=True)
-    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE)
+    # limited choice to
+    ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint': False})
 
     class Meta:
         verbose_name = 'Order'
