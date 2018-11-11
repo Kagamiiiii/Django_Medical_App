@@ -50,36 +50,13 @@ class Account(models.Model):
     firstname = models.CharField(max_length=200)
     lastname = models.CharField(max_length=200)
     email = models.EmailField()
+    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE)
+    role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
+                                                    ('Dispatcher', 'Dispatcher'),
+                                                    ('Warehouse personnel', 'Warehouse personnel')))
 
     def __str__(self):
         return self.lastname + self.firstname
-
-
-# Clinic Manager Account.
-class CMAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.account.__str__() + " from " + self.location.__str__()
-
-
-# account for dispatcher
-class DispatcherAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
-    warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.account.__str__() + " work at " + self.location.__str__()
-
-
-# account for warehouse personnel
-class WHPAccount(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, primary_key=True)
-    warehouse = models.ForeignKey(Location, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.account.__str__() + " work at " + self.location.__str__()
 
 
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
