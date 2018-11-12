@@ -59,7 +59,7 @@ class Account(models.Model):
     firstname = models.CharField(max_length=200)
     lastname = models.CharField(max_length=200)
     email = models.EmailField()
-    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE)
+    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint' : False})
     role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
                                                     ('Dispatcher', 'Dispatcher'),
                                                     ('Warehouse personnel', 'Warehouse personnel')))
@@ -121,10 +121,10 @@ class Include(models.Model):
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
 
-    @classmethod
-    def create(cls, oid, item_id, quantity):
-        includes = cls(order=oid, supply=item_id, quantity=quantity)
-        return includes
+    # @classmethod
+    # def create(cls, oid, item_id, quantity):
+    #     includes = cls(order=oid, supply=item_id, quantity=quantity)
+    #     return includes
 
 
 # records the location the order will be delivered to and who ordered it

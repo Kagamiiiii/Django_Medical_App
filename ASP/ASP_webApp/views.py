@@ -56,7 +56,7 @@ to ensure it's all correct.
 
 class createOrderPage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "CM/createOrderPage.html")
+        return render(request, "CM/[old]createOrderPage.html")
 
     def post(self, request, *args, **kwargs):
         # user wants to create an order
@@ -65,22 +65,21 @@ class createOrderPage(View):
         try:
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
-            return render(request, "CM/createOrderPage.html", {"result": "fail"})
+            return render(request, template_name="CM/[old]createOrderPage.html", context={"result": "fail"})
         clinic_id = orderObject['clinic_id']
         account_id = orderObject['account_id']
         dateTime = timezone.now()
         priority = orderObject['priority']
         weight = orderObject['weight']
-        Order.objects.create(priority=priority, ODatetime=dateTime, cid=clinic_id, weight=weight)
+        Order.objects.create(priority=priority, ODatetime=dateTime, weight=weight)
         itemsinfo = orderObject['items']
         # before submitting order to the database we has to check if the required quantity is correct or not
+        # we need to get item id...
         for item in itemsinfo:
-            # we need to get item id...
-            orderInclude = Include.create(order=Order.pk, supply=item['item_id'], quantity=item['quantity'])
+            orderInclude = Include(order=Order.pk, supply=item['item_id'], quantity=item['quantity'])
             orderInclude.save()
         OrderInfo.objects.create(order=Order.pk, location=Location.objects.get(clinic_id=clinic_id), account=account_id)
-        result = "success"
-        return render(request, "CM/createOrderPage.html", {"result": result})
+        return render(request, template_name="CM/[old]createOrderPage.html", context={"result": "success"})
 
 
 # View addition information of that item.
@@ -138,3 +137,4 @@ class DispatchUpdate(generic.ListView):
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
+
