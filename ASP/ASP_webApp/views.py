@@ -87,14 +87,13 @@ class DetailView(generic.DetailView):
     model = Supply  # where to search for primary key
     template_name = "CM/detail.html"
 
-
-# detail of specific order
-# preforming query for cretaing objects.
-def orderView(request, orderID):
-    order = Order.objects.get(pk=orderID)
-    supply = Include.objects.filter(order_id=orderID)
-    list = {'order': order, 'supplyList': supply}
-    return render(request, "CM/order.html", list)
+    # detail of specific order
+    # preforming query for cretaing objects.
+    def orderView(request, orderID):
+        order = Order.objects.get(pk=orderID)
+        supply = Include.objects.filter(order_id=orderID)
+        list = {'order': order, 'supplyList': supply}
+        return render(request, "CM/order.html", list)
 
 
 # if not use generic view, use render to call html
