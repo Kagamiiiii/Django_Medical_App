@@ -1,7 +1,7 @@
 # Create your views here.
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic, View
@@ -85,11 +85,18 @@ class createOrderPage(View):
     # if not use generic view, use render to call html
     # cat is the category name
     def displayByCategory(request):
-        cat = request.POST['select-answer']
-        suppiesOfCat = Supply.objects.filter(category=cat).distinct()
-        categories = Supply.objects.all().values('category').distinct()
-        return render(request, template_name='CM/createOrderPage.html',
-                      context={'supplies': suppiesOfCat, 'categories': categories})
+        if request.method == 'POST':
+            # data = json.load(request.POST)
+            # get the category of the returned JSON object
+            cat = request.POST.get("category", "")
+
+            # returned value
+            data = {
+                'supplies' : Supply.objects.filter(category=cat)
+            }
+            return JsonResponse(data)
+        else:
+            return None
 
 
 # View addition information of that item.

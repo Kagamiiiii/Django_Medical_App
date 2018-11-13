@@ -10,8 +10,8 @@ urlpatterns = [
 
     # --------------------------Clinic Manager-----------------------------
     path('CM/main/', views.createOrderPage.as_view()),
+    path('CM/main/displayByCategory/', views.createOrderPage.displayByCategory, name='displayByCategory'),
     path('CM/createOrder/', views.createOrderPage.as_view(), name='order'),
-    path('CM/displayByCategory/', views.createOrderPage.displayByCategory, name='displayByCategory'),
 
     path('CM/view_detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
 
