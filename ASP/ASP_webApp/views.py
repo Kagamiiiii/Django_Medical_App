@@ -54,7 +54,7 @@ to ensure it's all correct.
 """
 
 
-class createOrderPage(View):
+class createOrderPage(generic.ListView):
     def get(self, request, *args, **kwargs):
         categories = Supply.objects.all().values('category').distinct()
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
@@ -179,22 +179,31 @@ def createItinerary(request, orders):
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
+class WarehouseView(generic.ListView):
+    context_object_name = 'warehouseList'
+    # equal to pass a list
+    # {orderList: queryset}
+    template_name = "WarehousePersonnel/warehouse.html"
 
-# warehouse personnel views the priority queue
-def queueView(request):
-
-
-# remove order from the top to pick and pack (change status to "processing by warehouse")
-def orderRemove(request):
-
-
-# view details of the selected order
-def viewOrderDetail(request):
+    # view priority queue
+    def get_queryset(self):
+        return Order.objects.filter(status="Queued for processing").order_by('priority')
 
 
-# update status of the selcted order (status ==> "Queued for Dispatch")
-def completeProcess(request):
+    # remove order from the top to pick and pack (change status to "processing by warehouse")
+    # and return the details of the selected order
+    def orderSelect(request):
+        chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
+        chosen.objects.update(status="Processing by Warehouse")
+        chosen.save()
+        jsonresult = []
+        jsonresult.append(chosen)
+        return render(request, "WarehousePersonnel/warehouse.html", json.dumps(jsonresult))
 
 
-# get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
-def getShippingLabel(request):
+    # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
+    # and update status of the selcted order (status ==> "Queued for Dispatch")
+    def getShippingLabel(request):
+
+
+
