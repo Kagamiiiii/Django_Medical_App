@@ -89,7 +89,7 @@ class createOrderPage(View):
             # data = json.load(request.POST)
             # get the category of the returned JSON object
             cat = request.POST.get("category", "")
-
+            print(cat)
             # returned value
             data = {
                 'supplies' : Supply.objects.filter(category=cat)
