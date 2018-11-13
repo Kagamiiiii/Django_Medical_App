@@ -54,7 +54,7 @@ to ensure it's all correct.
 """
 
 
-class createOrderPage(generic.ListView):
+class createOrderPage(View):
     def get(self, request, *args, **kwargs):
         categories = Supply.objects.all().values('category').distinct()
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
