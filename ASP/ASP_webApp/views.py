@@ -89,14 +89,17 @@ class createOrderPage(View):
             # data = json.load(request.POST)
             # get the category of the returned JSON object
             cat = request.POST.get("category", "")
-            print(cat)
             # returned value
+            print(Supply.objects.all().filter(category=cat))
             data = {
                 'supplies' : Supply.objects.filter(category=cat)
             }
-            return JsonResponse(data)
+            return HttpResponse(json.dumps(data))
         else:
-            return None
+            data = {
+                'supplies': None
+            }
+            return HttpResponse(json.dumps(data))
 
 
 # View addition information of that item.
