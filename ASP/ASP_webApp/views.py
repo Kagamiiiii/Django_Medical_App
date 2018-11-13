@@ -56,7 +56,8 @@ to ensure it's all correct.
 
 class createOrderPage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "CM/[old]createOrderPage.html")
+        categories = Supply.objects.all().values('category').distinct()
+        return render(request, "CM/createOrderPage.html", context={'categories': categories})
 
     def post(self, request, *args, **kwargs):
         # user wants to create an order
@@ -65,7 +66,7 @@ class createOrderPage(View):
         try:
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
-            return render(request, template_name="CM/[old]createOrderPage.html", context={"result": "fail"})
+            return render(request, template_name="CM/createOrderPage.html", context={"result": "fail"})
         clinic_id = orderObject['clinic_id']
         account_id = orderObject['account_id']
         dateTime = timezone.now()
@@ -79,7 +80,16 @@ class createOrderPage(View):
             orderInclude = Include(order=Order.pk, supply=item['item_id'], quantity=item['quantity'])
             orderInclude.save()
         OrderInfo.objects.create(order=Order.pk, location=Location.objects.get(clinic_id=clinic_id), account=account_id)
-        return render(request, template_name="CM/[old]createOrderPage.html", context={"result": "success"})
+        return render(request, template_name="CM/createOrderPage.html", context={"result": "success"})
+
+    # if not use generic view, use render to call html
+    # cat is the category name
+    def displayByCategory(request):
+        cat = request.POST['select-answer']
+        suppiesOfCat = Supply.objects.filter(category=cat).distinct()
+        categories = Supply.objects.all().values('category').distinct()
+        return render(request, template_name='CM/createOrderPage.html',
+                      context={'supplies': suppiesOfCat, 'categories': categories})
 
 
 # View addition information of that item.
@@ -95,19 +105,10 @@ class DetailView(generic.DetailView):
         list = {'order': order, 'supplyList': supply}
         return render(request, "CM/order.html", list)
 
-
-# if not use generic view, use render to call html
-# cat is the category name
-def displayByCategory(request, cat):
-    supply = Supply.objects.filter(category=cat).distinct()
-    list = {'supply': supply}
-    return list
-
-
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------
 
-# for generic lsit view
+# for generic list view
 # use def get_queryset and return a list
 class DispatchView(generic.ListView):
     context_object_name = 'orderList'
@@ -118,21 +119,42 @@ class DispatchView(generic.ListView):
     def get_queryset(self):
         return Order.objects.filter(status="Queued for dispatch").order_by('priority')
 
-
 class DispatchUpdate(generic.ListView):
-    context_object_name = 'orderList'
-    template_name = "Dispatcher/dispatch.html"
+   context_object_name = 'orderList'
+   template_name = "Dispatcher/dispatch.html"
 
-    # update status and dispatch datetime of all selected orders
-    def dispatchUpdate(self):
-        orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
-        orderList.objects.update(status="Dispatched")
-        dateTime = timezone.now()
-        orderList.objects.update(dispatchedDatetime=dateTime)
-        orderList.save()
+   # update status and dispatch datetime of all selected orders
+   def dispatchUpdate(request, self):
+       orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+       orderList.objects.update(status="Dispatched")
+       dateTime = timezone.now()
+       orderList.objects.update(dispatchedDatetime=dateTime)
+       orderList.save()
+       return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
 
 # def createItinerary(self):
 # create itinerary file
+# orders should be a list of order ids
+def createItinerary(request, orders):
+   hospitalName = 'Queen Mary Hospital Drone Port'
+   # sets the hospital's id as first location
+   hospital_id = Location.objects.get(name=hospitalName).pk
+   location_id = hospital_id
+   leg = list()
+   order_ids = orders.copy()
+   while order_ids:
+       min = 999999
+       temp = None
+       for order in order_ids:
+           d = Distance.objects.get(distanceFrom=location_id, distanceTo=order).distance
+           if d < min:
+               temp = d
+               min = d
+       location_id = temp
+       order_ids.remove(temp)
+       leg.append(temp)
+   leg.append(hospital_id)
+   return render(request, "Dispatcher/dispatch.html", leg)
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------

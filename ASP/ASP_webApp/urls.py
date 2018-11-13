@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = 'webApp'
+app_name = 'ASP_webApp'
 
 urlpatterns = [
     # --------------------------Register-----------------------------------
@@ -11,6 +11,8 @@ urlpatterns = [
     # --------------------------Clinic Manager-----------------------------
     path('CM/main/', views.createOrderPage.as_view()),
     path('CM/createOrder/', views.createOrderPage.as_view(), name='order'),
+    path('CM/displayByCategory/', views.createOrderPage.displayByCategory, name='displayByCategory'),
+
     path('CM/view_detail/<int:pk>/', views.DetailView.as_view(), name='detail'),
 
     # --------------------------Dispatcher---------------------------------
@@ -18,5 +20,5 @@ urlpatterns = [
     path('D/dispatchUpdate/', views.DispatchUpdate.as_view(), name='dispatch_update'),
 
     # --------------------------Warehouse Personnel------------------------
-    path('WHP/displayByCategory<slug:cat>/', views.displayByCategory, name='displayByCategory'),
+
 ]

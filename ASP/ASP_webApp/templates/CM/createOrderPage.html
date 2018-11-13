@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <title>Create Order</title>
-    <style media="screen">
-        #icon{
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
+  <title>Create Order</title>
+  <style media="screen">
+    #icon{
           width: 90px;
           margin: 20px;
         }
@@ -20,15 +23,95 @@
           padding: 8px;
           border-radius: 20px;
         }
+        hr{
+          padding: 0px;
+          margin: 5px;
+        }
+        footer{
+          position: fixed;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          background-color: #619BF8;
+          color: white;
+          text-align: center;
+        }
+
+        .unselectable {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+        .bar{
+          margin: 10px;
+        }
+        #selector{
+          margin: 10px;
+        }
+        #maincontent{
+          margin: 10px;
+        }
     </style>
+    <script type="text/javascript">
+        function requestCategory(){
+          var e = document.getElementById("selector-inner");
+          var strUser = e.options[e.selectedIndex].text;
+          console.log(strUser);
+        }
+    </script>
 </head>
+
 <body>
   <header>
     <img id="icon" src="../../static/img/radar.png">
-    <button id="system" type="button" class="btn btn-primary" >AS-P System</button>
-    <span id="load_from_Django">St Mary's Hospital</span>
+    <button id="system" type="button" class="btn btn-primary">AS-P System</button>
+    <span id="load_from_Django" class="unselectable">St Mary's Hospital</span>
   </header>
+  <div class="bar">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">Browse Supplies by Category</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">View Orders</a>
+      </li>
+      <li class="nav-item dropdown ">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account settings</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Change Password</a>
+          <a class="dropdown-item" href="#">Change email address</a>
+          <a class="dropdown-item" href="#">Change name</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Log out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="selector">
+    <select class="selectpicker" id="selector-inner" data-live-search="true" onchange="requestCategory()">
+      {% if categories %}
+        {% for category in categories %}
+        <option>{{ category.category }}</option>
+        {% endfor %}
+      {% endif %}
+    </select>
+  </div>
+
+  <div id="maincontent">
+    {% if supplies %}
+    {% for supply in supplies %}
+    <option>{{ supply.name }}</option>
+    {% endfor %}
+    {% endif %}
+  </div>
 
 </body>
+
 </html>
-<footer><div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div></footer>
+<footer>
+  <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+      target="_blank">CC 3.0 BY</a></div>
+</footer>
