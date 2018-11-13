@@ -63,6 +63,7 @@ class Account(models.Model):
     role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
                                                     ('Dispatcher', 'Dispatcher'),
                                                     ('Warehouse personnel', 'Warehouse personnel')))
+    token = models.CharField(max_length=20)
 
     class Meta:
         verbose_name = 'Account'
@@ -155,3 +156,4 @@ class Distance(models.Model):
 
     def __str__(self):
         return self.distanceFrom.__str__() + " to " + self.distanceTo.__str__()
+
