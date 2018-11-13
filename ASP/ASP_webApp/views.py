@@ -142,30 +142,59 @@ class DispatchUpdate(generic.ListView):
 # def createItinerary(self):
 # create itinerary file
 # orders should be a list of order idss
-# def createItinerary(request, orders):
-   # hospitalName = 'Queen Mary Hospital Drone Port'
-   # # sets the hospital's id as first location
-   # hospital_id = Location.objects.get(name=hospitalName).pk
-   # location_id = hospital_id
-   # leg = list()
-   # order_ids = orders.copy()
-   # items = {}
-   # while order_ids:
-   #     min = 999999
-   #     temp = None
-   #     for order_id in order_ids:
-   #         destination = OrderInfo.objects.get(order=order_id).location
-   #         d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
-   #         if d < min:
-   #             temp = order_id
-   #             min = d
-   #     location_id = temp
-   #     order_ids.remove(temp)
-   #     leg.append(temp)
-   #     items['order'] = temp
-   #  leg.append(hospital_id)
-   # return render(request, "Dispatcher/dispatch.html", leg)
+def createItinerary(request, orders):
+   hospitalName = 'Queen Mary Hospital Drone Port'
+   # sets the hospital's id as first location
+   hospital_location = Location.objects.get(name=hospitalName)
+   location_id = hospital_location.pk
+   leg = list()
+   order_ids = orders.copy()
+   items = []
+   # check sequence for locations
+   while order_ids:
+       min = 999999
+       temp = None
+       for order_id in order_ids:
+           destination = OrderInfo.objects.get(order=order_id).location
+           d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
+           if d < min:
+               temp = order_id
+               min = d
+       location_id = temp
+       order_ids.remove(temp)
+       leg.append(temp)
+       cur_location = Location.objects.get(id=temp)
+       item = { name : cur_location.name,
+                latitude : cur_location.latitude,
+                longtitude : cur_location.longtitude
+                altitude : cur_location.altitude }
+       items.append(item)
+    leg.append(hospital_id)
+   item = { name : 'Queen Mary Hospital Drone Port',
+            latitude : hospital_location.latitude,
+            longtitude : hospital_location.longtitude,
+            altitude : hospital_location.altitude }
+   items.append(item)
+   return render(request, "Dispatcher/dispatch.html", items)
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
 
+# warehouse personnel views the priority queue
+def queueView(request):
+
+
+# remove order from the top to pick and pack (change status to "processing by warehouse")
+def orderRemove(request):
+
+
+# view details of the selected order
+def viewOrderDetail(request):
+
+
+# update status of the selcted order (status ==> "Queued for Dispatch")
+def completeProcess(request):
+
+
+# get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
+def getShippingLabel(request):
