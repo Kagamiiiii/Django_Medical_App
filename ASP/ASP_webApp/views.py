@@ -141,27 +141,30 @@ class DispatchUpdate(generic.ListView):
 
 # def createItinerary(self):
 # create itinerary file
-# orders should be a list of order ids
-def createItinerary(request, orders):
-   hospitalName = 'Queen Mary Hospital Drone Port'
-   # sets the hospital's id as first location
-   hospital_id = Location.objects.get(name=hospitalName).pk
-   location_id = hospital_id
-   leg = list()
-   order_ids = orders.copy()
-   while order_ids:
-       min = 999999
-       temp = None
-       for order in order_ids:
-           d = Distance.objects.get(distanceFrom=location_id, distanceTo=order).distance
-           if d < min:
-               temp = d
-               min = d
-       location_id = temp
-       order_ids.remove(temp)
-       leg.append(temp)
-   leg.append(hospital_id)
-   return render(request, "Dispatcher/dispatch.html", leg)
+# orders should be a list of order idss
+# def createItinerary(request, orders):
+   # hospitalName = 'Queen Mary Hospital Drone Port'
+   # # sets the hospital's id as first location
+   # hospital_id = Location.objects.get(name=hospitalName).pk
+   # location_id = hospital_id
+   # leg = list()
+   # order_ids = orders.copy()
+   # items = {}
+   # while order_ids:
+   #     min = 999999
+   #     temp = None
+   #     for order_id in order_ids:
+   #         destination = OrderInfo.objects.get(order=order_id).location
+   #         d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
+   #         if d < min:
+   #             temp = order_id
+   #             min = d
+   #     location_id = temp
+   #     order_ids.remove(temp)
+   #     leg.append(temp)
+   #     items['order'] = temp
+   #  leg.append(hospital_id)
+   # return render(request, "Dispatcher/dispatch.html", leg)
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
