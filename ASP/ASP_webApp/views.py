@@ -148,7 +148,6 @@ def createItinerary(request, orders):
    # sets the hospital's id as first location
    hospital_location = Location.objects.get(name=hospitalName)
    location_id = hospital_location.pk
-   leg = list()
    order_ids = orders.copy()
    items = []
    # check sequence for locations
@@ -163,14 +162,12 @@ def createItinerary(request, orders):
                min = d
        location_id = temp
        order_ids.remove(temp)
-       leg.append(temp)
        cur_location = Location.objects.get(id=temp)
        item = { 'name' : cur_location.name,
                 'latitude' : cur_location.latitude,
                 'longtitude' : cur_location.longtitude,
                 'altitude' : cur_location.altitude }
        items.append(item)
-       # leg.append(hospital_id)
    item = { 'name' : 'Queen Mary Hospital Drone Port',
             'latitude' : hospital_location.latitude,
             'longtitude' : hospital_location.longtitude,
