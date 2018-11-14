@@ -116,11 +116,11 @@ class DetailView(generic.DetailView):
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------
 
-# for generic list view
-# use def get_queryset and return a lis
+# use return a json containing all the orders that are "Queued for Dispatch"
 def dispatchView(request):
 
-    result = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    result = Order.objects.filter(status="Queued for Dispatch").values('id', 'name', 'priority', 'ordering_clinic')\
+                                    .order_by('priority')
     json_result = []
     for item in result:
         json_result.append(item)
@@ -130,7 +130,7 @@ def dispatchView(request):
 
 # update status and dispatch datetime of all selected orders
 def dispatchUpdate(request, self):
-    orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    orderList = Order.objects.filter(status="Queued for Dispatch").order_by('priority')
     orderList.objects.update(status="Dispatched")
     dateTime = timezone.now()
     orderList.objects.update(dispatchedDatetime=dateTime)
@@ -182,13 +182,13 @@ class WarehouseView(generic.ListView):
 
     # view priority queue
     def get_queryset(self):
-        return Order.objects.filter(status="Queued for processing").order_by('priority')
+        return Order.objects.filter(status="Queued for Processing").order_by('priority')
 
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
 def orderSelect(request):
-    chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
+    chosen = Order.objects.filter(status="Queued for Processing").order_by('priority')[:1]
     chosen.objects.update(status="Processing by Warehouse")
     chosen.save()
     jsonresult = []
