@@ -117,28 +117,25 @@ class DetailView(generic.DetailView):
 # ---------------------------------------------------------------------
 
 # for generic list view
-# use def get_queryset and return a list
-class DispatchView(generic.ListView):
-    context_object_name = 'orderList'
-    # equal to pass a list
-    # {orderList: queryset}
-    template_name = "Dispatcher/dispatch.html"
+# use def get_queryset and return a lis
+def dispatchView(request):
 
-    def get_queryset(self):
-        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    result = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    json_result = []
+    for item in result:
+        json_result.append(item)
+    return render_to_response("Dispatcher/dispatch.html", {'results': json_result})
 
-class DispatchUpdate(generic.ListView):
-   context_object_name = 'orderList'
-   template_name = "Dispatcher/dispatch.html"
 
-   # update status and dispatch datetime of all selected orders
-   def dispatchUpdate(request, self):
-       orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
-       orderList.objects.update(status="Dispatched")
-       dateTime = timezone.now()
-       orderList.objects.update(dispatchedDatetime=dateTime)
-       orderList.save()
-       return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
+
+# update status and dispatch datetime of all selected orders
+def dispatchUpdate(request, self):
+    orderList = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    orderList.objects.update(status="Dispatched")
+    dateTime = timezone.now()
+    orderList.objects.update(dispatchedDatetime=dateTime)
+    orderList.save()
+    return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
 
 # def createItinerary(self):
 # create itinerary file
@@ -148,7 +145,6 @@ def createItinerary(request, orders):
    # sets the hospital's id as first location
    hospital_location = Location.objects.get(name=hospitalName)
    location_id = hospital_location.pk
-   leg = list()
    order_ids = orders.copy()
    items = []
    # check sequence for locations
@@ -163,20 +159,18 @@ def createItinerary(request, orders):
                min = d
        location_id = temp
        order_ids.remove(temp)
-       leg.append(temp)
        cur_location = Location.objects.get(id=temp)
        item = { 'name' : cur_location.name,
                 'latitude' : cur_location.latitude,
                 'longtitude' : cur_location.longtitude,
                 'altitude' : cur_location.altitude }
        items.append(item)
-       # leg.append(hospital_id)
    item = { 'name' : 'Queen Mary Hospital Drone Port',
             'latitude' : hospital_location.latitude,
             'longtitude' : hospital_location.longtitude,
             'altitude' : hospital_location.altitude }
    items.append(item)
-   return render(request, "Dispatcher/dispatch.html", items)
+   return render(request, "Dispatcher/dispatch.html", {'results': items})
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
@@ -184,7 +178,7 @@ class WarehouseView(generic.ListView):
     context_object_name = 'warehouseList'
     # equal to pass a list
     # {orderList: queryset}
-    template_name = "WarehousePersonnel/warehouse.html"
+    template_name = "WHP/warehouse.html"
 
     # view priority queue
     def get_queryset(self):
@@ -193,13 +187,13 @@ class WarehouseView(generic.ListView):
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
-    def orderSelect(request):
-        chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
-        chosen.objects.update(status="Processing by Warehouse")
-        chosen.save()
-        jsonresult = []
-        jsonresult.append(chosen)
-        return render(request, "WarehousePersonnel/warehouse.html", json.dumps(jsonresult))
+def orderSelect(request):
+    chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
+    chosen.objects.update(status="Processing by Warehouse")
+    chosen.save()
+    jsonresult = []
+    jsonresult.append(chosen)
+    return render(request, "WHP/warehouse.html", {'results': jsonresult})
 
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
