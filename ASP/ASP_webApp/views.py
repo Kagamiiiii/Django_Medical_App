@@ -117,15 +117,15 @@ class DetailView(generic.DetailView):
 # ---------------------------------------------------------------------
 
 # for generic list view
-# use def get_queryset and return a list
-class DispatchView(generic.ListView):
-    context_object_name = 'orderList'
-    # equal to pass a list
-    # {orderList: queryset}
-    template_name = "Dispatcher/dispatch.html"
+# use def get_queryset and return a lis
+def dispatchView(request):
 
+    result = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    json_result = []
+    for item in result:
+        json_result.append(item)
     def get_queryset(self):
-        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+        return render_to_response("Dispatcher/dispatch.html", {'results': json_result})
 
 class DispatchUpdate(generic.ListView):
    context_object_name = 'orderList'
@@ -148,7 +148,6 @@ def createItinerary(request, orders):
    # sets the hospital's id as first location
    hospital_location = Location.objects.get(name=hospitalName)
    location_id = hospital_location.pk
-   leg = list()
    order_ids = orders.copy()
    items = []
    # check sequence for locations
@@ -163,20 +162,18 @@ def createItinerary(request, orders):
                min = d
        location_id = temp
        order_ids.remove(temp)
-       leg.append(temp)
        cur_location = Location.objects.get(id=temp)
        item = { 'name' : cur_location.name,
                 'latitude' : cur_location.latitude,
                 'longtitude' : cur_location.longtitude,
                 'altitude' : cur_location.altitude }
        items.append(item)
-       # leg.append(hospital_id)
    item = { 'name' : 'Queen Mary Hospital Drone Port',
             'latitude' : hospital_location.latitude,
             'longtitude' : hospital_location.longtitude,
             'altitude' : hospital_location.altitude }
    items.append(item)
-   return render(request, "Dispatcher/dispatch.html", items)
+   return render(request, "Dispatcher/dispatch.html", {'results': items})
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
@@ -184,7 +181,7 @@ class WarehouseView(generic.ListView):
     context_object_name = 'warehouseList'
     # equal to pass a list
     # {orderList: queryset}
-    template_name = "WarehousePersonnel/warehouse.html"
+    template_name = "WHP/warehouse.html"
 
     # view priority queue
     def get_queryset(self):
@@ -193,46 +190,46 @@ class WarehouseView(generic.ListView):
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
-    def orderSelect(request):
-        chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
-        chosen.objects.update(status="Processing by Warehouse")
-        chosen.save()
-        jsonresult = []
-        jsonresult.append(chosen)
-        return render(request, "WarehousePersonnel/warehouse.html", json.dumps(jsonresult))
+def orderSelect(request):
+    chosen = Order.objects.filter(status="Queued for processing").order_by('priority')[:1]
+    chosen.objects.update(status="Processing by Warehouse")
+    chosen.save()
+    jsonresult = []
+    jsonresult.append(chosen)
+    return render(request, "WHP/warehouse.html", {'results': jsonresult})
 
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
-    def getShippingLabel(request, order_id):
-        order_selected = Order.objects.get(id=order_id)
-        items = Include.objects.filter(order=order_id)
-        quantity = 0
-        for item in items:
-            quantity += item.quantity
-        buffer =  io.BytesIO()
-        pdf = canvas.Canvas(buffer)
-        pdf.setLineWidth(.3)
-        pdf.setFont('Helvetica', 12)
+def getShippingLabel(request, order_id):
+    order_selected = Order.objects.get(id=order_id)
+    items = Include.objects.filter(order=order_id)
+    quantity = 0
+    for item in items:
+        quantity += item.quantity
+    buffer =  io.BytesIO()
+    pdf = canvas.Canvas(buffer)
+    pdf.setLineWidth(.3)
+    pdf.setFont('Helvetica', 12)
 
-        pdf.drawString(30, 750, 'Queen Mary ')
-        pdf.drawString(30, 735, 'Hospital Drone Port')
-        pdf.drawString(450, 750, 'Order id:')
-        pdf.drawString(500, 750, order_id)
+    pdf.drawString(30, 750, 'Queen Mary ')
+    pdf.drawString(30, 735, 'Hospital Drone Port')
+    pdf.drawString(450, 750, 'Order id:')
+    pdf.drawString(500, 750, order_id)
 
-        pdf.line(480, 747, 580, 747)
+    pdf.line(480, 747, 580, 747)
 
-        pdf.drawString(275, 725, 'Quantity:')
-        pdf.drawString(500, 725, quantity)
-        pdf.line(378, 723, 580, 723)
+    pdf.drawString(275, 725, 'Quantity:')
+    pdf.drawString(500, 725, quantity)
+    pdf.line(378, 723, 580, 723)
 
-        pdf.drawString(30, 703, 'RECEIVED BY:')
-        pdf.line(120, 700, 580, 700)
-        pdf.drawString(120, 703, order_selected.name)
-        pdf.drawString(450, 703, 'Priority:')
-        pdf.drawString(500, 703, order_selected.priority)
-        pdf.showPage()
-        pdf.save()
-        Order.objects.update(status="Queued for Dispatch")
-        Order.save()
-        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+    pdf.drawString(30, 703, 'RECEIVED BY:')
+    pdf.line(120, 700, 580, 700)
+    pdf.drawString(120, 703, order_selected.name)
+    pdf.drawString(450, 703, 'Priority:')
+    pdf.drawString(500, 703, order_selected.priority)
+    pdf.showPage()
+    pdf.save()
+    Order.objects.update(status="Queued for Dispatch")
+    Order.save()
+    return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
