@@ -1,6 +1,6 @@
 # Create your views here.
 
-from django.shortcuts import render
+from django.shortcuts import *
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -165,16 +165,16 @@ def createItinerary(request, orders):
        order_ids.remove(temp)
        leg.append(temp)
        cur_location = Location.objects.get(id=temp)
-       item = { name : cur_location.name,
-                latitude : cur_location.latitude,
-                longtitude : cur_location.longtitude
-                altitude : cur_location.altitude }
+       item = { 'name' : cur_location.name,
+                'latitude' : cur_location.latitude,
+                'longtitude' : cur_location.longtitude,
+                'altitude' : cur_location.altitude }
        items.append(item)
-    leg.append(hospital_id)
-   item = { name : 'Queen Mary Hospital Drone Port',
-            latitude : hospital_location.latitude,
-            longtitude : hospital_location.longtitude,
-            altitude : hospital_location.altitude }
+       # leg.append(hospital_id)
+   item = { 'name' : 'Queen Mary Hospital Drone Port',
+            'latitude' : hospital_location.latitude,
+            'longtitude' : hospital_location.longtitude,
+            'altitude' : hospital_location.altitude }
    items.append(item)
    return render(request, "Dispatcher/dispatch.html", items)
 
@@ -206,7 +206,7 @@ class WarehouseView(generic.ListView):
     # and update status of the selcted order (status ==> "Queued for Dispatch")
     def getShippingLabel(request, order_id):
         order_selected = Order.objects.get(id=order_id)
-        items = Includes.objects.filter(order=order_id)
+        items = Include.objects.filter(order=order_id)
         quantity = 0
         for item in items:
             quantity += item.quantity
@@ -233,7 +233,6 @@ class WarehouseView(generic.ListView):
         pdf.drawString(500, 703, order_selected.priority)
         pdf.showPage()
         pdf.save()
-        order.objects.update(status="Queued for Dispatch")
-        order.save
-        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+        Order.objects.update(status="Queued for Dispatch")
+        Order.save()
         return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
