@@ -227,6 +227,6 @@ def getShippingLabel(request, order_id):
     pdf.drawString(500, 703, order_selected.priority)
     pdf.showPage()
     pdf.save()
-    Order.objects.update(status="Queued for Dispatch")
-    Order.save()
+    order_selected.objects.update(status="Queued for Dispatch")
+    order_selected.save()
     return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')

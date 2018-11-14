@@ -77,7 +77,7 @@ class Account(models.Model):
 class Order(models.Model):
     status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
                                                       ('Processing by Warehouse', 'Processing by Warehouse'),
-                                                      ('Queued for Dispatched', 'Queued for Dispatched'),
+                                                      ('Queued for Dispatch', 'Queued for Dispatch'),
                                                       ('Dispatched', 'Dispatched'),
                                                       ('Delivered', 'Delivered')), default='Queued for Processing')
     priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
