@@ -1,20 +1,24 @@
-#icon{
+#icon {
   width: 90px;
   margin: 20px;
 }
-#system{
+
+#system {
   margin-right: 20px;
 }
-#load_from_Django{
+
+#load_from_Django {
   border: 1px solid red;
   padding: 8px;
   border-radius: 20px;
 }
-hr{
+
+hr {
   padding: 0;
   margin: 5px;
 }
-footer{
+
+footer {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -32,18 +36,25 @@ footer{
   -ms-user-select: none;
   user-select: none;
 }
-.bar{
+
+.bar {
   margin: 10px;
 }
-#selector{
+
+#selector {
   margin: 10px;
+  width: true;
 }
-#maincontent{
-  margin: 10px;
-}
-#maincontent{
+
+#maincontent {
   display: none;
+  margin: 10px;
 }
-.category_quantity{
-  width: 50px;
+
+.category_checkbox{
+  align-items: center;
+}
+
+.category_quantity {
+  align-items: center;
 }

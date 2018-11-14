@@ -93,11 +93,24 @@ class createOrderPage(View):
         # get the category of the returned JSON object
         cat = request.POST.get("category", "")
         # returned value
-        results = Supply.objects.filter(category=cat).values('id', 'name')
+        results = Supply.objects.filter(category=cat).values('id', 'name', 'weight', 'description')
         json_result = []
         for result in results:
             json_result.append(result)
         return render_to_response("CM/category_load.html", {'results': json_result})
+
+    def displayByCategoryJson(request):
+        if request.method != 'POST':
+            return render_to_response()
+        # data = json.load(request.POST)
+        # get the category of the returned JSON object
+        cat = request.POST.get("category", "")
+        # returned value
+        results = Supply.objects.filter(category=cat).values('id', 'name', 'weight', 'description')
+        json_result = []
+        for result in results:
+            json_result.append(result)
+        return JsonResponse(json_result, safe=False)
 
 
 # View addition information of that item.
@@ -119,7 +132,6 @@ class DetailView(generic.DetailView):
 # for generic list view
 # use def get_queryset and return a lis
 def dispatchView(request):
-
     result = Order.objects.filter(status="Queued for dispatch").order_by('priority')
     json_result = []
     for item in result:
