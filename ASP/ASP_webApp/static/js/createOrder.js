@@ -24,10 +24,9 @@ $.ajax({
       data: {
         category : strUser
       },
-      dataType: 'json',
       success: function (respond) {
-          // clear all element in maincontent first.
-          alert('msg');
+          $('#maincontent').html(respond);
+          $('#maincontent').show();
       }
     });
 };

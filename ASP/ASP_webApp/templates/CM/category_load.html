@@ -1,0 +1,26 @@
+{% block content %}
+    {% if results %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Item id</th>
+            <th scope="col">Item description</th>
+            <th scope="col">Additional information</th>
+            <th scope="col">quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+      {% for result in results %}
+          <tr>
+            <th scope="row">{{result.id}}</th>
+            {% autoescape on %}
+            <td><img id="icon" src='../../static/img/CM_{{result.id}}.JPG'></td>
+            {% endautoescape %}
+            <td>{{result.name}}</td>
+            <td><input class="category_checkbox" type="checkbox"><input class="category_quantity" type="text" name="" value=""></td>
+          </tr>
+      {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}
