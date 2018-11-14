@@ -17,16 +17,19 @@ $.ajaxSetup({
 
 var e = document.getElementById("selector-inner");
 var strUser = e.options[e.selectedIndex].text;
-
-$.ajax({
-      type: "POST",
-      url: "./displayByCategory/",
-      data: {
-        category : strUser
-      },
-      success: function (respond) {
-          $('#maincontent').html(respond);
-          $('#maincontent').show();
-      }
-    });
-};
+if (strUser != "Please select a category...") {
+  $.ajax({
+        type: "POST",
+        url: "./displayByCategory/",
+        data: {
+          category : strUser
+        },
+        success: function (respond) {
+            $('#maincontent').html(respond);
+            $('#maincontent').show();
+        }
+      });
+  } else {
+    $('#maincontent').hide();
+  }
+}
