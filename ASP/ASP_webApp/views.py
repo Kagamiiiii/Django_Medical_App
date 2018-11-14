@@ -1,13 +1,15 @@
 # Create your views here.
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic, View
 from django.utils import timezone
 from .models import *
 import json
+import io
+from reportlab.pdfgen import canvas
 
 # --------------------------Clinic Manager-----------------------------
 # ---------------------------------------------------------------------
@@ -203,7 +205,35 @@ class WarehouseView(generic.ListView):
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
-    def getShippingLabel(request):
+    def getShippingLabel(request, order_id):
+        order_selected = Order.objects.get(id=order_id)
+        items = Includes.objects.filter(order=order_id)
+        quantity = 0
+        for item in items:
+            quantity += item.quantity
+        buffer =  io.BytesIO()
+        pdf = canvas.Canvas(buffer)
+        pdf.setLineWidth(.3)
+        pdf.setFont('Helvetica', 12)
 
+        pdf.drawString(30, 750, 'Queen Mary ')
+        pdf.drawString(30, 735, 'Hospital Drone Port')
+        pdf.drawString(450, 750, 'Order id:')
+        pdf.drawString(500, 750, order_id)
 
+        pdf.line(480, 747, 580, 747)
 
+        pdf.drawString(275, 725, 'Quantity:')
+        pdf.drawString(500, 725, quantity)
+        pdf.line(378, 723, 580, 723)
+
+        pdf.drawString(30, 703, 'RECEIVED BY:')
+        pdf.line(120, 700, 580, 700)
+        pdf.drawString(120, 703, order_selected.name)
+        pdf.drawString(450, 703, 'Priority:')
+        pdf.drawString(500, 703, order_selected.priority)
+        pdf.showPage()
+        pdf.save()
+        order.objects.update(status="Queued for Dispatch")
+        order.save
+        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
