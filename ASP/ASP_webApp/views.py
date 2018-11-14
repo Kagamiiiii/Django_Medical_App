@@ -177,12 +177,12 @@ def createItinerary(request, orders):
        cur_location = Location.objects.get(id=temp)
        item = { 'name' : cur_location.name,
                 'latitude' : cur_location.latitude,
-                'longtitude' : cur_location.longtitude,
+                'longitude' : cur_location.longitude,
                 'altitude' : cur_location.altitude }
        items.append(item)
    item = { 'name' : 'Queen Mary Hospital Drone Port',
             'latitude' : hospital_location.latitude,
-            'longtitude' : hospital_location.longtitude,
+            'longitude' : hospital_location.longitude,
             'altitude' : hospital_location.altitude }
    items.append(item)
    return render(request, "Dispatcher/dispatch.html", {'results': items})
