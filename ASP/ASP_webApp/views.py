@@ -93,7 +93,7 @@ class createOrderPage(View):
         # get the category of the returned JSON object
         cat = request.POST.get("category", "")
         # returned value
-        results = Supply.objects.filter(category=cat).values('id', 'name')
+        results = Supply.objects.filter(category=cat).values('id', 'name', 'description', 'weight')
         json_result = []
         for result in results:
             json_result.append(result)
