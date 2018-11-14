@@ -117,15 +117,15 @@ class DetailView(generic.DetailView):
 # ---------------------------------------------------------------------
 
 # for generic list view
-# use def get_queryset and return a list
-class DispatchView(generic.ListView):
-    context_object_name = 'orderList'
-    # equal to pass a list
-    # {orderList: queryset}
-    template_name = "Dispatcher/dispatch.html"
+# use def get_queryset and return a lis
+def dispatchView(request):
 
+    result = Order.objects.filter(status="Queued for dispatch").order_by('priority')
+    json_result = []
+    for item in result:
+        json_result.append(item)
     def get_queryset(self):
-        return Order.objects.filter(status="Queued for dispatch").order_by('priority')
+        return render_to_response("Dispatch/dispatch.html", {'results': json_result})
 
 class DispatchUpdate(generic.ListView):
    context_object_name = 'orderList'
@@ -176,7 +176,7 @@ def createItinerary(request, orders):
             'longtitude' : hospital_location.longtitude,
             'altitude' : hospital_location.altitude }
    items.append(item)
-   return render(request, "Dispatcher/dispatch.html", items)
+   return render(request, "Dispatcher/dispatch.html", {'results': items})
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
@@ -199,7 +199,7 @@ class WarehouseView(generic.ListView):
         chosen.save()
         jsonresult = []
         jsonresult.append(chosen)
-        return render(request, "WarehousePersonnel/warehouse.html", json.dumps(jsonresult))
+        return render(request, "WarehousePersonnel/warehouse.html", {'results': jsonresult})
 
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
