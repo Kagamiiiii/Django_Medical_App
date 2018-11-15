@@ -178,3 +178,42 @@ function checkboxToggle(element){
         updateWeight();
     }
 }
+
+function toggleBrowseSupplies(){
+    $('#bs-section-button').addClass("active");
+    $('#vo-section-button').removeClass( "active" );
+    $('#bs-section').show();
+    $('#vo-section').hide();
+}
+
+function toggleViewOrder(){
+    $('#bs-section-button').removeClass("active");
+    $('#vo-section-button').addClass("active");
+
+    $.ajax({
+          type: "POST",
+          url: "./displayByCategory/",
+          data: {
+            category : strUser
+          },
+          success: function (respond) {
+              $('#maincontent').html(respond);
+              $('#maincontent').show();
+              $.ajax({
+                    type: "POST",
+                    url: "./displayByCategoryJson/",
+                    data: {
+                      category : strUser
+                    },
+                    success: function (respond) {
+                      window.items = respond;
+                  }
+                }
+              );
+          }
+        }
+      );
+
+    $('#bs-section').hide();
+    $('#vo-section').show();
+}

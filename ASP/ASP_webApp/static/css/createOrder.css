@@ -56,7 +56,7 @@ footer {
 #success-message{
   display: none;
   border: 1px solid red;
-  width: 15%:
+  width: 15%;
   padding: 8px;
   border-radius: 20px;
 }

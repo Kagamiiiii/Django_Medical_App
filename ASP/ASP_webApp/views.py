@@ -99,8 +99,6 @@ class createOrderPage(View):
         return render_to_response("CM/category_load.html", {'results': json_result})
 
     def displayByCategoryJson(request):
-        if request.method != 'POST':
-            return render_to_response()
         # data = json.load(request.POST)
         # get the category of the returned JSON object
         cat = request.POST.get("category", "")
@@ -111,19 +109,15 @@ class createOrderPage(View):
             json_result.append(result)
         return JsonResponse(json_result, safe=False)
 
+    # def viewOrder(request):
+    #     cat = request.POST.get("category", "")
+    #     # returned value
+    #     results = Supply.objects.filter(category=cat).values('id', 'name', 'weight', 'description')
+    #     json_result = []
+    #     for result in results:
+    #         json_result.append(result)
+    #     return render_to_response("CM/category_load.html", {'results': json_result})
 
-# View addition information of that item.
-class DetailView(generic.DetailView):
-    model = Supply  # where to search for primary key
-    template_name = "CM/detail.html"
-
-    # detail of specific order
-    # preforming query for cretaing objects.
-    def orderView(request, orderID):
-        order = Order.objects.get(pk=orderID)
-        supply = Include.objects.filter(order_id=orderID)
-        list = {'order': order, 'supplyList': supply}
-        return render(request, "CM/order.html", list)
 
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------

@@ -59,9 +59,9 @@ class Account(models.Model):
     lastname = models.CharField(max_length=200)
     email = models.EmailField()
     worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint' : False})
-    role = models.CharField(max_length=30, choices=(('Clinic Manager', 'clinic manager'),
-                                                    ('Dispatcher', 'dispatcher'),
-                                                    ('Warehouse personnel', 'Warehouse personnel')))
+    role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
+                                                    ('Dispatcher', 'Dispatcher'),
+                                                    ('Warehouse Personnel', 'Warehouse Personnel')))
     token = models.CharField(max_length=20)
 
     class Meta:
@@ -74,11 +74,11 @@ class Account(models.Model):
 
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 class Order(models.Model):
-    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'queued for processing'),
-                                                      ('Processing by Warehouse', 'processing by warehouse'),
-                                                      ('Queued for Dispatch', 'queued for dispatch'),
-                                                      ('Dispatched', 'dispatched'),
-                                                      ('Delivered', 'delivered')), default='Queued for Processing')
+    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
+                                                      ('Processing by Warehouse', 'Processing by Warehouse'),
+                                                      ('Queued for Dispatch', 'Queued for Dispatch'),
+                                                      ('Dispatched', 'Dispatched'),
+                                                      ('Delivered', 'Delivered')), default='Queued for Processing')
     priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
                                 default='Low')
     weight = models.FloatField()

@@ -29,10 +29,10 @@
   <div class="bar">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link active" onclick="toggleBrowseSupplies()">Browse Supplies by Category</a>
+        <a id="bs-section-button" class="nav-link unselectable active" onclick="toggleBrowseSupplies()">Browse Supplies by Category</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" onclick="toggleViewOrder()">View Orders</a>
+        <a id="vo-section-button" class="nav-link unselectable" onclick="toggleViewOrder()">View Orders</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account settings</a>
@@ -47,19 +47,20 @@
     </ul>
   </div>
 
-  <div class="card text-center">
-    <div class="card-header">
-      Cart
+  <div id="bs-section" class="block-container">
+    <div class="card text-center">
+      <div class="card-header">
+        Cart
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Your cart was empty</h5>
+      </div>
+      <div class="card-footer text-muted">
+        <span id="weight-warning">[Warning: Too heavy] </span>Weight = <span id="weight">0</span> KG
+      </div>
     </div>
-    <div class="card-body">
-      <h5 class="card-title">Your cart was empty</h5>
-    </div>
-    <div class="card-footer text-muted">
-      <span id="weight-warning">[Warning: Too heavy] </span>Weight = <span id="weight">0</span> KG
-    </div>
-  </div>
 
-  <div class="block-container">
+
     <div id="selector">
       <select class="selectpicker" id="selector-inner" data-live-search="true" data-width="100%" onchange="requestCategory()">
         {% if categories %}
@@ -73,7 +74,7 @@
 
     <div id="priority-selector">
       <select class="selectpicker" id="priority-selector-inner" data-width="50%" onchange="changePriority()">
-        <option>Select priority</option>
+        <optipon>Select priority</optipon>
         <option>High</option>
         <option>Medium</option>
         <option>Low</option>
@@ -87,16 +88,14 @@
     <div id="createOrder-div">
       <button id="createOrder" type="button" class="btn btn-primary" onclick="createOrder();" disabled>Create Order</button>
     </div>
+
+    <table id="maincontent" class="table">
+      {% include 'CM/category_load.html' %}
+    </table>
   </div>
 
-
-  <table id="maincontent" class="table">
-    {% include 'CM/category_load.html' %}
-  </table>
-
-  <div class="viewOrder">
-    {% block category %}
-    {% endblock %}
+  <div id="vo-section" class="viewOrder">
+    {% include 'CM/viewOrder.html' %}
   </div>
 </body>
 </html>
