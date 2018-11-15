@@ -101,8 +101,8 @@ class Order(models.Model):
         return string + temp
 
     @classmethod
-    def create(cls, priority, ODatetime, cid, weight):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+    def create(cls, priority, ODatetime, clinic, weight):
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=clinic, weight=weight, )
         return order
 
 
@@ -121,10 +121,10 @@ class Include(models.Model):
     def __str__(self):
         return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
 
-    # @classmethod
-    # def create(cls, oid, item_id, quantity):
-    #     includes = cls(order=oid, supply=item_id, quantity=quantity)
-    #     return includes
+    @classmethod
+    def create(cls, oid, supply, quantity):
+        includes = cls(order=oid, supply=supply, quantity=quantity)
+        return includes
 
 
 # records the location the order will be delivered to and who ordered it

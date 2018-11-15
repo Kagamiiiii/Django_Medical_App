@@ -292,38 +292,3 @@ and open the template in the editor.
 
 </body>
 </html>
-
-{#<!DOCTYPE html>#}
-{#<html lang="en" dir="ltr">#}
-{#  <head>#}
-{#    <meta charset="utf-8">#}
-{#    <title>test</title>#}
-{#      <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>#}
-{#    <script type="text/javascript">#}
-{#    function createOrder() {#}
-{#        let order = {#}
-{#          priority: "high",#}
-{#          clinic_id: 2, // from north lamma#}
-{#          account_id: 1, // some account.#}
-{#          clinic: 1,#}
-{#          weight: 20,#}
-{#          item: [{#}
-{#            id: 1,#}
-{#            quantity: 20#}
-{#          },{#}
-{#            id: 2,#}
-{#            quantity: 20#}
-{#          }]#}
-{#        };#}
-{##}
-{#        $.post("/CM/createOrder/", order, function (response){#}
-{#          $('#message').html(response["result"]);#}
-{#        });#}
-{#    }#}
-{#    </script>#}
-{#  </head>#}
-{#  <body>#}
-{#    <div id='message'>Before activation</div>#}
-{#    <input type="button" value="Create order" onclick="createOrder();">#}
-{#  </body>#}
-{#</html>#}

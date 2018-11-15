@@ -7,7 +7,7 @@
   margin-right: 20px;
 }
 
-#load_from_Django {
+#clinic_name {
   border: 1px solid red;
   padding: 8px;
   border-radius: 20px;
@@ -53,6 +53,14 @@ footer {
   display: inline-block;
 }
 
+#success-message{
+  display: none;
+  border: 1px solid red;
+  width: 15%:
+  padding: 8px;
+  border-radius: 20px;
+}
+
 #createOrder-div{
   margin: 10px;
   display: inline-block;
@@ -62,6 +70,19 @@ footer {
 #maincontent {
   display: none;
   margin: 10px;
+}
+
+.card-body{
+  padding: 20px;
+}
+
+.card.text-center{
+  margin: 0 auto;
+  width: 80%;
+}
+
+.list-group-item{
+  max-width: 100%;
 }
 
 #weight-warning{

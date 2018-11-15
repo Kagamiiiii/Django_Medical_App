@@ -70,23 +70,19 @@ class createOrderPage(View):
         except json.JSONDecodeError as e:
             return HttpResponse("Fail")
         clinic_id = orderObject['clinic_id']
-        print(orderObject)
         account_id = orderObject['account_id']
-        print("Here! 1")
         dateTime = timezone.now()
-        print("Here! 2")
         priority = orderObject['priority']
         weight = orderObject['weight']
-        print("Here! 3")
-        Order.objects.create(priority=priority, ODatetime=dateTime, cid=clinic_id, weight=weight)
-        print("Here! 4")
-        itemsinfo = orderObject['items']
+        order = Order.create(priority=priority, ODatetime=dateTime, clinic=Location.objects.get(id=clinic_id), weight=weight)
+        itemsinfo = orderObject['cart']
+        order.save()
         # before submitting order to the database we has to check if the required quantity is correct or not
         # we need to get item id...
         for item in itemsinfo:
-            orderInclude = Include(order=Order.pk, supply=item['item_id'], quantity=item['quantity'])
+            orderInclude = Include(order=order, supply=Supply.objects.get(id=item['item_id']), quantity=item['quantity'])
             orderInclude.save()
-        OrderInfo.objects.create(order=Order.pk, location=clinic_id, account=account_id)
+        OrderInfo.objects.create(order=order, location=Location.objects.get(id=clinic_id), account=Account.objects.get(id=account_id))
         return HttpResponse("Success")
 
     # if not use generic view, use render to call html

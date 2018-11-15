@@ -50,6 +50,20 @@ function requestCategory(){
     }
 }
 
+function orderCreated(){
+  items = null;
+  cart = [];
+  priority = "Low";
+  updateWeight();
+  updateCart();
+  $('#success-message').css({
+        opacity: 0,
+        display: 'inline-block'
+    }).animate({opacity:1},600,function() {
+      $('#success-message').css("display", "hide");
+    });
+}
+
 function createOrder(){
   var e = document.getElementById("priority-selector-inner");
   var selected_priority = e.options[e.selectedIndex].text;
@@ -70,7 +84,7 @@ function createOrder(){
             order: JSON.stringify(order),
           },
           success: function (respond) {
-              alert("yes!");
+            orderCreated();
         }
     });
   }
@@ -101,6 +115,7 @@ function updateCart()
   if (cart.length == 0) {
     $('.cart-body').remove();
     $('.card-title').show();
+    $('.card-body').css("padding", "20px");
     $('#createOrder').prop('disabled', true);
     return;
   }
@@ -108,6 +123,7 @@ function updateCart()
   if ( $('.cart-body').length ){
     $('.cart-body').remove();
   }
+  $('.card-body').css("padding", "0px");
   $('.card-body').append("<div class=\"cart-body\">");
   $('.cart-body').append("<ul class=\"list-group\">");
   for (let i = 0; i < cart.length; i++) {
