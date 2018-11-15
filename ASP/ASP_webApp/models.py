@@ -23,7 +23,6 @@ class Supply(models.Model):
     name = models.CharField(max_length=200)
     category = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
-    detail = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
     # This is float field. Storing floating point
     weight = models.FloatField()
@@ -60,8 +59,8 @@ class Account(models.Model):
     lastname = models.CharField(max_length=200)
     email = models.EmailField()
     worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint' : False})
-    role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
-                                                    ('Dispatcher', 'Dispatcher'),
+    role = models.CharField(max_length=30, choices=(('Clinic Manager', 'clinic manager'),
+                                                    ('Dispatcher', 'dispatcher'),
                                                     ('Warehouse personnel', 'Warehouse personnel')))
     token = models.CharField(max_length=20)
 
@@ -75,11 +74,11 @@ class Account(models.Model):
 
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
 class Order(models.Model):
-    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'Queued for Processing'),
-                                                      ('Processing by Warehouse', 'Processing by Warehouse'),
-                                                      ('Queued for Dispatch', 'Queued for Dispatch'),
-                                                      ('Dispatched', 'Dispatched'),
-                                                      ('Delivered', 'Delivered')), default='Queued for Processing')
+    status = models.CharField(max_length=30, choices=(('Queued for Processing', 'queued for processing'),
+                                                      ('Processing by Warehouse', 'processing by warehouse'),
+                                                      ('Queued for Dispatch', 'queued for dispatch'),
+                                                      ('Dispatched', 'dispatched'),
+                                                      ('Delivered', 'delivered')), default='Queued for Processing')
     priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
                                 default='Low')
     weight = models.FloatField()
@@ -101,10 +100,10 @@ class Order(models.Model):
             string += "0"
         return string + temp
 
-    # @classmethod
-    # def create(cls, priority, ODatetime, cid, weight):
-    #     order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
-    #     return order
+    @classmethod
+    def create(cls, priority, ODatetime, cid, weight):
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=cid, weight=weight)
+        return order
 
 
 # record supply in an order

@@ -68,27 +68,30 @@ class createOrderPage(View):
         try:
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
-            return render(request, template_name="CM/createOrderPage.html", context={"result": "fail"})
+            return HttpResponse("Fail")
         clinic_id = orderObject['clinic_id']
+        print(orderObject)
         account_id = orderObject['account_id']
+        print("Here! 1")
         dateTime = timezone.now()
+        print("Here! 2")
         priority = orderObject['priority']
         weight = orderObject['weight']
-        Order.objects.create(priority=priority, ODatetime=dateTime, weight=weight)
+        print("Here! 3")
+        Order.objects.create(priority=priority, ODatetime=dateTime, cid=clinic_id, weight=weight)
+        print("Here! 4")
         itemsinfo = orderObject['items']
         # before submitting order to the database we has to check if the required quantity is correct or not
         # we need to get item id...
         for item in itemsinfo:
             orderInclude = Include(order=Order.pk, supply=item['item_id'], quantity=item['quantity'])
             orderInclude.save()
-        OrderInfo.objects.create(order=Order.pk, location=Location.objects.get(clinic_id=clinic_id), account=account_id)
-        return render(request, template_name="CM/createOrderPage.html", context={"result": "success"})
+        OrderInfo.objects.create(order=Order.pk, location=clinic_id, account=account_id)
+        return HttpResponse("Success")
 
     # if not use generic view, use render to call html
     # cat is the category name
     def displayByCategory(request):
-        if request.method != 'POST':
-            return render_to_response()
         # data = json.load(request.POST)
         # get the category of the returned JSON object
         cat = request.POST.get("category", "")

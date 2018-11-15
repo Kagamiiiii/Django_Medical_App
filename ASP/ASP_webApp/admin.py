@@ -12,7 +12,7 @@ from .models import *
 # password: admin
 
 class SupplyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'description', 'detail', 'weight', 'image')
+    list_display = ('name', 'category', 'description', 'weight', 'image')
 
 
 class LocationAdmin(admin.ModelAdmin):

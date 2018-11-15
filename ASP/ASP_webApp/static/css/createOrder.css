@@ -43,12 +43,31 @@ footer {
 
 #selector {
   margin: 10px;
-  width: true;
+  width: 610px !important;
+  display: inline-block;
+}
+
+#priority-selector{
+  margin: 10px;
+  width: 305px;
+  display: inline-block;
+}
+
+#createOrder-div{
+  margin: 10px;
+  display: inline-block;
+  float: right;
 }
 
 #maincontent {
   display: none;
   margin: 10px;
+}
+
+#weight-warning{
+  color: red;
+  font-weight: bolder;
+  display: none;
 }
 
 .category_checkbox{
