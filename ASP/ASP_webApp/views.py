@@ -181,10 +181,11 @@ class DispatchPage(View):
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
-class warehouseView(View):
+class warehousePage(View):
     # view priority queue
-    def get_queryset(self):
-        return Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
+    def warehouseView(request):
+        orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
+        return render(request, "Dispatcher/dispatch.html", {'results': orderList})
 
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
