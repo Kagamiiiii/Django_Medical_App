@@ -229,12 +229,18 @@ function viewOrderAction(element){
     var status = element.parent().siblings("#status").html();
     $.ajax({
           type: "POST",
-          url: "./viewOrder/",
+          url: "./orderAction/",
           data: {
             orderID: id,
           },
           success: function (respond) {
-              if ( status == "Queued for Processing")
+            if ( status == "Queued for Processing"){
+                element.prop('disabled', true);
+                element.parent().siblings("#status").html("Order Cancelled!");
+            } else {
+                element.prop('disabled', true);
+                element.parent().siblings("#status").html("Delivered!");
+            }
           }
         }
       );

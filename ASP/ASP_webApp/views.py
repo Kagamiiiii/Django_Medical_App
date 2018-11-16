@@ -90,8 +90,9 @@ class createOrderPage(View):
             json_result.append(temp_dict)
         return render_to_response("CM/viewOrder.html", {'results': json_result})
 
-    def orderCancel(request):
-        account_id = request.POST.get("account_id", "")
+    def orderAction(request):
+        order_id = request.POST.get("orderID", "")
+        Order.objects.get(id=order_id)
 
         # return render_to_response("CM/viewOrder.html", {'results': json_result})
 

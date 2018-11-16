@@ -23,11 +23,11 @@
             <td id="status"><b>{{result.status}}</b></td>
             <td>
               {% if result.status == "Delivered"%}
-                <button type="button" class="btn btn-danger order_action" disabled onclick="viewOrderAction(this)">Danger</button>
-              {% elif result.status == "Dispatched" %}
-                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Order Received</button>
-              {% else %}
+                <button type="button" class="btn btn-danger order_action" disabled onclick="viewOrderAction(this)">Delivered</button>
+              {% elif result.status == "Queued for Processing"%}
                 <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
+              {% else %}
+                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Received Order</button>
               {% endif %}
             </td>
           </tr>

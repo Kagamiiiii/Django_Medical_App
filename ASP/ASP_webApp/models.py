@@ -31,10 +31,6 @@ class Supply(models.Model):
         verbose_name = 'Supply'
         verbose_name_plural = 'Supplies'
 
-    # this function return a human readable string about this data model upon call.
-    # def __str__(self):
-    #     return self.name
-
 
 # Location information.
 class Location(models.Model):
@@ -47,9 +43,6 @@ class Location(models.Model):
     class Meta:
         verbose_name = 'Location'
         verbose_name_plural = 'Locations'
-
-    # def __str__(self):
-    #     return self.name
 
 
 class Account(models.Model):
@@ -67,9 +60,6 @@ class Account(models.Model):
     class Meta:
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
-
-    # def __str__(self):
-    #     return self.lastname + self.firstname
 
 
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
@@ -92,16 +82,6 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
-
-    # returns an order ID of length 8
-    # the order starts from 00000001.
-    # the __str__ functions has been deleted because it will induce wrong query result.
-    # def __str__(self):
-    #     temp = str(self.pk)
-    #     string = "Order "
-    #     for i in range(8 - len(temp)):
-    #         string += "0"
-    #     return string + temp
 
     @classmethod
     def create(cls, priority, ODatetime, clinic, weight, account):
