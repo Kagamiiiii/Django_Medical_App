@@ -1,0 +1,38 @@
+{% block content %}
+    {% if results %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 10%">Order ID</th>
+            <th scope="col" style="width: 40%">Item details</th>
+            <th scope="col" style="width: 25%">Status</th>
+            <th scope="col" style="width: 25%">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+      {% for result in results %}
+          <tr>
+            <td id="order_id" scope="row">{{ result.order_id }}</td>
+            <td>
+            {% for item in result.items %}
+            {{item.name}} <br><b>Quantity</b>: {{item.quantity}}<br><img id="icon" src='../../static/img/CM_{{item.supply_id}}.JPG'><br>
+            {% endfor %}
+            <hr>
+            <strong>Weight:</strong> {{result.total_weight}} KG
+            </td>
+            <td id="status"><b>{{result.status}}</b></td>
+            <td>
+              {% if result.status == "Delivered"%}
+                <button type="button" class="btn btn-danger order_action" disabled onclick="viewOrderAction(this)">Danger</button>
+              {% elif result.status == "Dispatched" %}
+                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Order Received</button>
+              {% else %}
+                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
+              {% endif %}
+            </td>
+          </tr>
+      {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}

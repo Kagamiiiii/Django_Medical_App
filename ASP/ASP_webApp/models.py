@@ -78,7 +78,8 @@ class Order(models.Model):
                                                       ('Processing by Warehouse', 'Processing by Warehouse'),
                                                       ('Queued for Dispatch', 'Queued for Dispatch'),
                                                       ('Dispatched', 'Dispatched'),
-                                                      ('Delivered', 'Delivered')), default='Queued for Processing')
+                                                      ('Delivered', 'Delivered'),
+                                                      ('Cancelled', 'Cancelled')), default='Queued for Processing')
     priority = models.CharField(max_length=4, choices=(('High', 'high'), ('Medium', 'mid'), ('Low', 'low'),),
                                 default='Low')
     weight = models.FloatField()

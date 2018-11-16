@@ -72,19 +72,27 @@ class createOrderPage(View):
 
         # first get their order ID (distinct), get their supply_id and quantity,
         # then merge them together, and get their priority and weight later.
+        order_ids = []
+        for id_result in Order.objects.all().filter(ordering_account=account_id).values("id"):
+            order_ids.append(id_result['id'])
+        # print(order_ids)
 
-        order_id = [ Order.objects.all().filter(ordering_account=account_id).values("id")]
-        print(order_id)
-
-        results = []
-        for order_object in Order.objects.all().filter(ordering_account=account_id):
-            results += Include.objects.all().filter(order=order_object).values("order_id", "supply_id", "quantity")
         json_result = []
-        for result in results:
-            result['total_weight'] = Order.objects.get(id=result['order_id']).weight
-            result['priority'] = Order.objects.get(id=result['order_id']).priority
-            json_result.append(result)
+        for order_id in order_ids:
+            temp_dict = {}
+            temp_dict["order_id"] = order_id
+            temp_dict["priority"] = Order.objects.get(id=order_id).priority
+            temp_dict["items"] = []
+            temp_dict["status"] = Order.objects.get(id=order_id).status
+            for order_object in Include.objects.all().filter(order=order_id).values():
+                temp_dict["items"].append({ "name": Supply.objects.get(id=order_object["supply_id"]).name, "supply_id": order_object["supply_id"], "quantity": order_object["quantity"]})
+            temp_dict["total_weight"] = Order.objects.get(id=order_id).weight
+            json_result.append(temp_dict)
         return render_to_response("CM/viewOrder.html", {'results': json_result})
+
+    def orderCancel(request):
+        account_id = request.POST.get("account_id", "")
+
         # return render_to_response("CM/viewOrder.html", {'results': json_result})
 
 

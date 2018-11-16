@@ -207,6 +207,7 @@ function toggleViewOrder(){
 
     $('#bs-section').hide();
 
+
     $.ajax({
           type: "POST",
           url: "./viewOrder/",
@@ -214,12 +215,27 @@ function toggleViewOrder(){
             account_id : 1,
           },
           success: function (respond) {
-            console.log("success!!");
-              // $('#maincontent').html(respond);
-              // $('#maincontent').show();
+            // console.log("success!!");
+              $('#vo-section').html(respond);
+              $('#vo-section').show();
+              buttonDetermine();
           }
         }
       );
+}
 
-      $('#vo-section').show();
+function viewOrderAction(element){
+    var id = element.parent().siblings("#order_id").html();
+    var status = element.parent().siblings("#status").html();
+    $.ajax({
+          type: "POST",
+          url: "./viewOrder/",
+          data: {
+            orderID: id,
+          },
+          success: function (respond) {
+              if ( status == "Queued for Processing")
+          }
+        }
+      );
 }
