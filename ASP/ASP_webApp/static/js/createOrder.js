@@ -218,15 +218,15 @@ function toggleViewOrder(){
             // console.log("success!!");
               $('#vo-section').html(respond);
               $('#vo-section').show();
-              buttonDetermine();
           }
         }
       );
 }
 
 function viewOrderAction(element){
-    var id = element.parent().siblings("#order_id").html();
-    var status = element.parent().siblings("#status").html();
+    var id = $(element).parent().siblings("#order_id").html();
+    var status = $(element).parent().siblings("#status").html();
+    alert("it worked!");
     $.ajax({
           type: "POST",
           url: "./orderAction/",
@@ -235,13 +235,13 @@ function viewOrderAction(element){
           },
           success: function (respond) {
             if ( status == "Queued for Processing"){
-                element.prop('disabled', true);
-                element.parent().siblings("#status").html("Order Cancelled!");
+                $(element).prop('disabled', true);
+                $(element).parent().siblings("#status").html("Cancelled");
             } else {
-                element.prop('disabled', true);
-                element.parent().siblings("#status").html("Delivered!");
+                $(element).prop('disabled', true);
+                $(element).parent().siblings("#status").html("Delivered");
             }
           }
         }
-      );
+    );
 }

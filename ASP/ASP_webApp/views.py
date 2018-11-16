@@ -73,7 +73,7 @@ class createOrderPage(View):
         # first get their order ID (distinct), get their supply_id and quantity,
         # then merge them together, and get their priority and weight later.
         order_ids = []
-        for id_result in Order.objects.all().filter(ordering_account=account_id).values("id"):
+        for id_result in Order.objects.all().filter(ordering_account=account_id).values("id").order_by("-id"):
             order_ids.append(id_result['id'])
         # print(order_ids)
 
@@ -92,10 +92,11 @@ class createOrderPage(View):
 
     def orderAction(request):
         order_id = request.POST.get("orderID", "")
-        Order.objects.get(id=order_id)
-
-        # return render_to_response("CM/viewOrder.html", {'results': json_result})
-
+        if (Order.objects.get(id=order_id).status != "Queued for Processing"):
+            Order.objects.filter(id=order_id).update(status="Delivered")
+        else:
+            Order.objects.filter(id=order_id).update(status="Cancelled")
+        return HttpResponse("Success")
 
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------
