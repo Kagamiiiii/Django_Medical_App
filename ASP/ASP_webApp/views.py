@@ -134,7 +134,7 @@ def dispatchView(request):
 # update status and dispatch datetime of all selected orders
 def dispatchUpdate(request, orders):
     for order_id in orders:
-        singleOrder = Order.objects.get(id=order_id).update(status="Dispatched")
+        singleOrder = Order.objects.filter(id=order_id).update(status="Dispatched")
         dateTime = timezone.now()
         singleOrder.objects.update(dispatchedDatetime=dateTime)
         singleOrder.save()
@@ -202,7 +202,7 @@ def orderSelect(request):
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
 def getShippingLabel(request, order_id):
-    order_selected = Order.objects.get(id=order_id)
+    order_selected = Order.objects.filter(id=order_id)
     items = Include.objects.filter(order=order_id)
     quantity = 0
     for item in items:
