@@ -86,6 +86,7 @@ class Order(models.Model):
     dispatchedDatetime = models.DateTimeField(blank=True, null=True)
     deliveredDatetime = models.DateTimeField(blank=True, null=True)
     ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint': False})
+    ordering_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Order'
@@ -101,8 +102,8 @@ class Order(models.Model):
         return string + temp
 
     @classmethod
-    def create(cls, priority, ODatetime, clinic, weight):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=clinic, weight=weight, )
+    def create(cls, priority, ODatetime, clinic, weight, account):
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=clinic, weight=weight, ordering_account=account)
         return order
 
 
@@ -125,22 +126,6 @@ class Include(models.Model):
     def create(cls, oid, supply, quantity):
         includes = cls(order=oid, supply=supply, quantity=quantity)
         return includes
-
-
-# records the location the order will be delivered to and who ordered it
-class OrderInfo(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, primary_key=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Order Information'
-        verbose_name_plural = 'Order Information'
-        unique_together = ("order", "location")
-
-    def __str__(self):
-        return "Order " + str(self.order.__str__()) + " to " + self.location.__str__() + " by Account " + self.account.__str__()
-
 
 # distance data model, should storing the calculation result of distance data for deliveries.
 class Distance(models.Model):

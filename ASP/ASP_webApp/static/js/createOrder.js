@@ -187,33 +187,34 @@ function toggleBrowseSupplies(){
 }
 
 function toggleViewOrder(){
+    var csrftoken = Cookies.get('csrftoken');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
     $('#bs-section-button').removeClass("active");
     $('#vo-section-button').addClass("active");
 
+    $('#bs-section').hide();
+
     $.ajax({
           type: "POST",
-          url: "./displayByCategory/",
+          url: "./viewOrder/",
           data: {
-            category : strUser
+            account_id : 1,
           },
           success: function (respond) {
-              $('#maincontent').html(respond);
-              $('#maincontent').show();
-              $.ajax({
-                    type: "POST",
-                    url: "./displayByCategoryJson/",
-                    data: {
-                      category : strUser
-                    },
-                    success: function (respond) {
-                      window.items = respond;
-                  }
-                }
-              );
+            alert("success!!");
+              // $('#maincontent').html(respond);
+              // $('#maincontent').show();
           }
         }
       );
 
-    $('#bs-section').hide();
-    $('#vo-section').show();
+      $('#vo-section').show();
 }

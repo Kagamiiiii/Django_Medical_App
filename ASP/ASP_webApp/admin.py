@@ -30,11 +30,6 @@ class AccountAdmin(admin.ModelAdmin):
 class IncludeAdmin(admin.ModelAdmin):
     list_display = ('order', 'supply', 'quantity')
 
-
-class OrderInfoAdmin(admin.ModelAdmin):
-    list_display = ('order', 'location', 'account')
-
-
 class DistanceAdmin(admin.ModelAdmin):
     list_display = ('distanceFrom', 'distanceTo', 'distance')
 
@@ -45,5 +40,4 @@ admin.site.register(Order, OrderAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Include, IncludeAdmin)
-admin.site.register(OrderInfo, OrderInfoAdmin)
 admin.site.register(Distance, DistanceAdmin)

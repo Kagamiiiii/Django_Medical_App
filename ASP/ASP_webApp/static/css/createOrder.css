@@ -56,7 +56,6 @@ footer {
 #success-message{
   display: none;
   border: 1px solid red;
-  width: 15%;
   padding: 8px;
   border-radius: 20px;
 }
@@ -97,4 +96,9 @@ footer {
 
 .category_quantity {
   align-items: center;
+}
+
+#vo-content{
+  display: none;
+  margin: 10px;
 }
