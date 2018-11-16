@@ -9,15 +9,15 @@ urlpatterns = [
     # path('register/',),
 
     # --------------------------Clinic Manager-----------------------------
-    path('CM/main/', views.createOrderPage.as_view()),
-    path('CM/main/displayByCategory/', views.createOrderPage.displayByCategory, name='displayByCategory'),
-    path('CM/main/displayByCategoryJson/', views.createOrderPage.displayByCategoryJson, name='displayByCategoryJson'),
-    path('CM/main/createOrder/', views.createOrderPage.as_view(), name='createOrder'),
-    path('CM/main/viewOrder/', views.createOrderPage.viewOrder, name='viewOrder'),
-    path('CM/main/orderAction/', views.createOrderPage.orderAction, name='orderCancel'),
+    path('CM/main/', views.CreateOrderPage.createOrderView, name='createOrderPage'),
+    path('CM/main/createOrder/', views.CreateOrderPage.createOrder, name='createOrder'),
+    path('CM/main/displayByCategory/', views.CreateOrderPage.displayByCategory, name='displayByCategory'),
+    path('CM/main/displayByCategoryJson/', views.CreateOrderPage.displayByCategoryJson, name='displayByCategoryJson'),
+    path('CM/main/orderAction/', views.CreateOrderPage.orderAction, name='orderCancel'),
+    path('CM/main/viewOrder/', views.CreateOrderPage.viewOrder, name='viewOrder'),
     # --------------------------Dispatcher---------------------------------
-    path('D/main', views.dispatchView, name='dispatch'),
-    path('D/dispatchUpdate/', views.dispatchUpdate, name='dispatch_update'),
+    path('D/main', views.DispatchPage.dispatchView, name='dispatch'),
+    path('D/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
 
     # --------------------------Warehouse Personnel------------------------
 

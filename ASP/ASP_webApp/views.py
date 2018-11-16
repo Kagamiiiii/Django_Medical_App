@@ -15,12 +15,12 @@ from reportlab.pdfgen import canvas
 # ---------------------------------------------------------------------
 
 
-class createOrderPage(View):
-    def get(self, request, *args, **kwargs):
+class CreateOrderPage(View):
+    def createOrderView(request):
         categories = Supply.objects.all().values('category').distinct()
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
 
-    def post(self, request, *args, **kwargs):
+    def createOrder(request):
         # user wants to create an order
         query = request.POST.get('order')
         # need a verification block here
@@ -181,13 +181,7 @@ class DispatchPage(View):
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
-class WarehouseView(generic.ListView):
-
-    context_object_name = 'warehouseList'
-    # equal to pass a list
-    # {orderList: queryset}
-    template_name = "WHP/warehouse.html"
-
+class warehouseView(View):
     # view priority queue
     def get_queryset(self):
         return Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
