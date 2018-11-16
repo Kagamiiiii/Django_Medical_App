@@ -103,9 +103,13 @@ class createOrderPage(View):
 def dispatchView(request):
     result = Order.objects.filter(status="Queued for Dispatch")\
                                     .values('id', 'name', 'priority', 'ordering_clinic', 'weight')\
-                                    .order_by('priority')
+                                    .order_by('priority', 'orderedDatetime', 'id')
     json_result = []
+    max_weight = 25.0
     for item in result:
+        max_weight -= item.weight
+        if max_weight < 0:
+            break
         single_order = {}
         single_order["order_id"] = item.id
         single_order["order_name"] = item.name
@@ -126,12 +130,12 @@ def dispatchView(request):
 
 
 # update status and dispatch datetime of all selected orders
-def dispatchUpdate(request, self):
-    orderList = Order.objects.filter(status="Queued for Dispatch").order_by('priority')
-    orderList.objects.update(status="Dispatched")
-    dateTime = timezone.now()
-    orderList.objects.update(dispatchedDatetime=dateTime)
-    orderList.save()
+def dispatchUpdate(request, orders):
+    for order_id in orders:
+        singleOrder = Order.objects.get(id=order_id).update(status="Dispatched")
+        dateTime = timezone.now()
+        singleOrder.objects.update(dispatchedDatetime=dateTime)
+        singleOrder.save()
     return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
 
 # def createItinerary(self):
@@ -179,13 +183,13 @@ class WarehouseView(generic.ListView):
 
     # view priority queue
     def get_queryset(self):
-        return Order.objects.filter(status="Queued for Processing").order_by('priority')
+        return Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
 
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
 def orderSelect(request):
-    chosen = Order.objects.filter(status="Queued for Processing").order_by('priority')[:1]
+    chosen = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')[:1]
     chosen.objects.update(status="Processing by Warehouse")
     chosen.save()
     jsonresult = []
