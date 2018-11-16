@@ -14,7 +14,7 @@ urlpatterns = [
     path('CM/main/displayByCategoryJson/', views.createOrderPage.displayByCategoryJson, name='displayByCategoryJson'),
     path('CM/main/createOrder/', views.createOrderPage.as_view(), name='createOrder'),
     path('CM/main/viewOrder/', views.createOrderPage.viewOrder, name='viewOrder'),
-    path('CM/main/orderCancel/', views.createOrderPage.orderCancel, name='orderCancel'),
+    path('CM/main/orderAction/', views.createOrderPage.orderAction, name='orderCancel'),
     # --------------------------Dispatcher---------------------------------
     path('D/main', views.dispatchView, name='dispatch'),
     path('D/dispatchUpdate/', views.dispatchUpdate, name='dispatch_update'),
