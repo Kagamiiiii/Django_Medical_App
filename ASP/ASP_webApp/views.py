@@ -92,7 +92,7 @@ class createOrderPage(View):
 
     def orderAction(request):
         order_id = request.POST.get("orderID", "")
-
+        Order.objects.get(id=order_id)
 
         # return render_to_response("CM/viewOrder.html", {'results': json_result})
 
