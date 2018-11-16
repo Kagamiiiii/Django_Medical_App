@@ -1,0 +1,29 @@
+{% block content %}
+    {% if results %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 10%">Order ID</th>
+            <th scope="col" style="width: 60%">Item details</th>
+            <th scope="col" style="width: 15%">Status</th>
+            <th scope="col" style="width: 15%">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+      {% for result in results %}
+          <tr>
+            <td scope="row" class="order_id">{{result.id}}</td>
+            <td>
+              {% for item in result.%}
+              {{ item.supply.name }} <br> {{item.quantity}}<img id="icon" src='../../static/img/CM_{{result.id}}.JPG'><hr>
+              {% endfor %}
+              <hr>
+            </td>
+            <td>{{result.order.status}}</td>
+            <td class="category_quantity_parent"><input class="category_quantity" type="text" name="{{result.weight}}"></input></td>
+          </tr>
+      {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}

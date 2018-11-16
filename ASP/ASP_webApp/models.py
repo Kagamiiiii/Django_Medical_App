@@ -32,8 +32,8 @@ class Supply(models.Model):
         verbose_name_plural = 'Supplies'
 
     # this function return a human readable string about this data model upon call.
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 
 # Location information.
@@ -48,8 +48,8 @@ class Location(models.Model):
         verbose_name = 'Location'
         verbose_name_plural = 'Locations'
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 
 class Account(models.Model):
@@ -68,8 +68,8 @@ class Account(models.Model):
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
 
-    def __str__(self):
-        return self.lastname + self.firstname
+    # def __str__(self):
+    #     return self.lastname + self.firstname
 
 
 # This is similar to Enum in MySQL, where the stored data can only be one of the choice in choices option.
@@ -94,16 +94,17 @@ class Order(models.Model):
 
     # returns an order ID of length 8
     # the order starts from 00000001.
-    def __str__(self):
-        temp = str(self.pk)
-        string = "Order "
-        for i in range(8 - len(temp)):
-            string += "0"
-        return string + temp
+    # the __str__ functions has been deleted because it will induce wrong query result.
+    # def __str__(self):
+    #     temp = str(self.pk)
+    #     string = "Order "
+    #     for i in range(8 - len(temp)):
+    #         string += "0"
+    #     return string + temp
 
     @classmethod
     def create(cls, priority, ODatetime, clinic, weight, account):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic=clinic, weight=weight, ordering_account=account)
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic_id=clinic, weight=weight, ordering_account_id=account)
         return order
 
 
@@ -118,9 +119,6 @@ class Include(models.Model):
         verbose_name = 'Include'
         verbose_name_plural = 'Includes'
         unique_together = (("order", "supply"),)
-
-    def __str__(self):
-        return "Order " + str(self.order.__str__()) + " includes " + self.supply.__str__()
 
     @classmethod
     def create(cls, oid, supply, quantity):
@@ -137,7 +135,3 @@ class Distance(models.Model):
         verbose_name = 'Distance'
         verbose_name_plural = 'Distances'
         unique_together = (("distanceFrom", "distanceTo"),)
-
-    def __str__(self):
-        return self.distanceFrom.__str__() + " to " + self.distanceTo.__str__()
-

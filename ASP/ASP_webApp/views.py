@@ -33,7 +33,7 @@ class createOrderPage(View):
         dateTime = timezone.now()
         priority = orderObject['priority']
         weight = orderObject['weight']
-        order = Order.create(priority=priority, ODatetime=dateTime, clinic=Location.objects.get(id=clinic_id), weight=weight, account=Account.objects.get(id=account_id))
+        order = Order.create(priority=priority, ODatetime=dateTime, clinic=clinic_id, weight=weight, account=account_id)
         itemsinfo = orderObject['cart']
         order.save()
         # before submitting order to the database we has to check if the required quantity is correct or not
@@ -69,12 +69,22 @@ class createOrderPage(View):
 
     def viewOrder(request):
         account_id = request.POST.get("account_id", "")
-        results = Include.objects.filter(order=Order.objects.get(account=account_id))
+
+        # first get their order ID (distinct), get their supply_id and quantity,
+        # then merge them together, and get their priority and weight later.
+
+        order_id = [ Order.objects.all().filter(ordering_account=account_id).values("id")]
+        print(order_id)
+
+        results = []
+        for order_object in Order.objects.all().filter(ordering_account=account_id):
+            results += Include.objects.all().filter(order=order_object).values("order_id", "supply_id", "quantity")
         json_result = []
         for result in results:
+            result['total_weight'] = Order.objects.get(id=result['order_id']).weight
+            result['priority'] = Order.objects.get(id=result['order_id']).priority
             json_result.append(result)
-        print(json_result)
-        return HttpResponse("okay")
+        return render_to_response("CM/viewOrder.html", {'results': json_result})
         # return render_to_response("CM/viewOrder.html", {'results': json_result})
 
 

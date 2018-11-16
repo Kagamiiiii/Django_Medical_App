@@ -59,10 +59,15 @@ function orderCreated(){
   $('#success-message').css({
         opacity: 0,
         display: 'inline-block'
-    }).animate({opacity:1},600,function() {
-      $('#success-message').css("display", "hide");
+    }).animate({opacity:1},1500,function() {
+      $('#success-message').animate({opacity:0},1500,function() {
+        $('#success-message').css({
+              opacity: 1,
+              display: 'none'
+          });
+        })
     });
-}
+  }
 
 function createOrder(){
   var e = document.getElementById("priority-selector-inner");
@@ -209,7 +214,7 @@ function toggleViewOrder(){
             account_id : 1,
           },
           success: function (respond) {
-            alert("success!!");
+            console.log("success!!");
               // $('#maincontent').html(respond);
               // $('#maincontent').show();
           }
