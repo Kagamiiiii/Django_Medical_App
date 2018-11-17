@@ -117,7 +117,7 @@ class DispatchPage(View):
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch").\
             values('id', 'priority', 'ordering_clinic', 'weight' ) \
-            .order_by('priority', 'orderedDatetime', 'id', )
+            .order_by('priority', 'processedDatetime', 'id' )
         for ele in results:
             result.append(ele)
         json_result = []
@@ -255,5 +255,7 @@ class warehousePage(View):
         order_id = request.POST.get("order_id", "")
         order_selected = Order.objects.filter(id=order_id)
         order_selected.objects.update(status="Queued for Dispatch")
+        dateTime = timezone.now()
+        order_selected.objects.update(processedDatetime=dateTime)
         order_selected.save()
         return HttpResponse("Success")
