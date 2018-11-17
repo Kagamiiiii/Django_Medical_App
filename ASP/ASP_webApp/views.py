@@ -118,6 +118,7 @@ class DispatchPage(View):
             values('id', 'priority', 'ordering_clinic', 'weight' ) \
             .order_by('priority', 'orderedDatetime', 'id', )
 
+        print(result)
         json_result = []
         max_weight = 25.0
         for item in result:
