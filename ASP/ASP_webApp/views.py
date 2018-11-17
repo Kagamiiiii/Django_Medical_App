@@ -249,6 +249,11 @@ class warehousePage(View):
         pdf.drawString(30, 665, location_name)
         pdf.showPage()
         pdf.save()
+        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+
+    def updateStatus(request):
+        order_id = request.POST.get("order_id", "")
+        order_selected = Order.objects.filter(id=order_id)
         order_selected.objects.update(status="Queued for Dispatch")
         order_selected.save()
-        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+        return HttpResponse("Success")
