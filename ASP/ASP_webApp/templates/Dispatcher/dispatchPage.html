@@ -43,14 +43,16 @@
       </li>
     </ul>
   </div>
+
 	<div id="dispatch-option-section">
 		<button id="dispatchButton" type="button" class="btn btn-primary" onclick="requestDispatch();">Dispatch new set of orders</button>
 		<button id="downloadItineraryButton" type="button" class="btn btn-primary" onclick="downloadItinerary();">Download Itinerary</button>
 		<button id="updateToDispatchButton" type="button" class="btn btn-danger" onclick="updateToDispatch();" disabled>Update status as "Dispatched"</button>
 	</div>
-	<div id="maincontent">
+	
+	<table id="maincontent" class="table">
 			{% include 'Dispatcher/dispatchDetail.html' %}
-	</div>
+	</table>
 
 </body>
 </html>

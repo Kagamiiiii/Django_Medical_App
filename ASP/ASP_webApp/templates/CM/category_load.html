@@ -13,11 +13,11 @@
         <tbody>
       {% for result in results %}
           <tr>
-            <td scope="row"><input class="category_checkbox" type="checkbox" onchange="checkboxToggle(this)"></input></td>
+            <td scope="row" id="checkbox"><input class="category_checkbox" type="checkbox" disabled></input></td>
             <td class="category_id_parent">{{result.id}}</td>
-            <td>{{result.name}}<img id="icon" src='../../static/img/CM_{{result.id}}.JPG'></td>
+            <td>{{result.name}}<img id="icon" src='../../static/img/{{result.id}}.JPG'></td>
             <td>{{result.description}}<br><strong>Weight:</strong> {{result.weight}} KG</td>
-            <td class="category_quantity_parent"><input class="category_quantity" type="text" name="{{result.weight}}"></input></td>
+            <td class="category_quantity_parent"><input class="category_quantity" type="text" name="{{result.weight}}" oninput="toggleCheckbox(this)"></input></td>
           </tr>
       {% endfor %}
         </tbody>

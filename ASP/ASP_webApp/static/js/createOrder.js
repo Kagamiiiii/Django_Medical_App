@@ -222,6 +222,17 @@ function toggleViewOrder(){
       );
 }
 
+function toggleCheckbox(element){
+    var content = parseInt($(element).val());
+    if ( content > 0) {
+      console.log("here!");
+      $(element).parent().siblings('#checkbox').children().removeAttr("disabled");
+    } else {
+      console.log("here2!");
+      $(element).parent().siblings('#checkbox').children().prop("disabled", true);
+    }
+}
+
 function viewOrderAction(element){
     var id = $(element).parent().siblings("#order_id").html();
     var status = $(element).parent().siblings("#status").html();

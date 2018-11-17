@@ -3,23 +3,23 @@
     <table class="table">
         <thead>
           <tr>
-            <th scope="col" style="width: 5%"></th>
-            <th scope="col" style="width: 10%">Item id</th>
-            <th scope="col" style="width: 30%">Item description</th>
-            <th scope="col" style="width: 30%">Additional information</th>
-            <th scope="col" style="width: 20%">Quantity</th>
+            <th scope="col" style="width: 10%">Order id</th>
+            <th scope="col" style="width: 70%">Order detail</th>
+            <th scope="col" style="width: 20%">Order total weight:</th>
           </tr>
         </thead>
         <tbody>
-      {% for result in results %}
-          <tr>
-            <td scope="row"><input class="category_checkbox" type="checkbox" onchange="checkboxToggle(this)"></input></td>
-            <td class="category_id_parent">{{result.id}}</td>
-            <td>{{result.name}}<img id="icon" src='../../static/img/CM_{{result.id}}.JPG'></td>
-            <td>{{result.description}}<br><strong>Weight:</strong> {{result.weight}} KG</td>
-            <td class="category_quantity_parent"><input class="category_quantity" type="text" name="{{result.weight}}"></input></td>
-          </tr>
-      {% endfor %}
+        {% for result in results %}
+        <tr>
+            <td style="">{{ result.order_id }}</td>
+            <td>
+            {% for item in result.items %}
+              {{item.name}}<img id="icon" src='../../static/img/{{item.id}}.JPG'><hr>
+            {% endfor %}
+            </td>
+            <td>{{ result.weight }} KG</td>
+        </tr>
+        {% endfor%}
         </tbody>
     </table>
     {% endif %}

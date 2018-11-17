@@ -91,11 +91,11 @@ footer {
 }
 
 .category_checkbox{
-  align-items: center;
+  margin: 0 auto;
 }
 
 .category_quantity {
-  align-items: center;
+  margin: 0 auto;
 }
 
 #vo-content{

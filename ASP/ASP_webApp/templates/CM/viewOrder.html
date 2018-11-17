@@ -10,30 +10,30 @@
           </tr>
         </thead>
         <tbody>
-      {% for result in results %}
-          <tr>
-            <td id="order_id" scope="row">{{ result.order_id }}</td>
-            <td>
-            {% for item in result.items %}
-            {{item.name}} <br><b>Quantity</b>: {{item.quantity}}<br><img id="icon" src='../../static/img/CM_{{item.supply_id}}.JPG'><br>
-            {% endfor %}
-            <hr>
-            <strong>Weight:</strong> {{result.total_weight}} KG
-            </td>
-            <td id="status">{{result.status}}</td>
-            <td>
-              {% if result.status == "Delivered"%}
-                <button type="button" class="btn btn-danger order_action" disabled>Delivered</button>
-              {% elif result.status == "Queued for Processing"%}
-                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
-              {% elif result.status == "Cancelled" %}
-                <button type="button" class="btn btn-danger order_action" disabled>Order cancelled</button>
-              {% else %}
-                <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Received Order</button>
-              {% endif %}
-            </td>
-          </tr>
-      {% endfor %}
+        {% for result in results %}
+            <tr>
+              <td id="order_id" scope="row">{{ result.order_id }}</td>
+              <td>
+              {% for item in result.items %}
+              {{item.name}} <br><b>Quantity</b>: {{item.quantity}}<br><img id="icon" src='../../static/img/{{ item.supply_id }}.JPG'><br>
+              {% endfor %}
+              <hr>
+              <strong>Weight:</strong> {{result.total_weight}} KG
+              </td>
+              <td id="status">{{result.status}}</td>
+              <td>
+                {% if result.status == "Delivered"%}
+                  <button type="button" class="btn btn-danger order_action" disabled>Delivered</button>
+                {% elif result.status == "Queued for Processing"%}
+                  <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
+                {% elif result.status == "Cancelled" %}
+                  <button type="button" class="btn btn-danger order_action" disabled>Cancelled</button>
+                {% else %}
+                  <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Received Order</button>
+                {% endif %}
+              </td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
     {% endif %}

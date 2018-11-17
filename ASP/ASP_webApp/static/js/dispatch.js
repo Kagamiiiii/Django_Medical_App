@@ -21,8 +21,9 @@ function requestDispatch(){
         type: "POST",
         url: "./dispatchDetail/",
         success: function (respond) {
+            console.log(respond);
             $('#maincontent').html(respond);
-            $('#maincontent').css("display", "block");
+            $('#maincontent').show();
             $('#downloadItineraryButton').css("display", "inline-block");
             $('#updateToDispatchButton').css("display", "inline-block");
         }

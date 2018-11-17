@@ -114,29 +114,33 @@ class DispatchPage(View):
 
     def dispatchViewDetail(request):
         # get all order id with "Queued for Dispatch" status
-        result = Order.objects.all().filter(status="Queued for Dispatch").\
+        result = []
+        results = Order.objects.all().filter(status="Queued for Dispatch").\
             values('id', 'priority', 'ordering_clinic', 'weight' ) \
             .order_by('priority', 'orderedDatetime', 'id', )
-
-        print(result)
+        for ele in results:
+            result.append(ele)
         json_result = []
         max_weight = 25.0
         for item in result:
-            max_weight -= item.weight
+            max_weight -= item['weight']
             if max_weight < 0:
                 break
             single_order = {}
-            single_order["order_id"] = item.id
-            single_order["priority"] = item.priority
-            single_order["clinic"] = item.ordering_clinic
-            single_order["weight"] = item.weight
-            order_items = Include.objects.filter(order=item.id).values('supply', 'quantity')
+            single_order["order_id"] = item['id']
+            single_order["priority"] = item['priority']
+            single_order["clinic"] = item['ordering_clinic']
+            single_order["weight"] = item['weight']
+            order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
             # get all supplies of the corresponding order
-            children = []
+            items = []
             for info in order_items:
-                item_name = Supply.objects.get(id=info.supply).values('name')
-                children.append({"name": item_name, "quantity": info.quantity})
-            single_order["children"] = children
+                supply_item_id = Supply.objects.get(id=info["supply_id"]).id # should be index of image, it's for frontend image.
+                supply_item_name = Supply.objects.get(id=info["supply_id"]).name
+                print(supply_item_id)
+                print(supply_item_name)
+                items.append({"id": supply_item_id, "name": supply_item_name, "quantity": info['quantity']})
+            single_order["items"] = items
             json_result.append(single_order)
         print(json_result)
         return render_to_response("Dispatcher/dispatchDetail.html", {'results': json_result})
