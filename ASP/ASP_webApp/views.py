@@ -123,8 +123,6 @@ class DispatchPage(View):
                 break
             single_order = {}
             single_order["order_id"] = item.id
-            # we don't have order name!
-            # single_order["order_name"] = item.name
             single_order["priority"] = item.priority
             single_order["clinic"] = item.ordering_clinic
             single_order["weight"] = item.weight
@@ -165,7 +163,7 @@ class DispatchPage(View):
             minimum = 999999
             temp = None
             for order_id in order_ids:
-                destination = Order.objects.get(id=order_id).location
+                destination = Order.objects.get(id=order_id).ordering_clinic
                 d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
                 if d < minimum:
                     temp = order_id
@@ -206,12 +204,16 @@ class warehousePage(View):
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
-    def getShippingLabel(request, order_id):
+    def getShippingLabel(request):
+        order_id = request.POST.get("order_id")
+
         order_selected = Order.objects.filter(id=order_id)
         items = Include.objects.filter(order=order_id)
         quantity = 0
         for item in items:
             quantity += item.quantity
+        order_account = Account.objects.get(id=order_selected.ordering_account).values('firstname', 'lastname')
+        account_name = order_account.firstname + " " + order_account.lastname
         buffer = io.BytesIO()
         pdf = canvas.Canvas(buffer)
         pdf.setLineWidth(.3)
@@ -230,7 +232,7 @@ class warehousePage(View):
 
         pdf.drawString(30, 703, 'RECEIVED BY:')
         pdf.line(120, 700, 580, 700)
-        pdf.drawString(120, 703, order_selected.name)
+        pdf.drawString(120, 703, account_name)
         pdf.drawString(450, 703, 'Priority:')
         pdf.drawString(500, 703, order_selected.priority)
         pdf.showPage()
