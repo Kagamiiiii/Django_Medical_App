@@ -115,8 +115,7 @@ function updateWeight(){
     }
 }
 
-function updateCart()
-{
+function updateCart() {
   if (cart.length == 0) {
     $('.cart-body').remove();
     $('.card-title').show();

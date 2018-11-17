@@ -11,6 +11,7 @@ import json
 import io
 from reportlab.pdfgen import canvas
 
+
 # --------------------------Clinic Manager-----------------------------
 # ---------------------------------------------------------------------
 
@@ -39,7 +40,8 @@ class CreateOrderPage(View):
         # before submitting order to the database we has to check if the required quantity is correct or not
         # we need to get item id...
         for item in itemsinfo:
-            orderInclude = Include(order=order, supply=Supply.objects.get(id=item['item_id']), quantity=item['quantity'])
+            orderInclude = Include(order=order, supply=Supply.objects.get(id=item['item_id']),
+                                   quantity=item['quantity'])
             orderInclude.save()
         return HttpResponse("Success")
 
@@ -85,7 +87,9 @@ class CreateOrderPage(View):
             temp_dict["items"] = []
             temp_dict["status"] = Order.objects.get(id=order_id).status
             for order_object in Include.objects.all().filter(order=order_id).values():
-                temp_dict["items"].append({ "name": Supply.objects.get(id=order_object["supply_id"]).name, "supply_id": order_object["supply_id"], "quantity": order_object["quantity"]})
+                temp_dict["items"].append({"name": Supply.objects.get(id=order_object["supply_id"]).name,
+                                           "supply_id": order_object["supply_id"],
+                                           "quantity": order_object["quantity"]})
             temp_dict["total_weight"] = Order.objects.get(id=order_id).weight
             json_result.append(temp_dict)
         return render_to_response("CM/viewOrder.html", {'results': json_result})
@@ -98,6 +102,7 @@ class CreateOrderPage(View):
             Order.objects.filter(id=order_id).update(status="Cancelled")
         return HttpResponse("Success")
 
+
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------
 
@@ -105,9 +110,11 @@ class CreateOrderPage(View):
 class DispatchPage(View):
 
     def dispatchView(request):
-        result = Order.objects.filter(status="Queued for Dispatch")\
-                                        .values('id', 'name', 'priority', 'ordering_clinic', 'weight')\
-                                        .order_by('priority', 'orderedDatetime', 'id')
+        # get all order id with "Queued for Dispatch" status
+        result = Order.objects.all().filter(status="Queued for Dispatch").\
+            values('id', 'priority', 'ordering_clinic', 'weight' ) \
+            .order_by('priority', 'orderedDatetime', 'id', )
+
         json_result = []
         max_weight = 25.0
         for item in result:
@@ -116,7 +123,8 @@ class DispatchPage(View):
                 break
             single_order = {}
             single_order["order_id"] = item.id
-            single_order["order_name"] = item.name
+            # we don't have order name!
+            # single_order["order_name"] = item.name
             single_order["priority"] = item.priority
             single_order["clinic"] = item.ordering_clinic
             single_order["weight"] = item.weight
@@ -125,14 +133,12 @@ class DispatchPage(View):
             children = []
             for info in order_items:
                 item_name = Supply.objects.get(id=info.supply).values('name')
-                children.append({"name" : item_name, "quantity" : info.quantity})
+                children.append({"name": item_name, "quantity": info.quantity})
             single_order["children"] = children
             json_result.append(single_order)
         # initial loading.
         return render_to_response("Dispatcher/dispatch.html", {'results': json_result})
-    
-    
-    
+
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
         orders = request.POST.get("orderSet")
@@ -142,8 +148,8 @@ class DispatchPage(View):
             singleOrder.objects.update(dispatchedDatetime=dateTime)
             singleOrder.save()
         # should be success message, don't need to render.
-        return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
-    
+        return HttpResponse("Success")
+
     # create itinerary file
     # orders should be a list of order ids
     def createItinerary(request):
@@ -156,28 +162,29 @@ class DispatchPage(View):
         items = []
         # check sequence for locations
         while order_ids:
-            min = 999999
+            minimum = 999999
             temp = None
             for order_id in order_ids:
                 destination = Order.objects.get(id=order_id).location
                 d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
-                if d < min:
+                if d < minimum:
                     temp = order_id
-                    min = d
+                    minimum = d
             location_id = temp
             order_ids.remove(temp)
             cur_location = Location.objects.get(id=temp)
-            item = { 'name' : cur_location.name,
-                    'latitude' : cur_location.latitude,
-                    'longitude' : cur_location.longitude,
-                    'altitude' : cur_location.altitude }
+            item = {'name': cur_location.name,
+                    'latitude': cur_location.latitude,
+                    'longitude': cur_location.longitude,
+                    'altitude': cur_location.altitude}
             items.append(item)
-        item = { 'name' : 'Queen Mary Hospital Drone Port',
-                'latitude' : hospital_location.latitude,
-                'longitude' : hospital_location.longitude,
-                'altitude' : hospital_location.altitude }
+        item = {'name': 'Queen Mary Hospital Drone Port',
+                'latitude': hospital_location.latitude,
+                'longitude': hospital_location.longitude,
+                'altitude': hospital_location.altitude}
         items.append(item)
         return render(request, "Dispatcher/dispatch.html", {'results': items})
+
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------
@@ -187,10 +194,9 @@ class warehousePage(View):
         orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
         return render(request, "Dispatcher/dispatch.html", {'results': orderList})
 
-
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
-    def orderSelect(request):
+    def orderProcess(request):
         chosen = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')[:1]
         chosen.objects.update(status="Processing by Warehouse")
         chosen.save()
@@ -198,16 +204,15 @@ class warehousePage(View):
         jsonresult.append(chosen)
         return render(request, "WHP/warehouse.html", {'results': jsonresult})
 
-
-       # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
-       # and update status of the selcted order (status ==> "Queued for Dispatch")
+    # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
+    # and update status of the selcted order (status ==> "Queued for Dispatch")
     def getShippingLabel(request, order_id):
         order_selected = Order.objects.filter(id=order_id)
         items = Include.objects.filter(order=order_id)
         quantity = 0
         for item in items:
             quantity += item.quantity
-        buffer =  io.BytesIO()
+        buffer = io.BytesIO()
         pdf = canvas.Canvas(buffer)
         pdf.setLineWidth(.3)
         pdf.setFont('Helvetica', 12)

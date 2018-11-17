@@ -1,117 +1,52 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
+<html lang="en">
+{% load static %}
+
 <head>
-	<title>Dispatch</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="device-width, initial-scale=1.0">
-	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-	<script type='text/javascript' src="https://code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="https://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
-	<script type='text/javascript'>
-		let csv=null;
-		let orderList=[];//order_id
-		function hideViewPart(){
-			$('#view_part').hide();
-		}
-		function showViewPart(){
-			$('#view_part').show();
-		}
-		function start(){
-			hideOrderPart();
-		}
-		function hideOrderPart(){
-			$('#order_part').hide();
-		}
-		function showOrderPart(){
-			$('#order_part').show();
-		}
-		function next(){
-			showOrderPart();
-			hideViewPart();
-			updateOrderList();
-		}
-		function action(){
-
-			setOrdersDispatched();
-			sendEmail();
-			hideOrderPart();
-			showViewPart();
-			document.getElementById("orders").innerHTML = ""; //reset order
-		}
-		function getItinerary(){
-			csv=$(this).get('D/view');
-			var hiddenElement=document.createElement('a');
-			hiddenElement.href='data:text/csv;charset=utf-8,'+encodeURI(csv);
-			hiddenElement.target='_blank';
-
-			hiddenElement.download='itinerary.csv';
-			hiddenElement.click();
-		}
-		function updateOrderList(){
-			orderList=$(this).get('D/view');
-			for(order in orderList){
-				$("#orders").append(orderList[order]+"<br/>");
-			}
-		}
-		function setOrdersDispatched(){
-			let jsonObj = {
-				orderIdList: orderList,
-			};
-
-			$.post('dispatcher/dispatchUpdate', jsonObj, function(response){
-				//Success
-			});
-		}
-		function sendEmail(){
-		    // to be modified
-            return true;
-		}
-	</script>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
+  <script type="text/javascript">
+    window.CSRF_TOKEN = "{{ csrf_token }};"
+  </script>
+  <script type="text/javascript" src="../../static/js/dispatch.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/dispatch.css">
+  <link rel="shortcut icon" href="#" />
+  <title>Dispatch system</title>
 </head>
-<body onload="start();">
-Dispatcher Menu
-<div id="view_part">
-	<input type='button' value='View new set of orders to be dispatched' id='test' onclick="next();">
-</div>
-<div id="order_part">
-	<br/>
-	<br/>
-	<input type='button' value='Download itinerary' onclick="getItinerary();">
-	<input type='button' value='Update all status as "Dispatched"' onclick="action();">
-	<br/>
-	<br/>Next set of orders to be loaded:
-    <br/>Top order: <strong>Order 1</strong>
-    <br>
-    <br/>Order 1 Clinic: Peng Chau Priority: Medium
-    <br/>Items: B Braun Medical Lactated Ringers 250ml X 27
-    <br/>
-    <br/>Order 2 Clinic: North Lamma Priority: High
-    <br/>Items: B Braun Medical Lactated Ringers 250ml X 1
-    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 4
-    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 4
-    <br/>
-    <br/>Order 3 Clinic: Ap Lei Chau Priority: Medium
-    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 3
-    <br/>
-    <br/>Order 4 Clinic: Mui Wo Priority: High
-    <br/>Items: B Braun Medical Lactated Ringers 250ml X 2
-    <br/>       ICU Medical Normosol-R Ph 7.4 500ml X 3
-    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 4
-    <br/>
-    <br/>Order 5 Clinic: Sok Kwu Wan Priority: Low
-    <br/>Items: B Braun Medical Lactated Ringers 250ml X 1
-    <br/>       Baxter Dextrose 5%, NaCl  0.33% 1000ml X 8
-    <br/>
-{#	<br/>Order Details#}
-{#	<br/>Top order:#}
-{#	<div id="orders">#}
-{#	</div>#}
-{#	<br/>Top order:#}
-</div>
+
+<body>
+  <header>
+    <img id="icon" src="../../static/img/radar.png">
+    <button id="system" type="button" class="btn btn-primary">AS-P System</button>
+    <span id="clinic_name" class="unselectable">Dispatcher</span>
+  </header>
+  <div class="bar">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a id="bs-section-button" class="nav-link unselectable active">Dispatch Order</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account settings</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Change Password</a>
+          <a class="dropdown-item" href="#">Change email address</a>
+          <a class="dropdown-item" href="#">Change name</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Log out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
 </body>
 </html>
+<footer>
+  <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+      target="_blank">CC 3.0 BY</a></div>
+</footer>

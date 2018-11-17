@@ -16,9 +16,11 @@ urlpatterns = [
     path('CM/main/orderAction/', views.CreateOrderPage.orderAction, name='orderCancel'),
     path('CM/main/viewOrder/', views.CreateOrderPage.viewOrder, name='viewOrder'),
     # --------------------------Dispatcher---------------------------------
-    path('D/main', views.DispatchPage.dispatchView, name='dispatch'),
+    path('D/main', views.DispatchPage.dispatchView, name='dispatchPage'),
     path('D/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
     path('D/createItinerary/', views.DispatchPage.createItinerary, name='dispatchItinerary'),
     # --------------------------Warehouse Personnel------------------------
-
+    path('WHP/main', views.warehousePage.warehouseView, name='whpPage'),
+    path('WHP/main/processOrder', views.warehousePage.orderProcess, name='whpProcessOrder'),
+    path('WHP/main/PDF', views.warehousePage.getShippingLabel, name='whpPDF'),
 ]
