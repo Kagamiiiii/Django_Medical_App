@@ -76,6 +76,7 @@ class Order(models.Model):
     orderedDatetime = models.DateTimeField()
     dispatchedDatetime = models.DateTimeField(blank=True, null=True)
     deliveredDatetime = models.DateTimeField(blank=True, null=True)
+    processedDatetime = models.DateTimeField(blank=True, null=True)
     ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint': False})
     ordering_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
