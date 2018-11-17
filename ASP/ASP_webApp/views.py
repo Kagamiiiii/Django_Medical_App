@@ -128,7 +128,7 @@ class DispatchPage(View):
                 children.append({"name" : item_name, "quantity" : info.quantity})
             single_order["children"] = children
             json_result.append(single_order)
-    
+        # initial loading.
         return render_to_response("Dispatcher/dispatch.html", {'results': json_result})
     
     
@@ -141,43 +141,43 @@ class DispatchPage(View):
             dateTime = timezone.now()
             singleOrder.objects.update(dispatchedDatetime=dateTime)
             singleOrder.save()
+        # should be success message, don't need to render.
         return render(request, "Dispatcher/dispatch.html", {'message' : 'success'})
     
-    # def createItinerary(self):
     # create itinerary file
-    # orders should be a list of order idss
+    # orders should be a list of order ids
     def createItinerary(request):
-       orders = request.POST.get("orderSet")
-       hospitalName = 'Queen Mary Hospital Drone Port'
-       # sets the hospital's id as first location
-       hospital_location = Location.objects.get(name=hospitalName)
-       location_id = hospital_location.pk
-       order_ids = orders.copy()
-       items = []
-       # check sequence for locations
-       while order_ids:
-           min = 999999
-           temp = None
-           for order_id in order_ids:
-               destination = Order.objects.get(id=order_id).location
-               d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
-               if d < min:
-                   temp = order_id
-                   min = d
-           location_id = temp
-           order_ids.remove(temp)
-           cur_location = Location.objects.get(id=temp)
-           item = { 'name' : cur_location.name,
+        orders = request.POST.get("orderSet")
+        hospitalName = 'Queen Mary Hospital Drone Port'
+        # sets the hospital's id as first location
+        hospital_location = Location.objects.get(name=hospitalName)
+        location_id = hospital_location.pk
+        order_ids = orders.copy()
+        items = []
+        # check sequence for locations
+        while order_ids:
+            min = 999999
+            temp = None
+            for order_id in order_ids:
+                destination = Order.objects.get(id=order_id).location
+                d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
+                if d < min:
+                    temp = order_id
+                    min = d
+            location_id = temp
+            order_ids.remove(temp)
+            cur_location = Location.objects.get(id=temp)
+            item = { 'name' : cur_location.name,
                     'latitude' : cur_location.latitude,
                     'longitude' : cur_location.longitude,
                     'altitude' : cur_location.altitude }
-           items.append(item)
-       item = { 'name' : 'Queen Mary Hospital Drone Port',
+            items.append(item)
+        item = { 'name' : 'Queen Mary Hospital Drone Port',
                 'latitude' : hospital_location.latitude,
                 'longitude' : hospital_location.longitude,
                 'altitude' : hospital_location.altitude }
-       items.append(item)
-       return render(request, "Dispatcher/dispatch.html", {'results': items})
+        items.append(item)
+        return render(request, "Dispatcher/dispatch.html", {'results': items})
 
 # ---------------------------WarehousePersonnel------------------------
 # ---------------------------------------------------------------------

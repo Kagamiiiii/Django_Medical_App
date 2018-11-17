@@ -18,7 +18,7 @@ urlpatterns = [
     # --------------------------Dispatcher---------------------------------
     path('D/main', views.DispatchPage.dispatchView, name='dispatch'),
     path('D/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
-
+    path('D/createItinerary/', views.DispatchPage.createItinerary, name='dispatchItinerary'),
     # --------------------------Warehouse Personnel------------------------
 
 ]
