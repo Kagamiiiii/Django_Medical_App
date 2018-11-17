@@ -147,7 +147,7 @@ class DispatchPage(View):
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
-        orders = request.POSsT.get("orderSet")
+        orders = request.POST.get("orderSet", "")
         for order_id in orders:
             singleOrder = Order.objects.filter(id=order_id).update(status="Dispatched")
             dateTime = timezone.now()
@@ -159,7 +159,7 @@ class DispatchPage(View):
     # create itinerary file
     # orders should be a list of order ids
     def createItinerary(request):
-        orders = request.POST.get("orderSet")
+        orders = request.POST.get("orderSet", "")
         hospitalName = 'Queen Mary Hospital Drone Port'
         # sets the hospital's id as first location
         hospital_location = Location.objects.get(name=hospitalName)
@@ -213,15 +213,16 @@ class warehousePage(View):
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
-        order_id = request.POST.get("order_id")
+        order_id = request.POST.get("order_id", "")
 
-        order_selected = Order.objects.filter(id=order_id)
-        items = Include.objects.filter(order=order_id)
+        order_selected = Order.objects.get(id=order_id)
+        items = Include.objects.get(order=order_id)
         quantity = 0
         for item in items:
             quantity += item.quantity
-        order_account = Account.objects.get(id=order_selected.ordering_account).values('firstname', 'lastname')
+        order_account = Account.objects.get(id=order_selected.ordering_account)
         account_name = order_account.firstname + " " + order_account.lastname
+        location_name = Location.objects.get(id=order_selected.ordering_clinic).name
         buffer = io.BytesIO()
         pdf = canvas.Canvas(buffer)
         pdf.setLineWidth(.3)
@@ -229,20 +230,23 @@ class warehousePage(View):
 
         pdf.drawString(30, 750, 'Queen Mary ')
         pdf.drawString(30, 735, 'Hospital Drone Port')
-        pdf.drawString(450, 750, 'Order id:')
+        pdf.drawString(450, 750, 'ORDER ID:')
         pdf.drawString(500, 750, order_id)
 
         pdf.line(480, 747, 580, 747)
 
-        pdf.drawString(275, 725, 'Quantity:')
+        pdf.drawString(275, 725, 'QUANTITY:')
         pdf.drawString(500, 725, quantity)
         pdf.line(378, 723, 580, 723)
 
         pdf.drawString(30, 703, 'RECEIVED BY:')
-        pdf.line(120, 700, 580, 700)
+        pdf.line(120, 700, 600, 700)
         pdf.drawString(120, 703, account_name)
-        pdf.drawString(450, 703, 'Priority:')
+        pdf.drawString(450, 703, 'PRIORITY:')
         pdf.drawString(500, 703, order_selected.priority)
+        pdf.drawString(30, 665, 'DESTINATION: ')
+        pdf.line(120, 660, 600, 660)
+        pdf.drawString(30, 665, location_name)
         pdf.showPage()
         pdf.save()
         order_selected.objects.update(status="Queued for Dispatch")
