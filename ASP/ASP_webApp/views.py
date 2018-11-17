@@ -137,7 +137,7 @@ class DispatchPage(View):
             single_order["children"] = children
             json_result.append(single_order)
         # initial loading.
-        return render_to_response("Dispatcher/dispatch.html", {'results': json_result})
+        return render_to_response("Dispatcher/dispatchPage.html", {'results': json_result})
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
@@ -183,7 +183,7 @@ class DispatchPage(View):
                 'longitude': hospital_location.longitude,
                 'altitude': hospital_location.altitude}
         items.append(item)
-        return render(request, "Dispatcher/dispatch.html", {'results': items})
+        return render(request, "Dispatcher/dispatchPage.html", {'results': items})
 
 
 # ---------------------------WarehousePersonnel------------------------
@@ -192,7 +192,7 @@ class warehousePage(View):
     # view priority queue
     def warehouseView(request):
         orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
-        return render(request, "Dispatcher/dispatch.html", {'results': orderList})
+        return render(request, "Dispatcher/dispatchPage.html", {'results': orderList})
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order

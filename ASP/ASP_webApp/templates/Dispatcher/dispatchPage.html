@@ -43,7 +43,14 @@
       </li>
     </ul>
   </div>
-
+	<div id="dispatch-section">
+		<button id="dispatchButton" type="button" class="btn btn-primary" onclick="requestDispatch();">AS-P System</button>
+		<button id="downloadItinerary" type="button" class="btn btn-primary" onclick="downloadItinerary();">Download Itinerary</button>
+		<button id="updateToDispatch" type="button" class="btn btn-danger" onclick="updateToDispatch();" disabled>Update status as "Dispatched"</button>
+		<div id="maincontent">
+				{% include 'Dispatcher/dispatchDetail.html' %}
+		</div>
+	</div>
 </body>
 </html>
 <footer>
