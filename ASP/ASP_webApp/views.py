@@ -147,7 +147,7 @@ class DispatchPage(View):
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
-        orders = request.POST.get("orderSet")
+        orders = request.POSsT.get("orderSet")
         for order_id in orders:
             singleOrder = Order.objects.filter(id=order_id).update(status="Dispatched")
             dateTime = timezone.now()
