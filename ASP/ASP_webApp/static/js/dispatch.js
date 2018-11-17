@@ -21,7 +21,6 @@ function requestDispatch(){
         type: "POST",
         url: "./dispatchDetail/",
         success: function (respond) {
-            console.log(respond);
             $('#maincontent').html(respond);
             $('#maincontent').show();
             $('#downloadItineraryButton').css("display", "inline-block");
@@ -32,7 +31,18 @@ function requestDispatch(){
 }
 
 function downloadItinerary(){
-    $('#updateToDispatch').prop("disabled", false);
+  $.ajax({
+        type: "POST",
+        url: "./dispatchDetail/",
+        success: function (respond) {
+            $('#maincontent').html(respond);
+            $('#maincontent').show();
+            $('#downloadItineraryButton').css("display", "inline-block");
+            $('#updateToDispatchButton').css("display", "inline-block");
+            $('#updateToDispatch').prop("disabled", false);
+        }
+      }
+    );
 }
 
 function updateToDispatch(){

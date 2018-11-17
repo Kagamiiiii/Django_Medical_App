@@ -14,7 +14,7 @@
             <td style="">{{ result.order_id }}</td>
             <td>
             {% for item in result.items %}
-              {{item.name}}<img id="icon" src='../../static/img/{{item.id}}.JPG'><hr>
+              {{item.name}}<img id="icon" src='../../static/img/{{item.id}}.JPG'> <b> × {{ item.quantity }} units</b><hr>
             {% endfor %}
             </td>
             <td>{{ result.weight }} KG</td>

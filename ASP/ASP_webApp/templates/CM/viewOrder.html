@@ -24,10 +24,12 @@
               <td>
                 {% if result.status == "Delivered"%}
                   <button type="button" class="btn btn-danger order_action" disabled>Delivered</button>
-                {% elif result.status == "Queued for Processing"%}
-                  <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
                 {% elif result.status == "Cancelled" %}
                   <button type="button" class="btn btn-danger order_action" disabled>Cancelled</button>
+                {% elif result.status == "Queued for Processing"%}
+                  <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Cancel Order</button>
+                {% elif result.status == "Processing by Warehouse" or result.status == "Queued for Dispatch"%}
+                  <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)" disabled>Received Order</button>
                 {% else %}
                   <button type="button" class="btn btn-danger order_action" onclick="viewOrderAction(this)">Received Order</button>
                 {% endif %}
