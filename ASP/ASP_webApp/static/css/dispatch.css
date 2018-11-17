@@ -45,10 +45,15 @@ footer {
   display: none;
 }
 
-#downloadItinerary{
-  display: none;
+#dispatchButton{
+  margin: 10px;
 }
 
-#updateToDispatch{
+#downloadItineraryButton{
+  display: none;
+  margin: 10px;
+}
+
+#updateToDispatchButton{
   display: none;
 }

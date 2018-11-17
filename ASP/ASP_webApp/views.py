@@ -110,6 +110,9 @@ class CreateOrderPage(View):
 class DispatchPage(View):
 
     def dispatchView(request):
+        return render_to_response("Dispatcher/dispatchPage.html")
+
+    def dispatchViewDetail(request):
         # get all order id with "Queued for Dispatch" status
         result = Order.objects.all().filter(status="Queued for Dispatch").\
             values('id', 'priority', 'ordering_clinic', 'weight' ) \
@@ -134,8 +137,8 @@ class DispatchPage(View):
                 children.append({"name": item_name, "quantity": info.quantity})
             single_order["children"] = children
             json_result.append(single_order)
-        # initial loading.
-        return render_to_response("Dispatcher/dispatchPage.html", {'results': json_result})
+        print(json_result)
+        return render_to_response("Dispatcher/dispatchDetail.html", {'results': json_result})
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):

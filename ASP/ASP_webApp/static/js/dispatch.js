@@ -19,21 +19,22 @@ function requestDispatch(){
   $('#maincontent').hide();
   $.ajax({
         type: "POST",
-        url: "./dispatchView/",
+        url: "./dispatchDetail/",
         success: function (respond) {
             $('#maincontent').html(respond);
             $('#maincontent').css("display", "block");
-            $('#downloadItinerary').css("display", "inline-block");
-            $('#updateToDispatch').css("display", "inline-block");
+            $('#downloadItineraryButton').css("display", "inline-block");
+            $('#updateToDispatchButton').css("display", "inline-block");
         }
       }
     );
 }
 
-function updateToDispatch(){
-    return null;
+function downloadItinerary(){
+    $('#updateToDispatch').prop("disabled", false);
 }
 
-function downloadItinerary(){
-    $('#updateToDispatch').prop("display", "inline-block");
+function updateToDispatch(){
+    // restore all states of your html element. refresh the page.
+    return null;
 }
