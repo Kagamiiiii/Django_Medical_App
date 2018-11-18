@@ -40,15 +40,8 @@ function requestDispatch(){
 }
 
 function downloadItinerary(){
-    location.replace('./getItinerary/')
-  // $.ajax({
-  //       type: "POST",
-  //       url: "./getItinerary/",
-  //       success: function (respond) {
-  //           $('#updateToDispatchButton').prop("disabled", false);
-  //       }
-  //     }
-  //   );
+    $('#updateToDispatchButton').prop("disabled", false);
+    location.replace('./getItinerary/');
 }
 
 function updateToDispatch(){
