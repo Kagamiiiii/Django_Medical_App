@@ -44,7 +44,7 @@ function downloadItinerary(){
         type: "POST",
         url: "./getItinerary/",
         success: function (respond) {
-            $('#updateToDispatch').prop("disabled", false);
+            $('#updateToDispatchButton').prop("disabled", false);
         }
       }
     );
