@@ -198,34 +198,40 @@ class DispatchPage(View):
         hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
         order_ids = orders.copy()
-        items = []
+        # items = []
         # check sequence for locations
-        while order_ids:
-            minimum = 999999
-            temp = None
-            for order_id in order_ids:
-                destination = Order.objects.get(id=order_id).ordering_clinic_id
-                print("location id " + str(location_id))
-                print("destination id " + str(destination))
-                # the location data is designed to be from clinics to other places,
-                # therefore the distanceFrom_id is from destination (some clinic) and the starting point is St. Mary Drone.
-                d = Distance.objects.get(distanceFrom_id=destination, distanceTo_id=location_id).distance
-                if d < minimum:
-                    temp = order_id
-                    minimum = d
-            location_id = temp
-            order_ids.remove(temp)
-            cur_location = Location.objects.get(id=temp)
-            items.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
-        items.append(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
-                      hospital_location.altitude])
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="itinerary.csv"'
-
-        writer = csv.writer(response)
-        for item in items:
-            writer.writerow(item)
-        return response
+        with open("itinerary.csv", 'w') as csvfile:
+            spamwriter = csv.writer(csvfile, quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            while order_ids:
+                minimum = 999999
+                temp = None
+                for order_id in order_ids:
+                    destination = Order.objects.get(id=order_id).ordering_clinic_id
+                    if destination >= location_id:
+                        d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
+                    else:
+                        d = Distance.objects.get(distanceFrom=destination, distanceTo=location_id).distance
+                    if d < minimum:
+                        temp = destination
+                        minimum = d
+                location_id = temp
+                order_id2 = order_ids.copy()
+                for order_id in order_ids:
+                    order_location = Order.objects.get(id=order_id).ordering_clinic_id
+                    if order_location == location_id:
+                        order_id2.remove(order_id)
+                order_ids = order_id2
+                cur_location = Location.objects.get(id=temp)
+                # items.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
+                spamwriter.writerow([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
+            # items.append(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
+            #             hospital_location.altitude])
+            spamwriter.writerow(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
+                         hospital_location.altitude])
+        with open("itinerary.csv", 'r') as csvfile:
+            response = HttpResponse(csvfile, content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=itinerary.csv'
+            return response
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
