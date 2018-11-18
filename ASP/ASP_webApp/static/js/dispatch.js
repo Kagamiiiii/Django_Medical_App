@@ -40,14 +40,15 @@ function requestDispatch(){
 }
 
 function downloadItinerary(){
-  $.ajax({
-        type: "POST",
-        url: "./getItinerary/",
-        success: function (respond) {
-            $('#updateToDispatchButton').prop("disabled", false);
-        }
-      }
-    );
+    location.replace('./getItinerary/')
+  // $.ajax({
+  //       type: "POST",
+  //       url: "./getItinerary/",
+  //       success: function (respond) {
+  //           $('#updateToDispatchButton').prop("disabled", false);
+  //       }
+  //     }
+  //   );
 }
 
 function updateToDispatch(){
