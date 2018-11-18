@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views import generic, View
 from django.utils import timezone
 from .models import *
+import csv
 import json
 import io
 from reportlab.pdfgen import canvas
@@ -107,15 +108,16 @@ class CreateOrderPage(View):
 # ---------------------------------------------------------------------
 
 class DispatchPage(View):
-# use return a json containing all the orders that are "Queued for Dispatch"
+    # use return a json containing all the orders that are "Queued for Dispatch"
 
     def dispatchView(request):
         return render_to_response("Dispatcher/dispatchPage.html")
 
-    def dispatchViewDetail(request): # get all order id with "Queued for Dispatch" status
+    def dispatchViewDetail(request):
+        # get all order id with "Queued for Dispatch" status, render into the tempalte.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority','weight', 'processedDatetime', 'ordering_clinic') \
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
             .order_by('priority', 'processedDatetime', 'id')
         for ele in results:
             result.append(ele)
@@ -144,6 +146,7 @@ class DispatchPage(View):
         return render_to_response("Dispatcher/dispatchDetail.html", {'results': json_result})
 
     def dispatchViewDetailJson(request):
+        # return item JSON information to the website.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
             values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
@@ -177,8 +180,20 @@ class DispatchPage(View):
 
     # create itinerary file
     # orders should be a list of order ids
-    def createItinerary(request):
-        orders = request.POST.get("orderSet", "")
+    def getItinerary(request):
+        result = []
+        results = Order.objects.all().filter(status="Queued for Dispatch"). \
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
+        for ele in results:
+            result.append(ele)
+        orders = []
+        max_weight = 25.0
+        for item in result:
+            max_weight -= item['weight']
+            if max_weight < 0:
+                break
+            orders.append(item['id'])
         # sets the hospital's id as first location
         hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
@@ -197,17 +212,16 @@ class DispatchPage(View):
             location_id = temp
             order_ids.remove(temp)
             cur_location = Location.objects.get(id=temp)
-            item = {'name': cur_location.name,
-                    'latitude': cur_location.latitude,
-                    'longitude': cur_location.longitude,
-                    'altitude': cur_location.altitude}
-            items.append(item)
-        item = {'name': 'Queen Mary Hospital Drone Port',
-                'latitude': hospital_location.latitude,
-                'longitude': hospital_location.longitude,
-                'altitude': hospital_location.altitude}
-        items.append(item)
-        return render(request, "Dispatcher/dispatchPage.html", {'results': items})
+            items.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
+        items.append(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
+                      hospital_location.altitude])
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="itinerary.csv"'
+
+        writer = csv.writer(response)
+        for item in items:
+            writer.writerow(item)
+        return response
 
     # update status and dispatch datetime of all selected orders
     def dispatchUpdate(request):
@@ -215,7 +229,6 @@ class DispatchPage(View):
         for order_id in orders:
             Order.objects.filter(id=order_id).update(status="Dispatched", dispatchesDatatime=timezone.now())
         return HttpResponse("Success")
-
 
 
 # ---------------------------WarehousePersonnel------------------------

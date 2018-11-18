@@ -42,12 +42,8 @@ function requestDispatch(){
 function downloadItinerary(){
   $.ajax({
         type: "POST",
-        url: "./dispatchDetail/",
+        url: "./getItinerary/",
         success: function (respond) {
-            $('#maincontent').html(respond);
-            $('#maincontent').show();
-            $('#downloadItineraryButton').css("display", "inline-block");
-            $('#updateToDispatchButton').css("display", "inline-block");
             $('#updateToDispatch').prop("disabled", false);
         }
       }
@@ -56,5 +52,13 @@ function downloadItinerary(){
 
 function updateToDispatch(){
     // restore all states of your html element. refresh the page.
-    return null;
+    $.ajax({
+          type: "POST",
+          url: "./dispatchUpdate/",
+          success: function (respond) {
+              alert("Dispatch updated!");
+              location.reload();
+          }
+        }
+    );
 }
