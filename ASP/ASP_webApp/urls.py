@@ -18,6 +18,7 @@ urlpatterns = [
     # --------------------------Dispatcher---------------------------------
     path('D/main/', views.DispatchPage.dispatchView, name='dispatchPage'),
     path('D/main/dispatchDetail/', views.DispatchPage.dispatchViewDetail, name='dispatchPageDetail'),
+    path('D/main/dispatchDetailJson/', views.DispatchPage.dispatchViewDetailJson, name='dispatchPageDetailJson'),
     path('D/main/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
     path('D/main/createItinerary/', views.DispatchPage.createItinerary, name='dispatchItinerary'),
     # --------------------------Warehouse Personnel------------------------

@@ -74,9 +74,9 @@ class Order(models.Model):
                                 default='Low')
     weight = models.FloatField()
     orderedDatetime = models.DateTimeField()
+    processedDatetime = models.DateTimeField(blank=True, null=True)
     dispatchedDatetime = models.DateTimeField(blank=True, null=True)
     deliveredDatetime = models.DateTimeField(blank=True, null=True)
-    processedDatetime = models.DateTimeField(blank=True, null=True)
     ordering_clinic = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint': False})
     ordering_account = models.ForeignKey(Account, on_delete=models.CASCADE)
 

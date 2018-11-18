@@ -106,18 +106,17 @@ class CreateOrderPage(View):
 # -----------------------------Dispatcher------------------------------
 # ---------------------------------------------------------------------
 
-# use return a json containing all the orders that are "Queued for Dispatch"
 class DispatchPage(View):
+# use return a json containing all the orders that are "Queued for Dispatch"
 
     def dispatchView(request):
         return render_to_response("Dispatcher/dispatchPage.html")
 
-    def dispatchViewDetail(request):
-        # get all order id with "Queued for Dispatch" status
+    def dispatchViewDetail(request): # get all order id with "Queued for Dispatch" status
         result = []
-        results = Order.objects.all().filter(status="Queued for Dispatch").\
-            values('id', 'priority', 'ordering_clinic', 'weight' ) \
-            .order_by('priority', 'processedDatetime', 'id' )
+        results = Order.objects.all().filter(status="Queued for Dispatch"). \
+            values('id', 'priority','weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -129,40 +128,59 @@ class DispatchPage(View):
             single_order = {}
             single_order["order_id"] = item['id']
             single_order["priority"] = item['priority']
+            single_order["processedDatetime"] = item['processedDatetime']
             single_order["clinic"] = item['ordering_clinic']
             single_order["weight"] = item['weight']
             order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
             # get all supplies of the corresponding order
             items = []
             for info in order_items:
-                supply_item_id = Supply.objects.get(id=info["supply_id"]).id # should be index of image, it's for frontend image.
+                supply_item_id = Supply.objects.get(
+                    id=info["supply_id"]).id  # should be index of image, it's for frontend image.
                 supply_item_name = Supply.objects.get(id=info["supply_id"]).name
-                print(supply_item_id)
-                print(supply_item_name)
+                items.append({"id": supply_item_id, "name": supply_item_name, "quantity": info['quantity']})
+            single_order["items"] = items
+            json_result.append(single_order)
+        return render_to_response("Dispatcher/dispatchDetail.html", {'results': json_result})
+
+    def dispatchViewDetailJson(request):
+        result = []
+        results = Order.objects.all().filter(status="Queued for Dispatch"). \
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
+        for ele in results:
+            result.append(ele)
+        json_result = []
+        max_weight = 25.0
+        for item in result:
+            max_weight -= item['weight']
+            if max_weight < 0:
+                break
+            single_order = {}
+            single_order["order_id"] = item['id']
+            single_order["priority"] = item['priority']
+            single_order["processedDatetime"] = item['processedDatetime']
+            single_order["clinic"] = item['ordering_clinic']
+            single_order["weight"] = item['weight']
+            order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
+            # get all supplies of the corresponding order
+            items = []
+            for info in order_items:
+                supply_item_id = Supply.objects.get(
+                    id=info["supply_id"]).id  # should be index of image, it's for frontend image.
+                supply_item_name = Supply.objects.get(id=info["supply_id"]).name
                 items.append({"id": supply_item_id, "name": supply_item_name, "quantity": info['quantity']})
             single_order["items"] = items
             json_result.append(single_order)
         print(json_result)
-        return render_to_response("Dispatcher/dispatchDetail.html", {'results': json_result})
-
-    # update status and dispatch datetime of all selected orders
-    def dispatchUpdate(request):
-        orders = request.POST.get("orderSet", "")
-        for order_id in orders:
-            singleOrder = Order.objects.filter(id=order_id).update(status="Dispatched")
-            dateTime = timezone.now()
-            singleOrder.objects.update(dispatchedDatetime=dateTime)
-            singleOrder.save()
-        # should be success message, don't need to render.
-        return HttpResponse("Success")
+        return JsonResponse(json_result, safe=False)
 
     # create itinerary file
     # orders should be a list of order ids
     def createItinerary(request):
         orders = request.POST.get("orderSet", "")
-        hospitalName = 'Queen Mary Hospital Drone Port'
         # sets the hospital's id as first location
-        hospital_location = Location.objects.get(name=hospitalName)
+        hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
         order_ids = orders.copy()
         items = []
@@ -190,6 +208,14 @@ class DispatchPage(View):
                 'altitude': hospital_location.altitude}
         items.append(item)
         return render(request, "Dispatcher/dispatchPage.html", {'results': items})
+
+    # update status and dispatch datetime of all selected orders
+    def dispatchUpdate(request):
+        orders = request.POST.get("orderSet", "")
+        for order_id in orders:
+            Order.objects.filter(id=order_id).update(status="Dispatched", dispatchesDatatime=timezone.now())
+        return HttpResponse("Success")
+
 
 
 # ---------------------------WarehousePersonnel------------------------

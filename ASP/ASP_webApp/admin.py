@@ -20,7 +20,7 @@ class LocationAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('status', 'priority', 'weight', 'orderedDatetime', 'dispatchedDatetime', 'deliveredDatetime')
+    list_display = ('status', 'priority', 'weight', 'orderedDatetime', 'processedDatetime', 'dispatchedDatetime', 'deliveredDatetime')
 
 
 class AccountAdmin(admin.ModelAdmin):

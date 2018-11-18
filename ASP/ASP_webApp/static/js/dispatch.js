@@ -1,3 +1,4 @@
+var items = null;
 
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
@@ -25,6 +26,14 @@ function requestDispatch(){
             $('#maincontent').show();
             $('#downloadItineraryButton').css("display", "inline-block");
             $('#updateToDispatchButton').css("display", "inline-block");
+            $.ajax({
+                  type: "POST",
+                  url: "./dispatchDetailJson/",
+                  success: function (respond) {
+                      window.items = respond;
+                  }
+                }
+            );
         }
       }
     );
