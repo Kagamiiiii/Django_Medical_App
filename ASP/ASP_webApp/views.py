@@ -204,8 +204,12 @@ class DispatchPage(View):
             minimum = 999999
             temp = None
             for order_id in order_ids:
-                destination = Order.objects.get(id=order_id).ordering_clinic
-                d = Distance.objects.get(distanceFrom=location_id, distanceTo=destination).distance
+                destination = Order.objects.get(id=order_id).ordering_clinic_id
+                print("location id " + str(location_id))
+                print("destination id " + str(destination))
+                # the location data is designed to be from clinics to other places,
+                # therefore the distanceFrom_id is from destination (some clinic) and the starting point is St. Mary Drone.
+                d = Distance.objects.get(distanceFrom_id=destination, distanceTo_id=location_id).distance
                 if d < minimum:
                     temp = order_id
                     minimum = d
