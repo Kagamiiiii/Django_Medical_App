@@ -50,8 +50,9 @@ function updateToDispatch(){
           type: "POST",
           url: "./dispatchUpdate/",
           data: {
-            orderSet: window.items,
+            item: window.items,
           },
+          traditional: true,
           success: function (respond) {
               alert("Dispatch updated!");
               // location.reload();
