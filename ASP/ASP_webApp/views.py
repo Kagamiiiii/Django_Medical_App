@@ -24,7 +24,7 @@ class CreateOrderPage(View):
 
     def createOrder(request):
         # user wants to create an order
-        query = request.POST.get('order')
+        query = request.POST.get('order', "")
         # need a verification block here
         try:
             orderObject = json.loads(query)
@@ -159,23 +159,7 @@ class DispatchPage(View):
             max_weight -= item['weight']
             if max_weight < 0:
                 break
-            single_order = {}
-            single_order["order_id"] = item['id']
-            single_order["priority"] = item['priority']
-            single_order["processedDatetime"] = item['processedDatetime']
-            single_order["clinic"] = item['ordering_clinic']
-            single_order["weight"] = item['weight']
-            order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
-            # get all supplies of the corresponding order
-            items = []
-            for info in order_items:
-                supply_item_id = Supply.objects.get(
-                    id=info["supply_id"]).id  # should be index of image, it's for frontend image.
-                supply_item_name = Supply.objects.get(id=info["supply_id"]).name
-                items.append({"id": supply_item_id, "name": supply_item_name, "quantity": info['quantity']})
-            single_order["items"] = items
-            json_result.append(single_order)
-        print(json_result)
+            json_result.append(item['id'])
         return JsonResponse(json_result, safe=False)
 
     # create itinerary file
@@ -238,6 +222,7 @@ class DispatchPage(View):
     def dispatchUpdate(request):
         orders = request.POST.get("orderSet", "")
         for order_id in orders:
+            print(order_id)
             Order.objects.filter(id=order_id).update(status="Dispatched", dispatchesDatatime=timezone.now())
         return HttpResponse("Success")
 

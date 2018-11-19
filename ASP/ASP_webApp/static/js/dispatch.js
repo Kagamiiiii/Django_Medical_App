@@ -49,9 +49,12 @@ function updateToDispatch(){
     $.ajax({
           type: "POST",
           url: "./dispatchUpdate/",
+          data: {
+            orderSet: window.items,
+          },
           success: function (respond) {
               alert("Dispatch updated!");
-              location.reload();
+              // location.reload();
           }
         }
     );

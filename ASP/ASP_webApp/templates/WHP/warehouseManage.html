@@ -14,10 +14,10 @@
   <script type="text/javascript">
     window.CSRF_TOKEN = "{{ csrf_token }};"
   </script>
-  <script type="text/javascript" src="../../static/js/createOrder.js"></script>
-  <link rel="stylesheet" type="text/css" href="../../static/css/createOrder.css">
+  <script type="text/javascript" src="../../static/js/warehouse.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/warehouse.css">
   <link rel="shortcut icon" href="#" />
-  <title>Create Order</title>
+  <title>Warehouse Management System</title>
 </head>
 
 <body>
@@ -29,10 +29,7 @@
   <div class="bar">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a id="bs-section-button" class="nav-link unselectable active" onclick="">Browse Supplies by Category</a>
-      </li>
-      <li class="nav-item">
-        <a id="vo-section-button" class="nav-link unselectable" onclick="toggleViewOrder()">View Orders</a>
+        <a id="bs-section-button" class="nav-link unselectable active">Warehouse Menu</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account settings</a>
@@ -46,6 +43,10 @@
       </li>
     </ul>
   </div>
+  <div class="maincontent">
+    <button id="dispatchButton" type="button" class="btn btn-primary" onclick="requestDispatch();">Process the top order</button>
+  </div>
+
 
 </body>
 </html>
