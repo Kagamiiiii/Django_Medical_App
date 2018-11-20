@@ -269,7 +269,9 @@ class warehousePage(View):
     # and update status of the selcted order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
         order_id = request.POST.get("order_id", "")
-
+        if order_id is None:
+            print("Error")
+            return HttpResponse("Error")
         order_selected = Order.objects.get(id=order_id)
         items = Include.objects.get(order=order_id)
         quantity = 0
@@ -278,33 +280,37 @@ class warehousePage(View):
         order_account = Account.objects.get(id=order_selected.ordering_account)
         account_name = order_account.firstname + " " + order_account.lastname
         location_name = Location.objects.get(id=order_selected.ordering_clinic).name
-        buffer = io.BytesIO()
-        pdf = canvas.Canvas(buffer)
-        pdf.setLineWidth(.3)
-        pdf.setFont('Helvetica', 12)
+        with open('shippingLabel.pdf', 'w') as buffer:
+            pdf = canvas.Canvas(buffer)
+            pdf.setLineWidth(.3)
+            pdf.setFont('Helvetica', 12)
 
-        pdf.drawString(30, 750, 'Queen Mary ')
-        pdf.drawString(30, 735, 'Hospital Drone Port')
-        pdf.drawString(450, 750, 'ORDER ID:')
-        pdf.drawString(500, 750, order_id)
+            pdf.drawString(30, 750, 'Queen Mary ')
+            pdf.drawString(30, 735, 'Hospital Drone Port')
+            pdf.drawString(450, 750, 'ORDER ID:')
+            pdf.drawString(500, 750, order_id)
 
-        pdf.line(480, 747, 580, 747)
+            pdf.line(480, 747, 580, 747)
 
-        pdf.drawString(275, 725, 'QUANTITY:')
-        pdf.drawString(500, 725, quantity)
-        pdf.line(378, 723, 580, 723)
+            pdf.drawString(275, 725, 'QUANTITY:')
+            pdf.drawString(500, 725, quantity)
+            pdf.line(378, 723, 580, 723)
 
-        pdf.drawString(30, 703, 'RECEIVED BY:')
-        pdf.line(120, 700, 600, 700)
-        pdf.drawString(120, 703, account_name)
-        pdf.drawString(450, 703, 'PRIORITY:')
-        pdf.drawString(500, 703, order_selected.priority)
-        pdf.drawString(30, 665, 'DESTINATION: ')
-        pdf.line(120, 660, 600, 660)
-        pdf.drawString(30, 665, location_name)
-        pdf.showPage()
-        pdf.save()
-        return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+            pdf.drawString(30, 703, 'RECEIVED BY:')
+            pdf.line(120, 700, 600, 700)
+            pdf.drawString(120, 703, account_name)
+            pdf.drawString(450, 703, 'PRIORITY:')
+            pdf.drawString(500, 703, order_selected.priority)
+            pdf.drawString(30, 665, 'DESTINATION: ')
+            pdf.line(120, 660, 600, 660)
+            pdf.drawString(30, 665, location_name)
+            pdf.showPage()
+            pdf.save()
+        with open('shippingLabel.pdf', 'r') as buffer:
+            response = HttpResponse(buffer, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
+            return response
+
 
     def updateStatus(request):
         order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
