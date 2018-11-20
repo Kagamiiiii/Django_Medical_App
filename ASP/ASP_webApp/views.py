@@ -243,13 +243,14 @@ class warehousePage(View):
         order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime', 'ordering_clinic')\
                                         .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         order_id = None
+        jsonresult = []
         for order_obj in order_objects:
             print(order_obj)
             order_id = int(order_obj['id'])
             order_items = Include.objects.filter(order=order_id).values('quantity', 'order', 'supply')
             clinicID= order_obj['ordering_clinic']
             clinic_name = Location.objects.get(id=clinicID).name
-            jsonresult = []
+
             order_json={}
             order_json["id"] = order_obj['id']
             order_json["clinic"] = clinic_name
