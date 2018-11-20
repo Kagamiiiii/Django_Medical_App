@@ -23,7 +23,7 @@ import io
 
 class createTokenpage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "create token.html")
+        return render(request, "M/create token.html")
 
 
 # ----------------------------Registration-----------------------------
@@ -31,13 +31,14 @@ class createTokenpage(View):
 
 class registerPage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "registration page.html")
+        return render(request, "M/registration page.html")
 
 
 class tokenValidate(View):
     def post(self, request, *args, **kwargs):
         token = request.POST.get('token')
-
+        if token == '-':
+            return HttpResponse("No such token")
         try:
             account = Account.objects.get(token=token)
         except:
@@ -66,17 +67,16 @@ class createAccount(View):
         if account.username != '':
             return HttpResponse('Token has been redeemed')
 
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = User.objects.create_user(username, email, password)
-        user.first_name = request.POST.get('firstname')
-        user.last_name = request.POST.get('lastname')
-        user.save()
+
+        account.username = request.POST.get('username')
+        account.email = request.POST.get('email')
+        account.password = request.POST.get('password')
+        account.firstname = request.POST.get('firstname')
+        account.lastname = request.POST.get('lastname')
+        account.save()
         # User created
 
-        account.username = user.username
-        account.token = ''
+        account.token = '-'
         account.save()
         # account edited
 
@@ -92,7 +92,7 @@ class createAccount(View):
 
 class UserLogin(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "login.html")
+        return render(request, "M/login.html")
 
 
 class menu(View):
@@ -121,11 +121,11 @@ class menu(View):
             return redirect('/login/')
 
         if request.session['role'] == 'Clinic Manager':
-            return render(request, "CM/clinic manager menu.html")
+            return render(request, "CM/createOrderPage.html")
         if request.session['role'] == 'Dispatcher':
-            return render(request, "Dispatcher/dispatcher menu.html")
+            return render(request, "Dispatcher/dispatchPage.html")
         if request.session['role'] == 'Warehouse personnel':
-            return render(request, "Warehouse Personnel/warehouse personnel menu.html")
+            return render(request, "WHP/warehouseManage.html")
 
 
 class validate(View):
