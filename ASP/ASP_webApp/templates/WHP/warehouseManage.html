@@ -46,8 +46,7 @@
     <div id="maincontent">
       {% if results %}
       {% if results|length != 0 %}
-          <!-- <button id="processButton" type="button" class="btn btn-primary" onclick="processTop();">Process the top order</button> -->
-          <button id="processButton" type="button" class="btn btn-primary" onclick="obtainSL();">[DEBUG] Obtain Shipping Label</button>
+      <button id="processButton" type="button" class="btn btn-primary" onclick="processTop();">Process the top order</button>
       {% endif %}
       <table class="table">
           <thead>
@@ -65,8 +64,7 @@
           {% endfor %}
           </tbody>
         {% else %}
-            <!-- <button id="processButton" type="button" class="btn btn-primary" onclick="processTop();" disabled>Process the top order</button> -->
-            <button id="processButton" type="button" class="btn btn-primary" onclick="obtainSL();">[DEBUG] Obtain Shipping Label</button>
+          <button id="processButton" type="button" class="btn btn-primary" onclick="processTop();" disabled>Process the top order</button>
         {% endif %}
       </table>
     </div>
