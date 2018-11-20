@@ -7,10 +7,152 @@ from django.urls import reverse
 from django.views import generic, View
 from django.utils import timezone
 from .models import *
+from reportlab.pdfgen import canvas
+from django.contrib.auth import *
+from django.shortcuts import redirect
+from django.core import serializers
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
 import csv
 import json
 import io
-from reportlab.pdfgen import canvas
+
+
+# ---------------------------Token creation----------------------------
+# ---------------------------------------------------------------------
+
+class createTokenpage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "create token.html")
+
+
+# ----------------------------Registration-----------------------------
+# ---------------------------------------------------------------------
+
+class registerPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "registration page.html")
+
+
+class tokenValidate(View):
+    def post(self, request, *args, **kwargs):
+        token = request.POST.get('token')
+
+        try:
+            account = Account.objects.get(token=token)
+        except:
+            return HttpResponse("No such token")
+
+        if account is None:
+            return HttpResponse("No such token")
+
+        return HttpResponse(
+            json.dumps({'email': account.email, 'location': account.worklocation.name, 'role': account.role}),
+            content_type="application/json")
+
+
+class createAccount(View):
+    def post(self, request, *args, **kwargs):
+        token = request.POST.get('token')
+
+        try:
+            User.objects.get(username=request.POST.get('username'))
+            return HttpResponse("Username is in use.")
+        except:
+            pass
+
+        account = Account.objects.get(token=token)
+
+        if account.username != '':
+            return HttpResponse('Token has been redeemed')
+
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = User.objects.create_user(username, email, password)
+        user.first_name = request.POST.get('firstname')
+        user.last_name = request.POST.get('lastname')
+        user.save()
+        # User created
+
+        account.username = user.username
+        account.token = ''
+        account.save()
+        # account edited
+
+        # add user to group
+        group = Group.objects.get(name=account.role)
+        user.groups.add(group)
+
+        return HttpResponse('')
+
+
+# ------------------------------Login----------------------------------
+# ---------------------------------------------------------------------
+
+class UserLogin(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "login.html")
+
+
+class menu(View):
+    def get(self, request, *args, **kwargs):
+
+        try:
+            username = request.session['username']
+            password = request.session['password']
+        except:
+            return redirect("/login/")
+
+        """
+        try:
+            request.session['role']
+        except:
+            return redirect("/login/")
+        if request.session['role'] != 'Clinic Manager':  # 'Warehouse Personnel' 'Dispatcher'
+            return redirect("/login/")
+        """
+
+        user = User.objects.get(username=request.session['username'])
+
+        request.session['role'] = user.groups.all()[0].name
+
+        if user is None:
+            return redirect('/login/')
+
+        if request.session['role'] == 'Clinic Manager':
+            return render(request, "CM/clinic manager menu.html")
+        if request.session['role'] == 'Dispatcher':
+            return render(request, "Dispatcher/dispatcher menu.html")
+        if request.session['role'] == 'Warehouse personnel':
+            return render(request, "Warehouse Personnel/warehouse personnel menu.html")
+
+
+class validate(View):
+    def post(self, request, *args, **kwargs):
+        form = request.POST
+
+        if form is not None:
+            username = form['username']
+            password = form['password']
+
+            user = authenticate(username=username, password=password)
+
+            if user is None:
+                return redirect("/login/")
+            if user.is_active:
+                login(request, user)
+                request.session['username'] = username
+                request.session['password'] = password
+                return redirect("/menu/")
+
+
+class Logout(View):
+    def get(self, request, *args, **kwargs):
+        for key in request.session.keys():
+            del request.session[key]
+        logout(request)
+        return redirect("/login/")
 
 
 # --------------------------Clinic Manager-----------------------------

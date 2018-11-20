@@ -46,10 +46,10 @@ class Location(models.Model):
 
 
 class Account(models.Model):
-    username = models.CharField(max_length=200)
-    password = models.CharField(max_length=200)
-    firstname = models.CharField(max_length=200)
-    lastname = models.CharField(max_length=200)
+    username = models.CharField(max_length=200, blank=True)
+    password = models.CharField(max_length=200, blank=True)
+    firstname = models.CharField(max_length=200, blank=True)
+    lastname = models.CharField(max_length=200, blank=True)
     email = models.EmailField()
     worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint' : False})
     role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),

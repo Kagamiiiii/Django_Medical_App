@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ASP Registration page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    {% csrf_token %}
+    <script type="text/javascript">
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", jQuery("[name=csrfmiddlewaretoken]").val());
+                }
+            }
+        });
+
+
+
+
+        var token = null;
+		function start(){
+			$('#registration_section').hide();
+			$('#redirect').hide();
+		}
+		function validate(){
+			if ($('#token').val() === "" ){
+				$('#message').html('Token cannot be blank<br><br>');
+			}else{
+				token = $('#token').val();
+				$.post('/token validate', {token: token}, function (response) {
+					if (response == "No such token"){
+						$('#message').html(response);
+					}else{
+						$('#token_section').hide();
+						$('#registration_section').show();
+						$('#message').html('');
+						let temp = response
+						let email = temp.email;
+						let location = temp.location;
+						role = temp.role;
+						$('#email').html(email);
+						$('#workplace').html(location);
+						$('#role').html(role);
+					}
+				});
+			}
+		}
+		function create(){
+			if ($('#username').val() === "" || $('#password').val() === ""  || $('#firstname').val() === "" || $('#lastname').val() === "" ){
+				$('#message').html('All field should not be blank<br><br>');
+			}
+			else {
+			let lastname = $('#lastname').val();
+			let firstname = $('#firstname').val();
+
+				let detail={
+					username:$('#username').val(),
+					password:$('#password').val(),
+					email:$('#email').html(),
+					location:$('#location').html(),
+					role:$('#role').html(),
+					lastname:lastname,
+					firstname:firstname,
+					token: token
+				};
+				$.post('/createAccount', detail, function (response) {
+					if (response !== ""){
+						$('#message').html(response+'<br><br>');
+					}
+					else{
+						$('#registration_section').hide();
+						$('#message').html('Account creates successfully<br><br>');
+						$('#redirect').show();
+					}
+				});
+			}
+		}
+
+
+    </script>
+    <h2>ASP Registration page</h2>
+</head>
+
+<body onload="start()">
+
+<div id='message'></div>
+
+<div id='token_section'>
+    Please enter your token: <input id="token" type="text" name="token"><br>
+    <button type="button" onclick="validate()">Validate</button>
+</div>
+
+<div id='registration_section'>
+    Please enter your information<br>
+    Username: <input id="username" type="text" name="username"><br>
+    Password: &nbsp;<input id="password" type="password" name="password"><br>
+    Email: <span id='email'></span><br />
+    Workplace: <span id='workplace'></span><br />
+    Role: <span id='role'></span><br />
+    Firstname: <input id="firstname" type="text" name="firstname"><br>
+    Lastname: <input id="lastname" type="text" name="lastname"><br>
+    <button type="button" onclick="create()">Create Account</button>
+</div>
+
+<div id='redirect'>
+    <a href='/login'>Go to login page</a>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ASP login page</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script>
+		function validate(){
+			if ($('#username').val() === "" || $('#password').val() === "" ){
+				$('#error_message').html('Please enter both username and password<br><br>');
+			}
+			else{
+				let account = {
+					username:$('#username').val(),
+					password:$('#password').val()
+				};
+				$.post('/validate', account, function (response,error) {
+					if (error !== ""){
+						$('#error_message').html(error);
+					}
+					else{
+						window.location.href = response;
+					}
+				});
+			}
+		}
+	</script>
+	<h2>ASP login page</h2>
+</head>
+
+<body>
+
+<div id='error_message'></div>
+
+<form action="validate" method="post">{% csrf_token %}
+	Username: <input id="username" type="text" name="username"><br>
+	Password: &nbsp;<input id="password" type="password" name="password"><br>
+	<button type="submit">Log in</button>
+</form>
+
+
+</body>
+
+</html>
