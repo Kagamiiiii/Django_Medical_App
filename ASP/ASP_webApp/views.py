@@ -266,50 +266,60 @@ class warehousePage(View):
         return render(request, "WHP/warehouseDetail.html", {'process_results': order_json})
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
-    # and update status of the selcted order (status ==> "Queued for Dispatch")
+    # and update status of the selected order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
-        order_id = request.POST.get("order_id", "")
-        if order_id is None:
-            print("Error")
-            return HttpResponse("Error")
-        order_selected = Order.objects.get(id=order_id)
-        items = Include.objects.get(order=order_id)
-        quantity = 0
-        for item in items:
-            quantity += item.quantity
-        order_account = Account.objects.get(id=order_selected.ordering_account)
-        account_name = order_account.firstname + " " + order_account.lastname
-        location_name = Location.objects.get(id=order_selected.ordering_clinic).name
-        with open('shippingLabel.pdf', 'w') as buffer:
+        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority')
+        if not order_result:
+            return render(request, "WHP/warehouseDetail.html", {'message': "error"})
+        for order_selected in order_result:
+            order_id = order_selected['id']
+            items = Include.objects.filter(order=order_id).values('quantity')
+            quantity = 0
+            for item in items:
+                quantity += item['quantity']
+            account_name = order_selected['ordering_account']
+            order_account = Account.objects.get(id=account_name)
+            account_name = order_account.firstname + " " + order_account.lastname
+            order_clinic = order_selected['ordering_clinic']
+            location_name = Location.objects.get(id=order_clinic).name
+            priority = order_selected['priority']
+            # with open('shippingLabel.pdf', 'w') as buffer:
+            buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
+            pdf.setFont('Helvetica', 16)
+
+            pdf.drawString(30, 800, 'Queen Mary ')
+            pdf.drawString(30, 775, 'Hospital Drone Port')
             pdf.setFont('Helvetica', 12)
+            pdf.drawString(150, 700, 'ORDER ID:')
+            pdf.drawString(250, 700, str(order_id))
 
-            pdf.drawString(30, 750, 'Queen Mary ')
-            pdf.drawString(30, 735, 'Hospital Drone Port')
-            pdf.drawString(450, 750, 'ORDER ID:')
-            pdf.drawString(500, 750, order_id)
+            pdf.line(230, 697, 330, 697)
 
-            pdf.line(480, 747, 580, 747)
+            pdf.drawString(350, 700, 'QUANTITY:')
+            pdf.drawString(500, 700, str(quantity))
+            pdf.line(450, 697, 580, 697)
 
-            pdf.drawString(275, 725, 'QUANTITY:')
-            pdf.drawString(500, 725, quantity)
-            pdf.line(378, 723, 580, 723)
-
-            pdf.drawString(30, 703, 'RECEIVED BY:')
-            pdf.line(120, 700, 600, 700)
-            pdf.drawString(120, 703, account_name)
-            pdf.drawString(450, 703, 'PRIORITY:')
-            pdf.drawString(500, 703, order_selected.priority)
-            pdf.drawString(30, 665, 'DESTINATION: ')
-            pdf.line(120, 660, 600, 660)
-            pdf.drawString(30, 665, location_name)
+            pdf.drawString(30, 625, 'RECEIVED BY:')
+            pdf.line(120, 620, 450, 620)
+            pdf.drawString(120, 625, account_name)
+            pdf.drawString(350, 673, 'PRIORITY:')
+            pdf.drawString(500, 673, priority)
+            pdf.line(450, 670, 580, 670)
+            pdf.drawString(30, 575, 'DESTINATION: ')
+            pdf.line(120, 570, 580, 570)
+            pdf.drawString(120, 575, location_name)
             pdf.showPage()
             pdf.save()
-        with open('shippingLabel.pdf', 'r') as buffer:
-            response = HttpResponse(buffer, content_type='application/pdf')
+            response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
             return response
+        #     return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+        # with open('shippingLabel.pdf', 'r') as buffer:
+        #     response = HttpResponse(buffer, content_type='application/pdf')
+        #     response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
+        #     return response
 
 
     def updateStatus(request):
