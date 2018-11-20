@@ -240,16 +240,20 @@ class warehousePage(View):
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):
-        order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime')\
+        order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime', 'ordering_clinic')\
                                         .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         order_id = None
+        jsonresult = []
         for order_obj in order_objects:
             print(order_obj)
             order_id = int(order_obj['id'])
             order_items = Include.objects.filter(order=order_id).values('quantity', 'order', 'supply')
-            jsonresult = []
+            clinicID= order_obj['ordering_clinic']
+            clinic_name = Location.objects.get(id=clinicID).name
+
             order_json={}
             order_json["id"] = order_obj['id']
+            order_json["clinic"] = clinic_name
             order_json["priority'"] = order_obj['priority']
             order_json["weight"] = order_obj['weight']
             order_json["orderedDatetime"] = order_obj['orderedDatetime']
@@ -262,7 +266,7 @@ class warehousePage(View):
                 children.append(item_json)
             order_json["items"] = children
             jsonresult.append(order_json)
-        print(order_id)
+        print(jsonresult)
         ordered = Order.objects.filter(id=order_id)
         ordered.update(status="Processing by Warehouse")
         return render(request, "WHP/warehouseDetail.html", {'process_results': jsonresult})
