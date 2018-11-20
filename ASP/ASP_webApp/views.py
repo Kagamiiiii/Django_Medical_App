@@ -234,7 +234,6 @@ class warehousePage(View):
         orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id').values("ordering_clinic_id", "orderedDatetime")
         for order in orderList:
             order["ordering_clinic"] = Location.objects.get(id=order.pop("ordering_clinic_id", None)).name
-        print(orderList)
         return render(request, "WHP/warehouseManage.html", {'results': orderList})
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
@@ -243,33 +242,28 @@ class warehousePage(View):
         order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime', 'ordering_clinic')\
                                         .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         order_id = None
-        jsonresult = []
+        order_json = {}
         for order_obj in order_objects:
-            print(order_obj)
             order_id = int(order_obj['id'])
             order_items = Include.objects.filter(order=order_id).values('quantity', 'order', 'supply')
             clinicID= order_obj['ordering_clinic']
-            clinic_name = Location.objects.get(id=clinicID).name
-
-            order_json={}
             order_json["id"] = order_obj['id']
-            order_json["clinic"] = clinic_name
-            order_json["priority'"] = order_obj['priority']
+            order_json["clinic"] = Location.objects.get(id=clinicID).name
+            order_json["priority"] = order_obj['priority']
             order_json["weight"] = order_obj['weight']
             order_json["orderedDatetime"] = order_obj['orderedDatetime']
             children = []
             for item in order_items:
                 item_detail = Supply.objects.get(id=item['supply'])
                 item_json = {}
+                item_json['supply_id'] = item_detail.id
                 item_json['name'] = item_detail.name
                 item_json['quantity'] = item['quantity']
                 children.append(item_json)
             order_json["items"] = children
-            jsonresult.append(order_json)
-        print(jsonresult)
         ordered = Order.objects.filter(id=order_id)
         ordered.update(status="Processing by Warehouse")
-        return render(request, "WHP/warehouseDetail.html", {'process_results': jsonresult})
+        return render(request, "WHP/warehouseDetail.html", {'process_results': order_json})
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")

@@ -25,4 +25,5 @@ urlpatterns = [
     path('WHP/main/', views.warehousePage.warehouseView, name='whpPage'),
     path('WHP/main/processOrder/', views.warehousePage.orderProcess, name='whpProcessOrder'),
     path('WHP/main/PDF/', views.warehousePage.getShippingLabel, name='whpPDF'),
+    path('WHP/main/updateStatus/', views.warehousePage.updateStatus, name='whpPDF'),
 ]

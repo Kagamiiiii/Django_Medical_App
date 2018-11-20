@@ -1,9 +1,7 @@
 {% block content %}
   {% if process_results %}
-      <button id="processButton" type="button" class="btn btn-primary" onclick="">Complete order</button>
-      <div class="panel panel-success">
-        <div class="panel-heading">Order Details</div>
-        <div class="panel-body">
+      <button id="processButton" type="button" class="btn btn-primary" onclick="obtainSL();">Obtain Shipping Label</button>
+      <button id="completeOrderButton" type="button" class="btn btn-danger" onclick="completeOrder();" disabled>Complete order</button>
           <table class="table">
               <thead>
                 <tr>
@@ -12,21 +10,21 @@
                 </tr>
               </thead>
               <tbody>
-              {% for result in results %}
-                  <tr>
-                    <td id="order_id" scope="row">{{ result.order_id }}</td>
-                    <td>
-                    {% for item in result.items %}
-                    {{item.name}} <br><b>Quantity</b>: {{item.quantity}}<br><img id="icon" src='../../static/img/{{ item.supply_id }}.JPG'><br>
-                    {% endfor %}
-                    <hr>
-                    <strong>Weight:</strong> {{result.total_weight}} KG
-                    </td>
-                  </tr>
-              {% endfor %}
+                <tr>
+                  <td id="order_id" scope="row">{{ process_results.id }}</td>
+                  <td>
+                    <strong>Clinic:</strong> {{ process_results.clinic }}
+                  <hr>
+                    <strong>Order Time:</strong> {{ process_results.orderedDatetime }}
+                  <hr>
+                  {% for item in process_results.items %}
+                      {{ item.name }} <br><b>Quantity</b>: {{ item.quantity }}<br><img id="icon" src='../../static/img/{{ item.supply_id }}.JPG'><br>
+                  {% endfor %}
+                  <hr>
+                  <strong>Total weight:</strong> {{ process_results.weight }} KG
+                  </td>
+                </tr>
               </tbody>
           </table>
-        </div>
-      </div>
   {% endif %}
 {% endblock %}

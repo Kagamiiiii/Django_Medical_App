@@ -1,6 +1,6 @@
 function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  // these HTTP methods do not require CSRF protection
+  return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
 function processTop(){
@@ -21,6 +21,21 @@ function processTop(){
       $('#maincontent').hide();
       $('#alt-maincontent').show();
       $('#alt-maincontent').html(respond);
+    }
+  });
+}
+
+function obtainSL(){
+  $("completeOrderButton").prop("disabled", false);
+  location.replace('./PDF/');
+}
+
+function completeOrder(){
+  $.ajax({
+    type: "POST",
+    url: "./updateStatus/",
+    success: function (respond) {
+      alert("Order Completed!");
     }
   });
 }
