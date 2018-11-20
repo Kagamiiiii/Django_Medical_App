@@ -242,6 +242,7 @@ class warehousePage(View):
     def orderProcess(request):
         order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime')\
                                         .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        order_id = None
         for order_obj in order_objects:
             print(order_obj)
             order_id = int(order_obj['id'])
@@ -261,6 +262,7 @@ class warehousePage(View):
                 children.append(item_json)
             order_json["items"] = children
             jsonresult.append(order_json)
+        print(order_id)
         ordered = Order.objects.filter(id=order_id)
         ordered.update(status="Processing by Warehouse")
         return render(request, "WHP/warehouseManage.html", {'process_results': jsonresult})
