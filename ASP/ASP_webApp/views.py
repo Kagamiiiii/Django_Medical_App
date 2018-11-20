@@ -231,18 +231,23 @@ class DispatchPage(View):
 class warehousePage(View):
     # view priority queue
     def warehouseView(request):
-        orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')
-        return render(request, "Dispatcher/dispatchPage.html", {'results': orderList})
+        orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id').values("ordering_clinic_id", "orderedDatetime")
+        for order in orderList:
+            order["ordering_clinic"] = Location.objects.get(id=order.pop("ordering_clinic_id", None)).name
+        print(orderList)
+        return render(request, "WHP/warehouseManage.html", {'results': orderList})
 
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):
-        chosen = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')[:1]
-        chosen.objects.update(status="Processing by Warehouse")
-        chosen.save()
+        order_obj = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')[:1]
+        # chosen.update(status="Processing by Warehouse")
+        print(order_obj)
         jsonresult = []
-        jsonresult.append(chosen)
-        return render(request, "WHP/warehouse.html", {'results': jsonresult})
+        for obj in order_obj:
+            jsonresult.append(obj)
+        print(jsonresult)
+        return render(request, "WHP/warehouseManage.html", {'process_results': jsonresult})
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
