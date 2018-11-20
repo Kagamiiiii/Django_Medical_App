@@ -265,7 +265,7 @@ class warehousePage(View):
         print(order_id)
         ordered = Order.objects.filter(id=order_id)
         ordered.update(status="Processing by Warehouse")
-        return render(request, "WHP/warehouseManage.html", {'process_results': jsonresult})
+        return render(request, "WHP/warehouseDetail.html", {'process_results': jsonresult})
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selcted order (status ==> "Queued for Dispatch")
