@@ -307,6 +307,9 @@ class warehousePage(View):
         return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
 
     def updateStatus(request):
-        order_id = request.POST.get("order_id", "")
+        order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
+                            .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        for order_obj in order_objects:
+            order_id = int(order_obj['id'])
         Order.objects.filter(id=order_id).update(status="Queued for Dispatch", processedDatetime=timezone.now())
         return HttpResponse("Success")
