@@ -3,6 +3,7 @@ var cart = [];
 var priority = "Low";
 var total_weight = 0;
 
+
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
