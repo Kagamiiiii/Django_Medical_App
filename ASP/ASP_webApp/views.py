@@ -308,9 +308,5 @@ class warehousePage(View):
 
     def updateStatus(request):
         order_id = request.POST.get("order_id", "")
-        order_selected = Order.objects.filter(id=order_id)
-        order_selected.objects.update(status="Queued for Dispatch")
-        dateTime = timezone.now()
-        order_selected.objects.update(processedDatetime=dateTime)
-        order_selected.save()
+        Order.objects.filter(id=order_id).update(status="Queued for Dispatch", processedDatetime=timezone.now())
         return HttpResponse("Success")
