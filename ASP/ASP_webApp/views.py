@@ -240,13 +240,25 @@ class warehousePage(View):
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):
-        order_obj = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id')[:1]
-        # chosen.update(status="Processing by Warehouse")
-        print(order_obj)
+        order_obj = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        order_items = Include.objects.get(order=order_obj['id'])
         jsonresult = []
-        for obj in order_obj:
-            jsonresult.append(obj)
-        print(jsonresult)
+        order_json={}
+        order_json["id"] = order_obj['id']
+        order_json["priority'"] = order_obj['priority']
+        order_json["weight"] = order_obj['weight']
+        order_json["orderedDatetime"] = order_obj['orderedDatetime']
+        children = []
+        for item in order_items:
+            item_detail = Supply.objects.get(id=item.id)
+            item_json = {}
+            item_json['name'] = item_detail.name
+            item_json['quantity'] = item.quantity
+            children.append(item_json)
+        order_json["items"] = children
+        jsonresult.append(order_json)
+        order_obj.update(status="Processing by Warehouse")
+        order_obj.save()
         return render(request, "WHP/warehouseManage.html", {'process_results': jsonresult})
 
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
