@@ -338,6 +338,7 @@ class DispatchPage(View):
         order_ids = orders.copy()
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            spamwriter.writerow(['Location name', 'Latitude', 'Longitude', 'Altitude'])
             while order_ids:
                 minimum = 999999
                 temp = None
