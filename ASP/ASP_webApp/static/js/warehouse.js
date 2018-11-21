@@ -26,7 +26,7 @@ function processTop(){
 }
 
 function obtainSL(){
-  $("completeOrderButton").prop("disabled", false);
+  $("#completeOrderButton").prop("disabled", false);
   location.replace('./PDF/');
 }
 
@@ -36,6 +36,7 @@ function completeOrder(){
     url: "./updateStatus/",
     success: function (respond) {
       alert("Order Completed!");
+      window.location.reload(true);
     }
   });
 }

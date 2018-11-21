@@ -67,13 +67,18 @@ class createAccount(View):
         if account.username != '':
             return HttpResponse('Token has been redeemed')
 
-
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = User.objects.create_user(username, email, password)
+        user.first_name = request.POST.get('firstname')
+        user.last_name = request.POST.get('lastname')
+        user.save()
         account.username = request.POST.get('username')
         account.email = request.POST.get('email')
         account.password = request.POST.get('password')
         account.firstname = request.POST.get('firstname')
         account.lastname = request.POST.get('lastname')
-        account.save()
         # User created
 
         account.token = '-'
@@ -99,8 +104,8 @@ class menu(View):
     def get(self, request, *args, **kwargs):
 
         try:
-            username = request.session['username']
-            password = request.session['password']
+            inputusername = request.session['username']
+            inputpassword = request.session['password']
         except:
             return redirect("/login/")
 
@@ -115,17 +120,20 @@ class menu(View):
 
         user = User.objects.get(username=request.session['username'])
 
-        request.session['role'] = user.groups.all()[0].name
+        # request.session['role'] = user.groups.all()[0].name
 
         if user is None:
             return redirect('/login/')
+        user_account = Account.objects.filter(username=inputusername, password=inputpassword).values('id', 'role')
 
-        if request.session['role'] == 'Clinic Manager':
-            return render(request, "CM/createOrderPage.html")
-        if request.session['role'] == 'Dispatcher':
-            return render(request, "Dispatcher/dispatchPage.html")
-        if request.session['role'] == 'Warehouse personnel':
-            return render(request, "WHP/warehouseManage.html")
+        for user_ac in user_account:
+            request.session['id'] = user_ac['id']
+            if user_ac['role'] == "Clinic Manager":
+                return redirect("/CM/main/")
+            if user_ac['role'] == 'Dispatcher':
+                return redirect("/D/main")
+            if user_ac['role'] == 'Warehouse Personnel':
+                return redirect("/WHP/main")
 
 
 class validate(View):
@@ -149,8 +157,6 @@ class validate(View):
 
 class Logout(View):
     def get(self, request, *args, **kwargs):
-        for key in request.session.keys():
-            del request.session[key]
         logout(request)
         return redirect("/login/")
 
@@ -165,6 +171,7 @@ class CreateOrderPage(View):
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
 
     def createOrder(request):
+        account_id = request.session['id']
         # user wants to create an order
         query = request.POST.get('order', "")
         # need a verification block here
@@ -172,8 +179,12 @@ class CreateOrderPage(View):
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
             return HttpResponse("Fail")
-        clinic_id = orderObject['clinic_id']
-        account_id = orderObject['account_id']
+        clinic_id = None
+        print(account_id)
+        workingclinic = Account.objects.filter(id=account_id).values('worklocation')
+        print(workingclinic)
+        for x in workingclinic:
+            clinic_id = x['worklocation']
         dateTime = timezone.now()
         priority = orderObject['priority']
         weight = orderObject['weight']
@@ -186,7 +197,7 @@ class CreateOrderPage(View):
             orderInclude = Include(order=order, supply=Supply.objects.get(id=item['item_id']),
                                    quantity=item['quantity'])
             orderInclude.save()
-        return HttpResponse("Success")
+        return redirect("/CM/main/")
 
     # if not use generic view, use render to call html
     # cat is the category name
@@ -213,12 +224,13 @@ class CreateOrderPage(View):
         return JsonResponse(json_result, safe=False)
 
     def viewOrder(request):
-        account_id = request.POST.get("account_id", "")
-
+        #account_id = request.POST.get("account_id", "")
+        account_id = request.session['id']
+        print(account_id)
         # first get their order ID (distinct), get their supply_id and quantity,
         # then merge them together, and get their priority and weight later.
         order_ids = []
-        for id_result in Order.objects.all().filter(ordering_account=account_id).values("id").order_by("-id"):
+        for id_result in Order.objects.all().filter(ordering_account=int(account_id)).values("id").order_by("-id"):
             order_ids.append(id_result['id'])
         # print(order_ids)
 
@@ -324,9 +336,6 @@ class DispatchPage(View):
         hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
         order_ids = orders.copy()
-        # items = []
-        # check sequence for locations
-        #buffer = io.StringIO()
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
             while order_ids:
@@ -365,7 +374,7 @@ class DispatchPage(View):
         orders = request.POST.getlist("item")
         for order_id in orders:
             Order.objects.filter(id=int(order_id)).update(status="Dispatched", dispatchedDatetime=timezone.now())
-        return HttpResponse("Success")
+        return redirect("/D/main")
 
 
 # ---------------------------WarehousePersonnel------------------------
@@ -425,7 +434,6 @@ class warehousePage(View):
             order_clinic = order_selected['ordering_clinic']
             location_name = Location.objects.get(id=order_clinic).name
             priority = order_selected['priority']
-            # with open('shippingLabel.pdf', 'w') as buffer:
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
@@ -457,17 +465,12 @@ class warehousePage(View):
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
             return response
-        #     return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
-        # with open('shippingLabel.pdf', 'r') as buffer:
-        #     response = HttpResponse(buffer, content_type='application/pdf')
-        #     response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
-        #     return response
 
 
     def updateStatus(request):
-        order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
+        order_objects = Order.objects.filter(status="Processing by Warehouse").values('id') \
                             .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         for order_obj in order_objects:
             order_id = int(order_obj['id'])
         Order.objects.filter(id=order_id).update(status="Queued for Dispatch", processedDatetime=timezone.now())
-        return HttpResponse("Success")
+        return redirect("/WHP/main")

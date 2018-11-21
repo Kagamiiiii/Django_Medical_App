@@ -16,7 +16,7 @@ urlpatterns = [
     # --------------------------Login/Logout-------------------------------
     path('login/', views.UserLogin.as_view()),
     path('login/validate', views.validate.as_view()),
-    path('logout/', views.Logout.as_view()),
+    path('menu/logout/', views.Logout.as_view()),
     path('menu/', views.menu.as_view()),
 
     # --------------------------Clinic Manager-----------------------------
