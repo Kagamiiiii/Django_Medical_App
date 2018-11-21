@@ -252,7 +252,7 @@ class CreateOrderPage(View):
     def orderAction(request):
         order_id = request.POST.get("orderID", "")
         if (Order.objects.get(id=order_id).status != "Queued for Processing"):
-            Order.objects.filter(id=order_id).update(status="Delivered")
+            Order.objects.filter(id=order_id).update(status="Delivered", deliveredDatetime=timezone.now())
         else:
             Order.objects.filter(id=order_id).update(status="Cancelled")
         return HttpResponse("Success")
@@ -271,8 +271,8 @@ class DispatchPage(View):
         # get all order id with "Queued for Dispatch" status, render into the tempalte.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -284,7 +284,7 @@ class DispatchPage(View):
             single_order = {}
             single_order["order_id"] = item['id']
             single_order["priority"] = item['priority']
-            single_order["processedDatetime"] = item['processedDatetime']
+            single_order["orderedDatetime"] = item['orderedDatetime']
             single_order["clinic"] = item['ordering_clinic']
             single_order["weight"] = item['weight']
             order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
@@ -303,8 +303,8 @@ class DispatchPage(View):
         # return item JSON information to the website.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -321,8 +321,8 @@ class DispatchPage(View):
     def getItinerary(request):
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         orders = []
@@ -420,7 +420,7 @@ class warehousePage(View):
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selected order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
-        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority')
+        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority', 'weight')
         if not order_result:
             return render(request, "WHP/warehouseDetail.html", {'message': "error"})
         for order_selected in order_result:
@@ -434,6 +434,7 @@ class warehousePage(View):
             account_name = order_account.firstname + " " + order_account.lastname
             order_clinic = order_selected['ordering_clinic']
             location_name = Location.objects.get(id=order_clinic).name
+            order_weight = order_selected['weight']
             priority = order_selected['priority']
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
@@ -443,8 +444,8 @@ class warehousePage(View):
             pdf.drawString(30, 800, 'Queen Mary ')
             pdf.drawString(30, 775, 'Hospital Drone Port')
             pdf.setFont('Helvetica', 12)
-            pdf.drawString(150, 700, 'ORDER ID:')
-            pdf.drawString(250, 700, str(order_id))
+            pdf.drawString(30, 700, 'ORDER ID:')
+            pdf.drawString(140, 700, str(order_id))
 
             pdf.line(230, 697, 330, 697)
 
@@ -461,6 +462,27 @@ class warehousePage(View):
             pdf.drawString(30, 575, 'DESTINATION: ')
             pdf.line(120, 570, 580, 570)
             pdf.drawString(120, 575, location_name)
+            pdf.drawString(30, 525, 'WEIGHT: ')
+            pdf.line(120, 520, 580, 520)
+            pdf.drawString(120, 525, str(order_weight))
+            pdf.drawString(30, 475, 'ITEM DETAILS: ')
+            pdf.setFont('Helvetica', 10)
+            pdf.drawString(450, 445, 'QUANTITY')
+            pdf.drawString(50, 445, 'SUPPLY NAME')
+            order_items = Include.objects.filter(order=order_id).values('supply', 'quantity')
+            print(order_items)
+            next_line = 1
+            for item in order_items:
+                numbers = item['quantity']
+                supply_id = item['supply']
+                supply_object = Supply.objects.filter(id=supply_id).values('name')
+                supply_name = None
+                for name in supply_object:
+                    supply_name = name['name']
+                horizontal_pixel = 455-next_line*30
+                pdf.drawString(50, horizontal_pixel, supply_name)
+                pdf.drawString(480, horizontal_pixel, str(numbers))
+                next_line += 1
             pdf.showPage()
             pdf.save()
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
