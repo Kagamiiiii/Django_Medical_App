@@ -73,7 +73,6 @@ function orderCreated(){
 function createOrder(){
   var e = document.getElementById("priority-selector-inner");
   var selected_priority = e.options[e.selectedIndex].text;
-  var userid = '<%= Session["id"] %>';
   if (selected_priority == "Select priority") {
     alert("Please select a priority!");
   } else {
@@ -81,7 +80,8 @@ function createOrder(){
         priority: selected_priority,
         cart: cart,
         weight: total_weight,
-        //account_id: userid
+        clinic_id: 1,
+        account_id: 1
       };
     $.ajax({
           type: "POST",
@@ -193,7 +193,7 @@ function toggleBrowseSupplies(){
 
 function toggleViewOrder(){
     var csrftoken = Cookies.get('csrftoken');
-    //var userid = '<%= Session["id"] %>';
+
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {

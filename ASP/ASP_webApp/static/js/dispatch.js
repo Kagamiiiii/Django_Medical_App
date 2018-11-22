@@ -55,7 +55,7 @@ function updateToDispatch(){
           traditional: true,
           success: function (respond) {
               alert("Dispatch updated!");
-              window.location.reload(true);
+              // location.reload();
           }
         }
     );

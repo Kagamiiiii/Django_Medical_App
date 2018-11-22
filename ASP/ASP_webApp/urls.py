@@ -5,19 +5,18 @@ from . import views
 app_name = 'ASP_webApp'
 
 urlpatterns = [
-    # --------------------------Register-----------------------------------
-    path('create token/', views.createTokenpage.as_view()),
 
     # --------------------------Register-----------------------------------
-    path('register/', views.registerPage.as_view()),
-    path('token validate', views.tokenValidate.as_view()),
+    path('createToken/', views.createTokenpage.as_view()),
     path('createAccount', views.createAccount.as_view()),
+    path('tokenValidate', views.tokenValidate.as_view()),
+    path('register/', views.registerPage.as_view()),
 
     # --------------------------Login/Logout-------------------------------
+    path('menu/', views.menu.as_view()),
     path('login/', views.UserLogin.as_view()),
     path('login/validate', views.validate.as_view()),
-    path('menu/logout/', views.Logout.as_view()),
-    path('menu/', views.menu.as_view()),
+    path('logout/', views.Logout.as_view()),
 
     # --------------------------Clinic Manager-----------------------------
     path('CM/main/', views.CreateOrderPage.createOrderView, name='createOrderPage'),

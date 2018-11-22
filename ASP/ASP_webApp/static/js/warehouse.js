@@ -36,7 +36,6 @@ function completeOrder(){
     url: "./updateStatus/",
     success: function (respond) {
       alert("Order Completed!");
-      window.location.reload(true);
     }
   });
 }

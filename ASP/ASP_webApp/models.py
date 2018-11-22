@@ -51,7 +51,7 @@ class Account(models.Model):
     firstname = models.CharField(max_length=200, blank=True)
     lastname = models.CharField(max_length=200, blank=True)
     email = models.EmailField()
-    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE)
+    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, limit_choices_to={'isStartingPoint' : False})
     role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
                                                     ('Dispatcher', 'Dispatcher'),
                                                     ('Warehouse Personnel', 'Warehouse Personnel')))

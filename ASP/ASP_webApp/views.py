@@ -23,7 +23,7 @@ import io
 
 class createTokenpage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "M/create token.html")
+        return render(request, "createToken.html")
 
 
 # ----------------------------Registration-----------------------------
@@ -31,14 +31,13 @@ class createTokenpage(View):
 
 class registerPage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "M/registration page.html")
+        return render(request, "registrationpage.html")
 
 
 class tokenValidate(View):
     def post(self, request, *args, **kwargs):
         token = request.POST.get('token')
-        if token == '-':
-            return HttpResponse("No such token")
+
         try:
             account = Account.objects.get(token=token)
         except:
@@ -74,14 +73,10 @@ class createAccount(View):
         user.first_name = request.POST.get('firstname')
         user.last_name = request.POST.get('lastname')
         user.save()
-        account.username = request.POST.get('username')
-        account.email = request.POST.get('email')
-        account.password = request.POST.get('password')
-        account.firstname = request.POST.get('firstname')
-        account.lastname = request.POST.get('lastname')
         # User created
 
-        account.token = '-'
+        account.username = user.username
+        account.token = ''
         account.save()
         # account edited
 
@@ -97,15 +92,15 @@ class createAccount(View):
 
 class UserLogin(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "M/login.html")
+        return render(request, "login.html")
 
 
 class menu(View):
     def get(self, request, *args, **kwargs):
 
         try:
-            inputusername = request.session['username']
-            inputpassword = request.session['password']
+            username = request.session['username']
+            password = request.session['password']
         except:
             return redirect("/login/")
 
@@ -120,20 +115,17 @@ class menu(View):
 
         user = User.objects.get(username=request.session['username'])
 
-        # request.session['role'] = user.groups.all()[0].name
+        request.session['role'] = user.groups.all()[0].name
 
         if user is None:
             return redirect('/login/')
-        user_account = Account.objects.filter(username=inputusername, password=inputpassword).values('id', 'role')
 
-        for user_ac in user_account:
-            request.session['id'] = user_ac['id']
-            if user_ac['role'] == "Clinic Manager":
-                return redirect("/CM/main/")
-            if user_ac['role'] == 'Dispatcher':
-                return redirect("/D/main")
-            if user_ac['role'] == 'Warehouse Personnel':
-                return redirect("/WHP/main")
+        if request.session['role'] == 'Clinic Manager':
+            return render(request, "CM/clinic manager menu.html")
+        if request.session['role'] == 'Dispatcher':
+            return render(request, "Dispatcher/dispatcher menu.html")
+        if request.session['role'] == 'Warehouse personnel':
+            return render(request, "Warehouse Personnel/warehouse personnel menu.html")
 
 
 class validate(View):
@@ -157,6 +149,8 @@ class validate(View):
 
 class Logout(View):
     def get(self, request, *args, **kwargs):
+        for key in request.session.keys():
+            del request.session[key]
         logout(request)
         return redirect("/login/")
 
@@ -171,7 +165,6 @@ class CreateOrderPage(View):
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
 
     def createOrder(request):
-        account_id = request.session['id']
         # user wants to create an order
         query = request.POST.get('order', "")
         # need a verification block here
@@ -179,12 +172,8 @@ class CreateOrderPage(View):
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
             return HttpResponse("Fail")
-        clinic_id = None
-        print(account_id)
-        workingclinic = Account.objects.filter(id=account_id).values('worklocation')
-        print(workingclinic)
-        for x in workingclinic:
-            clinic_id = x['worklocation']
+        clinic_id = orderObject['clinic_id']
+        account_id = orderObject['account_id']
         dateTime = timezone.now()
         priority = orderObject['priority']
         weight = orderObject['weight']
@@ -197,7 +186,7 @@ class CreateOrderPage(View):
             orderInclude = Include(order=order, supply=Supply.objects.get(id=item['item_id']),
                                    quantity=item['quantity'])
             orderInclude.save()
-        return redirect("/CM/main/")
+        return HttpResponse("Success")
 
     # if not use generic view, use render to call html
     # cat is the category name
@@ -224,13 +213,12 @@ class CreateOrderPage(View):
         return JsonResponse(json_result, safe=False)
 
     def viewOrder(request):
-        #account_id = request.POST.get("account_id", "")
-        account_id = request.session['id']
-        print(account_id)
+        account_id = request.POST.get("account_id", "")
+
         # first get their order ID (distinct), get their supply_id and quantity,
         # then merge them together, and get their priority and weight later.
         order_ids = []
-        for id_result in Order.objects.all().filter(ordering_account=int(account_id)).values("id").order_by("-id"):
+        for id_result in Order.objects.all().filter(ordering_account=account_id).values("id").order_by("-id"):
             order_ids.append(id_result['id'])
         # print(order_ids)
 
@@ -252,7 +240,7 @@ class CreateOrderPage(View):
     def orderAction(request):
         order_id = request.POST.get("orderID", "")
         if (Order.objects.get(id=order_id).status != "Queued for Processing"):
-            Order.objects.filter(id=order_id).update(status="Delivered", deliveredDatetime=timezone.now())
+            Order.objects.filter(id=order_id).update(status="Delivered")
         else:
             Order.objects.filter(id=order_id).update(status="Cancelled")
         return HttpResponse("Success")
@@ -271,8 +259,8 @@ class DispatchPage(View):
         # get all order id with "Queued for Dispatch" status, render into the tempalte.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'orderedDatetime', 'id')
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -284,7 +272,7 @@ class DispatchPage(View):
             single_order = {}
             single_order["order_id"] = item['id']
             single_order["priority"] = item['priority']
-            single_order["orderedDatetime"] = item['orderedDatetime']
+            single_order["processedDatetime"] = item['processedDatetime']
             single_order["clinic"] = item['ordering_clinic']
             single_order["weight"] = item['weight']
             order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
@@ -303,8 +291,8 @@ class DispatchPage(View):
         # return item JSON information to the website.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'orderedDatetime', 'id')
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -321,8 +309,8 @@ class DispatchPage(View):
     def getItinerary(request):
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'orderedDatetime', 'id')
+            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'processedDatetime', 'id')
         for ele in results:
             result.append(ele)
         orders = []
@@ -336,9 +324,11 @@ class DispatchPage(View):
         hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
         order_ids = orders.copy()
+        # items = []
+        # check sequence for locations
+        #buffer = io.StringIO()
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            spamwriter.writerow(['Location name', 'Latitude', 'Longitude', 'Altitude'])
             while order_ids:
                 minimum = 999999
                 temp = None
@@ -375,7 +365,7 @@ class DispatchPage(View):
         orders = request.POST.getlist("item")
         for order_id in orders:
             Order.objects.filter(id=int(order_id)).update(status="Dispatched", dispatchedDatetime=timezone.now())
-        return redirect("/D/main")
+        return HttpResponse("Success")
 
 
 # ---------------------------WarehousePersonnel------------------------
@@ -420,7 +410,7 @@ class warehousePage(View):
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selected order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
-        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority', 'weight')
+        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority')
         if not order_result:
             return render(request, "WHP/warehouseDetail.html", {'message': "error"})
         for order_selected in order_result:
@@ -434,8 +424,8 @@ class warehousePage(View):
             account_name = order_account.firstname + " " + order_account.lastname
             order_clinic = order_selected['ordering_clinic']
             location_name = Location.objects.get(id=order_clinic).name
-            order_weight = order_selected['weight']
             priority = order_selected['priority']
+            # with open('shippingLabel.pdf', 'w') as buffer:
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
@@ -444,8 +434,8 @@ class warehousePage(View):
             pdf.drawString(30, 800, 'Queen Mary ')
             pdf.drawString(30, 775, 'Hospital Drone Port')
             pdf.setFont('Helvetica', 12)
-            pdf.drawString(30, 700, 'ORDER ID:')
-            pdf.drawString(140, 700, str(order_id))
+            pdf.drawString(150, 700, 'ORDER ID:')
+            pdf.drawString(250, 700, str(order_id))
 
             pdf.line(230, 697, 330, 697)
 
@@ -462,38 +452,22 @@ class warehousePage(View):
             pdf.drawString(30, 575, 'DESTINATION: ')
             pdf.line(120, 570, 580, 570)
             pdf.drawString(120, 575, location_name)
-            pdf.drawString(30, 525, 'WEIGHT: ')
-            pdf.line(120, 520, 580, 520)
-            pdf.drawString(120, 525, str(order_weight))
-            pdf.drawString(30, 475, 'ITEM DETAILS: ')
-            pdf.setFont('Helvetica', 10)
-            pdf.drawString(450, 445, 'QUANTITY')
-            pdf.drawString(50, 445, 'SUPPLY NAME')
-            order_items = Include.objects.filter(order=order_id).values('supply', 'quantity')
-            print(order_items)
-            next_line = 1
-            for item in order_items:
-                numbers = item['quantity']
-                supply_id = item['supply']
-                supply_object = Supply.objects.filter(id=supply_id).values('name')
-                supply_name = None
-                for name in supply_object:
-                    supply_name = name['name']
-                horizontal_pixel = 455-next_line*30
-                pdf.drawString(50, horizontal_pixel, supply_name)
-                pdf.drawString(480, horizontal_pixel, str(numbers))
-                next_line += 1
             pdf.showPage()
             pdf.save()
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
             return response
+        #     return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
+        # with open('shippingLabel.pdf', 'r') as buffer:
+        #     response = HttpResponse(buffer, content_type='application/pdf')
+        #     response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
+        #     return response
 
 
     def updateStatus(request):
-        order_objects = Order.objects.filter(status="Processing by Warehouse").values('id') \
+        order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
                             .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         for order_obj in order_objects:
             order_id = int(order_obj['id'])
         Order.objects.filter(id=order_id).update(status="Queued for Dispatch", processedDatetime=timezone.now())
-        return redirect("/WHP/main")
+        return HttpResponse("Success")
