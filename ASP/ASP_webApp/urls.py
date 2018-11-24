@@ -8,8 +8,8 @@ urlpatterns = [
 
     # --------------------------Register-----------------------------------
     path('createToken/', views.createTokenpage.as_view()),
-    path('createAccount', views.createAccount.as_view()),
-    path('tokenValidate', views.tokenValidate.as_view()),
+    path('register/createAccount', views.createAccount.as_view()),
+    path('register/tokenValidate', views.tokenValidate.as_view()),
     path('register/', views.registerPage.as_view()),
 
     # --------------------------Login/Logout-------------------------------
