@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ASP Change Information page</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script>
+		function start(){
+			$('#finish').hide();
+			$.get("/information",function(data,status){
+				$('#email').val(data.email);
+				$('#firstname').val(data.firstname);
+				$('#lastname').val(data.lastname);
+			});
+		}
+		function validate(){
+			if ($('#email').val() === "" || $('#firstname').val() === "" || $('#lastname').val() === "" ){
+				$('#error_message').html('Fields cannot be blank<br><br>');
+			}
+			else{
+				let information = {
+					email:$('#email').val(),
+					firstname:$('#firstname').val(),
+					lastname:$('#lastname').val()
+				};
+				$.post('/validate', information, function (response,error) {
+					if (error !== ""){
+						$('#error_message').html(error);
+					}
+					else{
+						$('#error_message').hide();
+						$('#fillin').hide();
+						$('#finish').show();
+					}
+				});
+			}
+		}
+	</script>
+	<h2>ASP Change Information page</h2>
+</head>
+
+<body onload="start()">
+
+<div id='error_message'></div>
+
+<div id='fillin'>
+Email: <input id="email" type="text" name="email"><br>
+Firstname: <input id="firstname" type="text" name="firstname"><br>
+Lastname: <input id="lastname" type="text" name="lastname"><br>
+<button type="button" onclick="validate()">Confirm</button>
+</div>
+
+<div id='finish'>
+Your information change successfully.<br>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ASP Change Password page</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script>
+		function start(){
+			$('#finish').hide();
+		}
+		function validate(){
+			if ($('#old').val() === "" || $('#new').val() === "" || $('#new2').val() === "" ){
+				$('#error_message').html('Please fill in all the fields<br><br>');
+			}
+			else if($('#new').val() !== $('#new2').val()){
+				$('#error_message').html("New passwords are not the same<br><br>");
+				$('#new').val("");
+				$('#new2').val("");
+			}
+			else{
+				let password = {
+					old:$('#old').val(),
+					new:$('#new').val()
+				};
+				$.post('/validate', password, function (response,error) {
+					if (error !== ""){
+						$('#error_message').html("The old password is not correct<br><br>");
+						$('#old').val("");
+						$('#new').val("");
+						$('#new2').val("");
+					}
+					else{
+						$('#finish').show();
+						$('#fillin').hide();
+						$('#error_message').hide();
+					}
+				});
+			}
+		}
+	</script>
+	<h2>ASP Change Password page</h2>
+</head>
+
+<body onload="start()">
+
+<div id='error_message'></div>
+
+<div id='fillin'>
+Old Password: <input id="old" type="password" name="old"><br>
+New Password: <input id="new" type="password" name="new"><br>
+Re-enter New Password: <input id="new2" type="password" name="new2"><br>
+<button type="button" onclick="validate()">Confirm</button>
+</div>
+
+<div id='finish'>
+Your password is changed.<br>
+</div>
+
+</body>
+
+</html>
