@@ -31,7 +31,7 @@ class createTokenpage(View):
 
 class registerPage(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "registrationpage.html")
+        return render(request, "M/registrationPage.html")
 
 
 class tokenValidate(View):
@@ -53,6 +53,7 @@ class tokenValidate(View):
 
 class createAccount(View):
     def post(self, request, *args, **kwargs):
+
         token = request.POST.get('token')
 
         try:
@@ -69,6 +70,7 @@ class createAccount(View):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
+
         user = User.objects.create_user(username, email, password)
         user.first_name = request.POST.get('firstname')
         user.last_name = request.POST.get('lastname')
@@ -92,7 +94,7 @@ class createAccount(View):
 
 class UserLogin(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "login.html")
+        return render(request, "M/login.html")
 
 
 class menu(View):
@@ -121,11 +123,11 @@ class menu(View):
             return redirect('/login/')
 
         if request.session['role'] == 'Clinic Manager':
-            return render(request, "CM/clinic manager menu.html")
+            return redirect("/CM/main/")
         if request.session['role'] == 'Dispatcher':
-            return render(request, "Dispatcher/dispatcher menu.html")
-        if request.session['role'] == 'Warehouse personnel':
-            return render(request, "Warehouse Personnel/warehouse personnel menu.html")
+            return redirect("/D/main/")
+        if request.session['role'] == 'Warehouse Personnel':
+            return redirect("/WHP/main/")
 
 
 class validate(View):
@@ -139,18 +141,16 @@ class validate(View):
             user = authenticate(username=username, password=password)
 
             if user is None:
-                return redirect("/login/")
+                return JsonResponse({'res': "Wrong username or password"})
             if user.is_active:
                 login(request, user)
                 request.session['username'] = username
                 request.session['password'] = password
-                return redirect("/menu/")
+                return JsonResponse({'res': "logged in"})
 
 
 class Logout(View):
     def get(self, request, *args, **kwargs):
-        for key in request.session.keys():
-            del request.session[key]
         logout(request)
         return redirect("/login/")
 
@@ -326,7 +326,7 @@ class DispatchPage(View):
         order_ids = orders.copy()
         # items = []
         # check sequence for locations
-        #buffer = io.StringIO()
+        # buffer = io.StringIO()
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
             while order_ids:
@@ -350,11 +350,13 @@ class DispatchPage(View):
                 order_ids = order_id2
                 cur_location = Location.objects.get(id=temp)
                 # items.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
-                spamwriter.writerow([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
+                spamwriter.writerow(
+                    [cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
             # items.append(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
             #             hospital_location.altitude])
-            spamwriter.writerow(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
-                        hospital_location.altitude])
+            spamwriter.writerow(
+                ['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
+                 hospital_location.altitude])
         with open('itinerary.csv', 'r') as buffer:
             response = HttpResponse(buffer, content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=itinerary.csv'
@@ -373,7 +375,9 @@ class DispatchPage(View):
 class warehousePage(View):
     # view priority queue
     def warehouseView(request):
-        orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime', 'id').values("ordering_clinic_id", "orderedDatetime")
+        orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime',
+                                                                                  'id').values("ordering_clinic_id",
+                                                                                               "orderedDatetime")
         for order in orderList:
             order["ordering_clinic"] = Location.objects.get(id=order.pop("ordering_clinic_id", None)).name
         return render(request, "WHP/warehouseManage.html", {'results': orderList})
@@ -381,14 +385,16 @@ class warehousePage(View):
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):
-        order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority', 'orderedDatetime', 'ordering_clinic')\
-                                        .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority',
+                                                                                    'orderedDatetime',
+                                                                                    'ordering_clinic') \
+                            .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         order_id = None
         order_json = {}
         for order_obj in order_objects:
             order_id = int(order_obj['id'])
             order_items = Include.objects.filter(order=order_id).values('quantity', 'order', 'supply')
-            clinicID= order_obj['ordering_clinic']
+            clinicID = order_obj['ordering_clinic']
             order_json["id"] = order_obj['id']
             order_json["clinic"] = Location.objects.get(id=clinicID).name
             order_json["priority"] = order_obj['priority']
@@ -410,7 +416,8 @@ class warehousePage(View):
     # get a shipping label consists of (order_id, supplies name, quantity, priority, destination name)
     # and update status of the selected order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
-        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id', 'ordering_clinic', 'priority')
+        order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id',
+                                                                                     'ordering_clinic', 'priority')
         if not order_result:
             return render(request, "WHP/warehouseDetail.html", {'message': "error"})
         for order_selected in order_result:
@@ -462,7 +469,6 @@ class warehousePage(View):
         #     response = HttpResponse(buffer, content_type='application/pdf')
         #     response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
         #     return response
-
 
     def updateStatus(request):
         order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
