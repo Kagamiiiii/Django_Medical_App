@@ -13,13 +13,15 @@ from django.shortcuts import redirect
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 import csv
 import json
 import io
 
 
 # ---------------------------Token creation----------------------------
-# ---------------------------------------------------------------------
+# -------------------------------Dummy---------------------------------
 
 class createTokenpage(View):
     def get(self, request, *args, **kwargs):
@@ -29,12 +31,23 @@ class createTokenpage(View):
 # ----------------------------Registration-----------------------------
 # ---------------------------------------------------------------------
 
+def validateEmail(email):
+
+    try:
+        validate_email(email)
+        return True
+    except ValidationError:
+        return False
+
+
 class registerPage(View):
+
     def get(self, request, *args, **kwargs):
         return render(request, "M/registrationPage.html")
 
 
 class tokenValidate(View):
+
     def post(self, request, *args, **kwargs):
         token = request.POST.get('token')
 
@@ -52,6 +65,7 @@ class tokenValidate(View):
 
 
 class createAccount(View):
+
     def post(self, request, *args, **kwargs):
 
         token = request.POST.get('token')
@@ -68,8 +82,24 @@ class createAccount(View):
             return HttpResponse('Token has been redeemed')
 
         username = request.POST.get('username')
+        # verify password
+        if len(username) > 10 or len(username) < 6:
+            return HttpResponse('Username length should be within 6 to 10.')
+        for i in range(len(username)):
+            if not username[i].isdigit() and not username[i].isalpha():
+                return HttpResponse('Username should only contain alphabets or number.')
+
         email = request.POST.get('email')
+        if not validateEmail(email):
+            return HttpResponse('Email is not valid')
+
         password = request.POST.get('password')
+        # verify password
+        if len(password) > 10 or len(password) < 6:
+            return HttpResponse('Password length should be within 6 to 10.')
+        for i in range(len(password)):
+            if not password[i].isdigit() and not password[i].isalpha():
+                return HttpResponse('Password should only contain alphabets or number.')
 
         user = User.objects.create_user(username, email, password)
         user.first_name = request.POST.get('firstname')
@@ -78,6 +108,7 @@ class createAccount(View):
         # User created
 
         account.username = user.username
+        account.password = password
         account.token = ''
         account.save()
         # account edited
@@ -89,7 +120,7 @@ class createAccount(View):
         return HttpResponse('')
 
 
-# ------------------------------Login----------------------------------
+# ---------------------------Authentication----------------------------
 # ---------------------------------------------------------------------
 
 class UserLogin(View):
@@ -98,6 +129,15 @@ class UserLogin(View):
 
 
 class menu(View):
+    """
+            try:
+                request.session['role']
+            except:
+                return redirect("/login/")
+            if request.session['role'] != 'Clinic Manager':  # 'Warehouse Personnel' 'Dispatcher'
+                return redirect("/login/")
+            """
+
     def get(self, request, *args, **kwargs):
 
         try:
@@ -105,15 +145,6 @@ class menu(View):
             password = request.session['password']
         except:
             return redirect("/login/")
-
-        """
-        try:
-            request.session['role']
-        except:
-            return redirect("/login/")
-        if request.session['role'] != 'Clinic Manager':  # 'Warehouse Personnel' 'Dispatcher'
-            return redirect("/login/")
-        """
 
         user = User.objects.get(username=request.session['username'])
 
@@ -155,12 +186,120 @@ class Logout(View):
         return redirect("/login/")
 
 
+# --------------------------Retrieve Account---------------------------
+# ---------------------------------------------------------------------
+class ForgotPassword(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "info/forgotPassword.html")
+
+
+class ForgotPasswordValidate(View):
+    def post(self, request, *args, **kwargs):
+        # send email here request.POST.get('email')
+
+        email = request.POST.get('email')
+
+        try:
+            account = Account.objects.get(email=email)
+        except:
+            return HttpResponse(json.dumps({'res': "No such email"}), content_type="application/json")
+
+        if account is None:
+            return HttpResponse(json.dumps({'res': "No such email"}), content_type="application/json")
+
+        # if success, send empty string and create empty file
+        file = open(email + " password email.txt", "w")
+        file.write("To: " + email + "\nFrom: admin@asp.com\nYour password is " + account.password)
+        file.close()
+
+        return HttpResponse('')
+
+
+# ---------------------Change Account Credentials----------------------
+# ---------------------------------------------------------------------
+class ChangePasswordPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, './info/changePW.html')
+
+
+class ChangePassword(View):
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('old') != request.session['password']:
+            return HttpResponse("The old password is not correct")
+
+        new_password = request.POST.get('new')
+
+        # verify password
+        if len(new_password) > 10 or len(new_password) < 6:
+            return HttpResponse('Password length should be within 6 to 10.')
+        for i in range(len(new_password)):
+            if not new_password[i].isdigit() and not new_password[i].isalpha():
+                return HttpResponse('Password should only contain alphabets or numbers.')
+
+        user = User.objects.get(username=request.session['username'])
+        user.set_password(new_password)
+        user.save()
+
+        account = Account.objects.get(username=request.session['username'])
+        account.password = new_password
+        account.save()
+
+        request.session['password'] = new_password
+        return HttpResponse('')
+
+
+class ChangeInfoPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, './info/changeInformation.html')
+
+
+class GetUserInfo(View):
+    def get(self, request, *args, **kwargs):
+        user = User.objects.get(username=request.session.get('username'))
+        # account = Account.objects.get(username=request.session.get('username'))
+
+        email = user.email
+        first_name = user.first_name
+        last_name = user.last_name
+
+        return JsonResponse({'email': email, 'firstname': first_name, 'lastname': last_name})
+
+
+class ChangeInfo(View):
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+        first_name = request.POST.get('firstname')
+        last_name = request.POST.get('lastname')
+
+        # TODO verify email
+
+        if not validateEmail(email):
+            return HttpResponse('Email is not valid')
+
+        user = User.objects.get(username=request.session['username'])
+
+        user.email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
+        return HttpResponse('')
+
+
 # --------------------------Clinic Manager-----------------------------
 # ---------------------------------------------------------------------
 
 
 class CreateOrderPage(View):
     def createOrderView(request):
+
+        try:
+            request.session['role']
+        except:
+            return redirect("/login/")
+        if request.session['role'] != 'Clinic Manager':
+            return redirect("/login/")
+
         categories = Supply.objects.all().values('category').distinct()
         return render(request, "CM/createOrderPage.html", context={'categories': categories})
 
@@ -253,6 +392,13 @@ class DispatchPage(View):
     # use return a json containing all the orders that are "Queued for Dispatch"
 
     def dispatchView(request):
+        try:
+            request.session['role']
+        except:
+            return redirect("/login/")
+        if request.session['role'] != 'Dispatcher':
+            return redirect("/login/")
+
         return render_to_response("Dispatcher/dispatchPage.html")
 
     def dispatchViewDetail(request):
@@ -375,6 +521,13 @@ class DispatchPage(View):
 class warehousePage(View):
     # view priority queue
     def warehouseView(request):
+        try:
+            request.session['role']
+        except:
+            return redirect("/login/")
+        if request.session['role'] != 'Warehouse Personnel':
+            return redirect("/login/")
+
         orderList = Order.objects.filter(status="Queued for Processing").order_by('priority', 'orderedDatetime',
                                                                                   'id').values("ordering_clinic_id",
                                                                                                "orderedDatetime")
