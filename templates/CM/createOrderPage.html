@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
+  <script type="text/javascript">
+    window.CSRF_TOKEN = "{{ csrf_token }};"
+  </script>
+  <script type="text/javascript" src="../../static/js/createOrder.js"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/createOrder.css">
+  <link rel="shortcut icon" href="#" />
+  <title>Create Order Page</title>
+</head>
+
+<body>
+  <header>
+    <img id="icon" src="../../static/img/radar.png">
+    <button id="system" type="button" class="btn btn-primary">AS-P System</button>
+    <span id="clinic_name" class="unselectable">Mui Wo General Out-patient Clinic</span>
+  </header>
+  <div class="bar">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a id="bs-section-button" class="nav-link unselectable active" onclick="toggleBrowseSupplies()">Browse Supplies by Category</a>
+      </li>
+      <li class="nav-item">
+        <a id="vo-section-button" class="nav-link unselectable" onclick="toggleViewOrder()">View Orders</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account settings</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/change password">Change Password</a>
+          <a class="dropdown-item" href="/change info page">Change email address</a>
+          <a class="dropdown-item" href="/change info page">Change name</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/logout">Log out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div id="bs-section" class="block-container">
+    <div class="card text-center">
+      <div class="card-header">
+        Cart
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Your cart was empty</h5>
+      </div>
+      <div class="card-footer text-muted">
+        <span id="weight-warning">[Warning: Too heavy] </span>Weight = <span id="weight">0</span> KG
+      </div>
+    </div>
+
+
+    <div id="selector">
+      <select class="selectpicker" id="selector-inner" data-live-search="true" data-width="100%" onchange="requestCategory()">
+        {% if categories %}
+        <option>Please select a category...</option>
+        {% for category in categories %}
+        <option>{{ category.category }}</option>
+        {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+
+    <div id="priority-selector">
+      <select class="selectpicker" id="priority-selector-inner" data-width="50%" onchange="changePriority()">
+        <optipon>Select priority</optipon>
+        <option>High</option>
+        <option>Medium</option>
+        <option>Low</option>
+      </select>
+    </div>
+
+    <div id="success-message">
+      Order created!
+    </div>
+
+    <div id="createOrder-div">
+      <button id="createOrder" type="button" class="btn btn-primary" onclick="createOrder();" disabled>Create Order</button>
+    </div>
+
+    <table id="maincontent" class="table">
+      {% include 'CM/category_load.html' %}
+    </table>
+  </div>
+
+  <div id="vo-section" class="viewOrder">
+    {% include 'CM/viewOrder.html' %}
+  </div>
+</body>
+</html>
+<footer>
+  <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0"
+      target="_blank">CC 3.0 BY</a></div>
+</footer>
