@@ -7,7 +7,6 @@ app_name = 'ASP_webApp'
 urlpatterns = [
 
     # --------------------------Register-----------------------------------
-    path('createToken/', views.createTokenpage.as_view()),
     path('register/createAccount', views.createAccount.as_view()),
     path('register/tokenValidate', views.tokenValidate.as_view()),
     path('register/', views.registerPage.as_view()),
