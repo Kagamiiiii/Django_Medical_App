@@ -20,14 +20,6 @@ import json
 import io
 
 
-# ---------------------------Token creation----------------------------
-# -------------------------------Dummy---------------------------------
-
-class createTokenpage(View):
-	def get(self, request, *args, **kwargs):
-		return render(request, "createToken.html")
-
-
 # ----------------------------Registration-----------------------------
 # ---------------------------------------------------------------------
 
