@@ -20,6 +20,9 @@ urlpatterns = [
     # -------------------------Forgot password-----------------------------
     path('forgot password/', views.ForgotPassword.as_view()),
     path('forgot password/validate', views.ForgotPasswordValidate.as_view()),
+    path('reset password/', views.ResetPasswordPage.as_view()),
+    path('reset password/validate', views.ResetPasswordTokenValidate.as_view()),
+    path('reset password/change', views.ResetPassword.as_view()),
 
     # ---------------------Change Account Credentials----------------------
     path('change password/', views.ChangePasswordPage.as_view()),
