@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.conf import settings
 import csv
 import json
 import io
@@ -211,15 +213,13 @@ class ForgotPasswordValidate(View):
             str(hash(account.password)))
         file.close()
 
-        from django.core.mail import send_mail
-
         send_mail(
             'Password reset',
             "Go to /reset password/ page for resetting your password with this token: " +
             str(hash(account.password)),
-            'password_reset@asp.com',
+            settings.EMAIL_HOST_USER,
             [email],
-            fail_silently=True,
+            fail_silently=False,
         )
 
         return HttpResponse('')
