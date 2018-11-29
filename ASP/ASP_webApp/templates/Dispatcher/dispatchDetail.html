@@ -5,7 +5,7 @@
           <tr>
             <th scope="col" style="width: 10%">Order id</th>
             <th scope="col" style="width: 70%">Order detail</th>
-            <th scope="col" style="width: 20%">Process Date Time</th>
+            <th scope="col" style="width: 20%">Order Date Time</th>
           </tr>
         </thead>
         <tbody>
@@ -19,7 +19,7 @@
             {% endfor %}
             <b>Total Weight: {{ result.weight }} KG</b>
             </td>
-            <td>{{result.processedDatetime}}</td>
+            <td>{{result.orderedDatetime}}</td>
         </tr>
         {% endfor%}
         </tbody>

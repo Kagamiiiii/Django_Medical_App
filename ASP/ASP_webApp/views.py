@@ -259,8 +259,8 @@ class DispatchPage(View):
         # get all order id with "Queued for Dispatch" status, render into the tempalte.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -272,7 +272,7 @@ class DispatchPage(View):
             single_order = {}
             single_order["order_id"] = item['id']
             single_order["priority"] = item['priority']
-            single_order["processedDatetime"] = item['processedDatetime']
+            single_order["orderedDatetime"] = item['orderedDatetime']
             single_order["clinic"] = item['ordering_clinic']
             single_order["weight"] = item['weight']
             order_items = Include.objects.filter(order_id=item['id']).values('supply_id', 'quantity')
@@ -291,8 +291,8 @@ class DispatchPage(View):
         # return item JSON information to the website.
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         json_result = []
@@ -309,8 +309,8 @@ class DispatchPage(View):
     def getItinerary(request):
         result = []
         results = Order.objects.all().filter(status="Queued for Dispatch"). \
-            values('id', 'priority', 'weight', 'processedDatetime', 'ordering_clinic') \
-            .order_by('priority', 'processedDatetime', 'id')
+            values('id', 'priority', 'weight', 'orderedDatetime', 'ordering_clinic') \
+            .order_by('priority', 'orderedDatetime', 'id')
         for ele in results:
             result.append(ele)
         orders = []
@@ -324,12 +324,16 @@ class DispatchPage(View):
         hospital_location = Location.objects.get(name="Queen Mary Hospital Drone Port")
         location_id = hospital_location.pk
         order_ids = orders.copy()
-        # items = []
         # check sequence for locations
         #buffer = io.StringIO()
+        # store stuff into data structure and check which half of priority is higher.
+        path_result = []
+        priority_list = []
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
             while order_ids:
+            # while order_ids are not being fully processed and is empty
                 minimum = 999999
                 temp = None
                 for order_id in order_ids:
@@ -343,16 +347,39 @@ class DispatchPage(View):
                         minimum = d
                 location_id = temp
                 order_id2 = order_ids.copy()
+                current_priority = 3 # lowest priority.
                 for order_id in order_ids:
+                # erase all order with same location as the current location
                     order_location = Order.objects.get(id=order_id).ordering_clinic_id
                     if order_location == location_id:
+                        priority = Order.objects.get(id=order_id).priority
+                        if priority == "Low":
+                            priority = 3
+                        elif priority == "High":
+                            priority = 1
+                        else:
+                            priority = 2
+                        if current_priority < priority:
+                            current_priority = priority
                         order_id2.remove(order_id)
+                priority_list.append(current_priority) # append the finalize priority of this location.
+                current_priority = 3 # reset priority
                 order_ids = order_id2
                 cur_location = Location.objects.get(id=temp)
-                # items.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
-                spamwriter.writerow([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
-            # items.append(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
-            #             hospital_location.altitude])
+                path_result.append([cur_location.name, cur_location.latitude, cur_location.longitude, cur_location.altitude])
+            # determining order of result.
+            first_halve = sum(priority_list[0:len(priority_list) // 2 - 1])
+            if len(priority_list) % 2 == 1: # odd
+                last_halve = sum(priority_list[len(priority_list) // 2 + 1:])
+            else: # even
+                last_halve = sum(priority_list[len(priority_list) // 2 :])
+            if last_halve < first_halve: # not normal
+                for result in path_result:
+                    spamwriter.writerow(result)
+            else: # normal
+                path_result = path_result[::-1]
+                for result in path_result:
+                    spamwriter.writerow(result)
             spamwriter.writerow(['Queen Mary Hospital Drone Port', hospital_location.latitude, hospital_location.longitude,
                         hospital_location.altitude])
         with open('itinerary.csv', 'r') as buffer:
