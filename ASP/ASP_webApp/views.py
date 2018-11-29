@@ -202,7 +202,8 @@ class ForgotPasswordValidate(View):
         if account is None:
             return HttpResponse(json.dumps({'res': "No such email"}), content_type="application/json")
 
-        account.token = str(hash(account.password))
+        import random
+        account.token = str(hash(account.username) + random.randint(100, 10000))
         account.save()
 
         # if success, send empty string and create empty file
@@ -210,16 +211,16 @@ class ForgotPasswordValidate(View):
         file.write(
             "To: " + email +
             "\nFrom: admin@asp.com\nGo to /reset password/ page for resetting your password with this token: " +
-            str(hash(account.password)))
+            account.token)
         file.close()
 
         send_mail(
             'Password reset',
             "Go to /reset password/ page for resetting your password with this token: " +
-            str(hash(account.password)),
+            account.token,
             settings.EMAIL_HOST_USER,
             [email],
-            fail_silently=True,
+            fail_silently=False,
         )
 
         return HttpResponse('')
