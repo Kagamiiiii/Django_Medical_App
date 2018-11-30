@@ -1,3 +1,15 @@
+$(window).on('load', function(){
+  $.ajax({
+    type: "POST",
+    url: "./pickUpLeftOff/",
+    success: function (respond) {
+       if ( respond == "Not done" ){
+         processTop();
+       }
+    }
+  });
+})
+
 function csrfSafeMethod(method) {
   // these HTTP methods do not require CSRF protection
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));

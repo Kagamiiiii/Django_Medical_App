@@ -685,6 +685,13 @@ class warehousePage(View):
             order["ordering_clinic"] = Location.objects.get(id=order.pop("ordering_clinic_id", None)).name
         return render(request, "WHP/warehouseManage.html", {'results': orderList})
 
+    def pickUpLeftOff(request):
+        if len(Order.objects.filter(status="Processing by Warehouse")) != 0:
+            # some orders are not done and are left off
+            return HttpResponse("Not done")
+        else:
+            return HttpResponse("Done")
+
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):

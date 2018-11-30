@@ -47,9 +47,6 @@ class Location(models.Model):
         verbose_name = 'Location'
         verbose_name_plural = 'Locations'
 
-    def __str__(self):
-        return self.name
-
 
 class Account(models.Model):
     username = models.CharField(max_length=200, blank=True)
