@@ -489,7 +489,7 @@ class CreateOrderPage(View):
         return JsonResponse(json_result, safe=False)
 
     def viewOrder(request):
-        account_id = request.POST.get("account_id", "")
+        account_id = request.session['account_id']
 
         # first get their order ID (distinct), get their supply_id and quantity,
         # then merge them together, and get their priority and weight later.
@@ -607,7 +607,7 @@ class DispatchPage(View):
         priority_list = []
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
+            spamwriter.writerow(['Location name', 'Latitude', 'Longitude', 'Altitude'])
             while order_ids:
                 # while order_ids are not being fully processed and is empty
                 minimum = 999999
@@ -670,7 +670,7 @@ class DispatchPage(View):
         orders = request.POST.getlist("item")
         for order_id in orders:
             Order.objects.filter(id=int(order_id)).update(status="Dispatched", dispatchedDatetime=timezone.now())
-        return HttpResponse("Success")
+        return redirect("/D/main")
 
 
 # ---------------------------WarehousePersonnel------------------------
@@ -733,7 +733,8 @@ class warehousePage(View):
     # and update status of the selected order (status ==> "Queued for Dispatch")
     def getShippingLabel(request):
         order_result = Order.objects.filter(status="Processing by Warehouse").values('ordering_account', 'id',
-                                                                                     'ordering_clinic', 'priority')
+                                                                                     'ordering_clinic', 'priority',
+                                                                                     'weight')
         if not order_result:
             return render(request, "WHP/warehouseDetail.html", {'message': "error"})
         for order_selected in order_result:
@@ -747,8 +748,8 @@ class warehousePage(View):
             account_name = order_account.firstname + " " + order_account.lastname
             order_clinic = order_selected['ordering_clinic']
             location_name = Location.objects.get(id=order_clinic).name
+            order_weight = order_selected['weight']
             priority = order_selected['priority']
-            # with open('shippingLabel.pdf', 'w') as buffer:
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
@@ -757,8 +758,8 @@ class warehousePage(View):
             pdf.drawString(30, 800, 'Queen Mary ')
             pdf.drawString(30, 775, 'Hospital Drone Port')
             pdf.setFont('Helvetica', 12)
-            pdf.drawString(150, 700, 'ORDER ID:')
-            pdf.drawString(250, 700, str(order_id))
+            pdf.drawString(30, 700, 'ORDER ID:')
+            pdf.drawString(140, 700, str(order_id))
 
             pdf.line(230, 697, 330, 697)
 
@@ -775,21 +776,37 @@ class warehousePage(View):
             pdf.drawString(30, 575, 'DESTINATION: ')
             pdf.line(120, 570, 580, 570)
             pdf.drawString(120, 575, location_name)
+            pdf.drawString(30, 525, 'WEIGHT: ')
+            pdf.line(120, 520, 580, 520)
+            pdf.drawString(120, 525, str(order_weight))
+            pdf.drawString(30, 475, 'ITEM DETAILS: ')
+            pdf.setFont('Helvetica', 10)
+            pdf.drawString(450, 445, 'QUANTITY')
+            pdf.drawString(50, 445, 'SUPPLY NAME')
+            order_items = Include.objects.filter(order=order_id).values('supply', 'quantity')
+            print(order_items)
+            next_line = 1
+            for item in order_items:
+                numbers = item['quantity']
+                supply_id = item['supply']
+                supply_object = Supply.objects.filter(id=supply_id).values('name')
+                supply_name = None
+                for name in supply_object:
+                    supply_name = name['name']
+                horizontal_pixel = 455 - next_line * 30
+                pdf.drawString(50, horizontal_pixel, supply_name)
+                pdf.drawString(480, horizontal_pixel, str(numbers))
+                next_line += 1
             pdf.showPage()
             pdf.save()
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
             return response
-        #     return FileResponse(buffer, as_attachment=True, filename='shipping_label.pdf')
-        # with open('shippingLabel.pdf', 'r') as buffer:
-        #     response = HttpResponse(buffer, content_type='application/pdf')
-        #     response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
-        #     return response
 
     def updateStatus(request):
-        order_objects = Order.objects.filter(status="Queued for Processing").values('id') \
+        order_objects = Order.objects.filter(status="Processing by Warehouse").values('id') \
                             .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         for order_obj in order_objects:
             order_id = int(order_obj['id'])
         Order.objects.filter(id=order_id).update(status="Queued for Dispatch", processedDatetime=timezone.now())
-        return HttpResponse("Success")
+        return redirect("/WHP/main")
