@@ -40,6 +40,9 @@ class Location(models.Model):
     altitude = models.FloatField()
     isStartingPoint = models.BooleanField()
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Location'
         verbose_name_plural = 'Locations'
@@ -51,10 +54,11 @@ class Account(models.Model):
     firstname = models.CharField(max_length=200, blank=True)
     lastname = models.CharField(max_length=200, blank=True)
     email = models.EmailField()
-    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE)
+    worklocation = models.ForeignKey(Location, on_delete=models.CASCADE, blank=True, null=True)
     role = models.CharField(max_length=30, choices=(('Clinic Manager', 'Clinic Manager'),
                                                     ('Dispatcher', 'Dispatcher'),
-                                                    ('Warehouse Personnel', 'Warehouse Personnel')))
+                                                    ('Warehouse Personnel', 'Warehouse Personnel'),
+                                                    ('Admin', 'Admin')))
     token = models.CharField(max_length=20, blank=True)
 
     class Meta:
@@ -86,7 +90,8 @@ class Order(models.Model):
 
     @classmethod
     def create(cls, priority, ODatetime, clinic, weight, account):
-        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic_id=clinic, weight=weight, ordering_account_id=account)
+        order = cls(priority=priority, orderedDatetime=ODatetime, ordering_clinic_id=clinic, weight=weight,
+                    ordering_account_id=account)
         return order
 
 
@@ -106,6 +111,7 @@ class Include(models.Model):
     def create(cls, oid, supply, quantity):
         includes = cls(order=oid, supply=supply, quantity=quantity)
         return includes
+
 
 # distance data model, should storing the calculation result of distance data for deliveries.
 class Distance(models.Model):
