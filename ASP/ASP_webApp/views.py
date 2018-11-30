@@ -401,6 +401,8 @@ class GetHospitalLocations(View):
 class GenerateToken(View):
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email')
+        if not validateEmail(email):
+            return HttpResponse('Email is not valid')
 
         account = Account(email=email, role=request.POST.get('role'))
 
