@@ -695,10 +695,16 @@ class warehousePage(View):
     # remove order from the top to pick and pack (change status to "processing by warehouse")
     # and return the details of the selected order
     def orderProcess(request):
-        order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority',
-                                                                                    'orderedDatetime',
-                                                                                    'ordering_clinic') \
-                            .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        if len(Order.objects.filter(status="Processing by Warehouse")) != 0:
+            order_objects = Order.objects.filter(status="Processing by Warehouse").values('id', 'weight', 'priority',
+                                                                                        'orderedDatetime',
+                                                                                        'ordering_clinic') \
+                                .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
+        else:
+            order_objects = Order.objects.filter(status="Queued for Processing").values('id', 'weight', 'priority',
+                                                                                        'orderedDatetime',
+                                                                                        'ordering_clinic') \
+                                .order_by('priority', 'orderedDatetime', 'id', 'weight')[:1]
         order_id = None
         order_json = {}
         for order_obj in order_objects:
