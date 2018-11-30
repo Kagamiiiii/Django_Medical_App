@@ -80,8 +80,8 @@ function createOrder(){
         priority: selected_priority,
         cart: cart,
         weight: total_weight,
-        clinic_id: 1,
-        account_id: 1
+        // clinic_id: 1,
+        // account_id: 1
       };
     $.ajax({
           type: "POST",
