@@ -418,7 +418,7 @@ class GenerateToken(View):
         file.close()
 
         send_mail(
-            'Password reset',
+            'Token for registration',
             "Go to /register/ page for registration with this token: " +
             account.token,
             settings.EMAIL_HOST_USER,
