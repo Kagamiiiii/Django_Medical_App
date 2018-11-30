@@ -57,9 +57,12 @@ class tokenValidate(View):
         locations = Location.objects.all()
         location_names = list()
 
-        if account.role == 'Clinic Manager':
+        if account.role == 'Admin':
+            location_names = []
+        elif account.role == 'Clinic Manager':
             for location in locations:
-                location_names.append(location.name)
+                if not location.isStartingPoint:
+                    location_names.append(location.name)
         else:
             location_names.append(account.worklocation.name)
 
@@ -117,7 +120,8 @@ class createAccount(View):
         account.firstname = user.first_name
         account.lastname = user.last_name
         account.token = ''
-        account.worklocation = Location.objects.get(name=request.POST.get('location'))
+        if account.role != 'Admin':
+            account.worklocation = Location.objects.get(name=request.POST.get('location'))
         account.save()
         # account edited
 
@@ -423,7 +427,6 @@ class GenerateToken(View):
         )
 
         return HttpResponse('')
-
 
 # --------------------------Clinic Manager-----------------------------
 # ---------------------------------------------------------------------
