@@ -31,6 +31,11 @@ urlpatterns = [
     path('information/', views.GetUserInfo.as_view()),
     path('change information', views.ChangeInfo.as_view()),
 
+    # --------------------------------Admin--------------------------------
+    path('Admin/main/', views.AdminMainPage.as_view()),
+    path('Admin/main/hospital locations', views.GetHospitalLocations.as_view()),
+    path('Admin/main/generate', views.GenerateToken.as_view()),
+
     # --------------------------Clinic Manager-----------------------------
     path('CM/main/', views.CreateOrderPage.createOrderView, name='createOrderPage'),
     path('CM/main/displayByCategory/', views.CreateOrderPage.displayByCategory, name='displayByCategory'),

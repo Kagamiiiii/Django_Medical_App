@@ -17,6 +17,8 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
+import random
+import string
 import csv
 import json
 import io
@@ -52,14 +54,24 @@ class tokenValidate(View):
         if account is None:
             return HttpResponse("No such token")
 
-        return HttpResponse(
-            json.dumps({'email': account.email, 'location': account.worklocation.name, 'role': account.role}),
-            content_type="application/json")
+        locations = Location.objects.all()
+        location_names = list()
+
+        if account.role == 'Clinic Manager':
+            for location in locations:
+                location_names.append(location.name)
+        else:
+            location_names.append(account.worklocation.name)
+
+        return JsonResponse(
+            {'email': account.email, 'locations': location_names, 'role': account.role})  # account.worklocation.name
 
 
 class createAccount(View):
 
     def post(self, request, *args, **kwargs):
+
+        # return HttpResponse(request.POST.get('location'))
 
         token = request.POST.get('token')
 
@@ -105,6 +117,7 @@ class createAccount(View):
         account.firstname = user.first_name
         account.lastname = user.last_name
         account.token = ''
+        account.worklocation = Location.objects.get(name=request.POST.get('location'))
         account.save()
         # account edited
 
@@ -147,13 +160,14 @@ class menu(View):
 
         if user is None:
             return redirect('/login/')
-
         if request.session['role'] == 'Clinic Manager':
             return redirect("/CM/main/")
         if request.session['role'] == 'Dispatcher':
             return redirect("/D/main/")
         if request.session['role'] == 'Warehouse Personnel':
             return redirect("/WHP/main/")
+        if request.session['role'] == 'Admin':
+            return redirect("/Admin/main/")
 
 
 class validate(View):
@@ -170,6 +184,8 @@ class validate(View):
                 return JsonResponse({'res': "Wrong username or password"})
             if user.is_active:
                 login(request, user)
+                account = Account.objects.get(username=username)
+                request.session['account_id'] = account.pk
                 request.session['username'] = username
                 request.session['password'] = password
                 return JsonResponse({'res': "logged in"})
@@ -220,7 +236,7 @@ class ForgotPasswordValidate(View):
             account.token,
             settings.EMAIL_HOST_USER,
             [email],
-            fail_silently=False,
+            fail_silently=True,
         )
 
         return HttpResponse('')
@@ -354,6 +370,57 @@ class ChangeInfo(View):
         account.firstname = first_name
         account.lastname = last_name
         account.save()
+
+        return HttpResponse('')
+
+
+# ------------------------------Admin----------------------------------
+# ---------------------------------------------------------------------
+class AdminMainPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, './info/requestToken.html')
+
+
+class GetHospitalLocations(View):
+    def get(self, request, *args, **kwargs):
+
+        locations = Location.objects.all()
+
+        location_names = list()
+        for location in locations:
+            if location.isStartingPoint:
+                location_names.append(location.name)
+
+        return JsonResponse({'locations': location_names})
+
+
+class GenerateToken(View):
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+
+        account = Account(email=email, role=request.POST.get('role'))
+
+        if request.POST.get('role') != 'Admin' and request.POST.get('role') != 'Clinic Manager':
+            account.worklocation = Location.objects.get(name=request.POST.get('location'))
+
+        account.token = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(20))
+        account.save()
+
+        file = open(email + " token for registration email.txt", "w")
+        file.write(
+            "To: " + email +
+            "\nFrom: admin@asp.com\nGo to /register/ page for registration with this token: " +
+            account.token)
+        file.close()
+
+        send_mail(
+            'Password reset',
+            "Go to /register/ page for registration with this token: " +
+            account.token,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=True,
+        )
 
         return HttpResponse('')
 
