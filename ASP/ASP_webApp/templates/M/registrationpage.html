@@ -75,10 +75,7 @@
 
                             let locations = temp.locations;
 
-
-                            if(locations.length == 0){
-                                $('#workplace').prop('disabled', true);
-                            }else if(locations.length == 1){
+                            if(locations.length == 1){
                                 $('#workplace').append('<option value="' + locations[0] + '">' + locations[0] + '</option>');
                                 $('#workplace').prop('disabled', true);
                             }else{
