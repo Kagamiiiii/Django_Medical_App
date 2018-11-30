@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ASP Forget Password page</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script>
+		function start(){
+			$('#finish').hide();
+		}
+		function validate(){
+			if ($('#email').val() === ""){
+				$('#error_message').html('Please enter the email<br><br>');
+			}
+			else{
+				let email = {
+					email:$('#email').val()
+				};
+				$.post('/validate', email, function (response,error) {
+					if (error !== ""){
+						$('#error_message').html(error);
+					}
+					else{
+						$('#finish').show();
+						$('#fillin').hide();
+						$('#error_message').hide();
+					}
+				});
+			}
+		}
+	</script>
+	<h2>ASP Forget Password page</h2>
+</head>
+
+<body onload="start()">
+
+<div id='error_message'></div>
+
+<div id='fillin'>
+Please enter the email of your account<br>
+Email: <input id="email" type="text" name="email"><br>
+<button type="button" onclick="validate()">Confirm</button>
+</div>
+
+<div id='finish'>
+An email contains your password is sent<br>
+<a href='../login'>Go back to login page</a>
+</div>
+
+</body>
+
+</html>
