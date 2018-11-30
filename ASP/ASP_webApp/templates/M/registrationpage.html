@@ -72,10 +72,22 @@
                             $('#message').html('');
                             let temp = response
                             let email = temp.email;
-                            let location = temp.location;
+
+                            let locations = temp.locations;
+
+                            if(locations.length == 1){
+                                $('#workplace').append('<option value="' + locations[0] + '">' + locations[0] + '</option>');
+                                $('#workplace').prop('disabled', true);
+                            }else{
+                                for(let i = 0; i < locations.length; i++){
+                                    $('#workplace').append('<option value="' + locations[i] + '">' + locations[i] + '</option>');
+                                }
+                            }
+
+
+
                             role = temp.role;
                             $('#email').val(email);
-                            $('#workplace').val(location);
                             $('#role').val(role);
                         }
                     });
@@ -92,7 +104,7 @@
                         username: $('#username').val(),
                         password: $('#password').val(),
                         email: $('#email').val(),
-                        location: $('#location').val(),
+                        location: $('#workplace').val(),
                         role: $('#role').val(),
                         lastname: lastname,
                         firstname: firstname,
@@ -109,6 +121,7 @@
                     });
                 }
             }
+
 
 
     </script>
@@ -143,19 +156,22 @@
 
         <span class="mb-3 font-weight-normal">Please enter your information<br></span>
 
-        <br />
-        Email: <input id='email' class="form-control" class="form-control" disabled />
-        <br />
-        Workplace: <input id='workplace' class="form-control" class="form-control" disabled />
-        <br />
-        Role: <input id='role' class="form-control" class="form-control" disabled />
-        <br />
+        <br/>
+        Email: <input id='email' class="form-control" disabled/>
+        <br/>
+        Workplace:
+        <select id='workplace' class="form-control">
+
+        </select>
+        <br/>
+        Role: <input id='role' class="form-control" disabled/>
+        <br/>
         <input id="username" type="text" name="username" class="form-control" placeholder="Username" required>
         <input id="password" type="password" name="password" class="form-control" placeholder="Password" required>
         <input id="firstname" type="text" name="firstname" placeholder="First name" class="form-control" required>
         <input id="lastname" type="text" name="lastname" placeholder="Last name" class="form-control" required>
 
-        <br />
+        <br/>
         <button type="button" onclick="create()" class="btn btn-lg btn-primary btn-block">Create Account</button>
 
     </div>
