@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 import random
 import string
@@ -475,7 +475,7 @@ class CreateOrderPage(View):
         json_result = []
         for result in results:
             json_result.append(result)
-        return render_to_response("CM/category_load.html", {'results': json_result})
+        return render_to_response("CM/categoryLoad.html", {'results': json_result})
 
     def displayByCategoryJson(request):
         # data = json.load(request.POST)
@@ -802,6 +802,73 @@ class warehousePage(View):
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = 'attachment; filename=shippingLabel.pdf'
             return response
+
+    def sendEmail(request):
+        orders = request.POST.getlist("item")
+        for order_id in orders:
+            order = Order.objects.get(id=int(order_id))
+            items = Include.objects.filter(order=int(order_id)).values('supply', 'quantity')
+            quantity = 0
+            for item in items:
+                quantity += item['quantity']
+            account_name = order.ordering_account.firstname + " " + order.ordering_account.lastname
+            location_name = order.ordering_clinic.name
+            priority = order.priority
+            # with open('shippingLabel.pdf', 'w') as buffer:
+            buffer = io.BytesIO()
+            pdf = canvas.Canvas(buffer)
+            pdf.setLineWidth(.3)
+            pdf.setFont('Helvetica', 16)
+
+            pdf.drawString(30, 800, 'Queen Mary ')
+            pdf.drawString(30, 775, 'Hospital Drone Port')
+            pdf.setFont('Helvetica', 12)
+            pdf.drawString(150, 700, 'ORDER ID:')
+            pdf.drawString(250, 700, str(order_id))
+
+            pdf.line(230, 697, 330, 697)
+
+            pdf.drawString(350, 700, 'QUANTITY:')
+            pdf.drawString(500, 700, str(quantity))
+            pdf.line(450, 697, 580, 697)
+
+            pdf.drawString(30, 625, 'RECEIVED BY:')
+            pdf.line(120, 620, 450, 620)
+            pdf.drawString(120, 625, account_name)
+            pdf.drawString(350, 673, 'PRIORITY:')
+            pdf.drawString(500, 673, priority)
+            pdf.line(450, 670, 580, 670)
+            pdf.drawString(30, 575, 'DESTINATION: ')
+            pdf.line(120, 570, 580, 570)
+            pdf.drawString(120, 575, location_name)
+            pdf.drawString(30, 475, 'ITEM DETAILS: ')
+            pdf.setFont('Helvetica', 10)
+            pdf.drawString(450, 445, 'QUANTITY')
+            pdf.drawString(50, 445, 'SUPPLY NAME')
+            print(items)
+            next_line = 1
+            for item in items:
+                numbers = item['quantity']
+                supply_id = item['supply']
+                supply_object = Supply.objects.filter(id=supply_id).values('name')
+                supply_name = None
+                for name in supply_object:
+                    supply_name = name['name']
+                horizontal_pixel = 455 - next_line * 30
+                pdf.drawString(50, horizontal_pixel, supply_name)
+                pdf.drawString(480, horizontal_pixel, str(numbers))
+                next_line += 1
+
+            pdf.showPage()
+            pdf.save()
+            pdfFile = buffer.getvalue()
+            buffer.close()
+            email = EmailMessage('Hi ' + account_name,
+                                 'Your order has been dispatched. Details are shown in the shipping label.',
+                                 settings.EMAIL_HOST_USER, [order.ordering_account.email])
+            email.attach('shipping_label.pdf', pdfFile, 'application/pdf')
+            email.send()
+        return HttpResponse("Success")
 
     def updateStatus(request):
         order_objects = Order.objects.filter(status="Processing by Warehouse").values('id') \
