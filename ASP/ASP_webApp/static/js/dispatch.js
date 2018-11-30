@@ -59,17 +59,4 @@ function updateToDispatch(){
           }
         }
     );
-    $.ajax({
-          type: "POST",
-          url: "./sendEmail/",
-          data: {
-            item: window.items,
-          },
-          traditional: true,
-          success: function (respond) {
-              alert("email sent to corresponding clinic manager.");
-              // location.reload();
-          }
-        }
-    );
 }
