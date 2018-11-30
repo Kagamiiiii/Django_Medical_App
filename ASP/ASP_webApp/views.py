@@ -365,7 +365,7 @@ class ChangeInfo(View):
 class CreateOrderPage(View):
     def createOrderView(request):
         categories = Supply.objects.all().values('category').distinct()
-        account_id = request.session['id']
+        account_id = request.session['account_id']
         clinic_name = Location.objects.get(id=Account.objects.get(id=account_id).worklocation_id).name
         return render(request, "CM/createOrderPage.html",
                       context={'categories': categories, 'clinic_name': clinic_name})
@@ -378,7 +378,7 @@ class CreateOrderPage(View):
             orderObject = json.loads(query)
         except json.JSONDecodeError as e:
             return HttpResponse("Fail")
-        account_id = request.session['id']
+        account_id = request.session['account_id']
         clinic_id = Location.objects.get(id=Account.objects.get(id=account_id).worklocation_id).id
         dateTime = timezone.now()
         priority = orderObject['priority']
