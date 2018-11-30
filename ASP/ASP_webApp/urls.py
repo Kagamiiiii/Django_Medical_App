@@ -49,7 +49,7 @@ urlpatterns = [
     path('D/main/dispatchDetailJson/', views.DispatchPage.dispatchViewDetailJson, name='dispatchPageDetailJson'),
     path('D/main/getItinerary/', views.DispatchPage.getItinerary, name='getItinerary'),
     path('D/main/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
-    path('D/main/sendEmail/', views.DispatchPage.sendEmail, name='sendEmail'),
+    # path('D/main/sendEmail/', views.DispatchPage.sendEmail, name='sendEmail'),
     # --------------------------Warehouse Personnel------------------------
     path('WHP/main/', views.warehousePage.warehouseView, name='whpPage'),
     path('WHP/main/processOrder/', views.warehousePage.orderProcess, name='whpProcessOrder'),
