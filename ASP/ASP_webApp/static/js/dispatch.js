@@ -55,8 +55,15 @@ function updateToDispatch(){
           traditional: true,
           success: function (respond) {
               alert("Dispatch updated!");
-              window.location.reload(true);
+              $.ajax({
+                  type: "POST",
+                  url: "./sendEmail/",
+                  success: function (respond) {
+                      window.location.reload(true);
+                  }
+              });
           }
         }
     );
+
 }

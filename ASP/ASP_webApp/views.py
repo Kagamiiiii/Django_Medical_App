@@ -609,7 +609,7 @@ class DispatchPage(View):
         priority_list = []
         with open('itinerary.csv', 'w') as buffer:
             spamwriter = csv.writer(buffer, quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
+            spamwriter.writerow(['Location Name', 'Latitude', 'Longitude', 'Altitude'])
             while order_ids:
                 # while order_ids are not being fully processed and is empty
                 minimum = 999999
