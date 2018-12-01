@@ -68,7 +68,7 @@ function orderCreated(){
           });
         })
     });
-  }
+}
 
 function createOrder(){
   var e = document.getElementById("priority-selector-inner");
@@ -80,8 +80,6 @@ function createOrder(){
         priority: selected_priority,
         cart: cart,
         weight: total_weight,
-        // clinic_id: 1,
-        // account_id: 1
       };
     $.ajax({
           type: "POST",
@@ -94,7 +92,6 @@ function createOrder(){
         }
     });
   }
-
 }
 
 function strip(num, precision = 4) {
@@ -142,7 +139,6 @@ function updateCart() {
 }
 
 function changePriority(){
-
   var e = document.getElementById("priority-selector-inner");
   var selected_priority = e.options[e.selectedIndex].text;
   if (selected_priority != "Select priority") {

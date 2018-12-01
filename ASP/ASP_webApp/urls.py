@@ -43,6 +43,7 @@ urlpatterns = [
     path('CM/main/createOrder/', views.CreateOrderPage.createOrder, name='createOrder'),
     path('CM/main/viewOrder/', views.CreateOrderPage.viewOrder, name='viewOrder'),
     path('CM/main/orderAction/', views.CreateOrderPage.orderAction, name='orderCancel'),
+
     # --------------------------Dispatcher---------------------------------
     path('D/main/', views.DispatchPage.dispatchView, name='dispatchPage'),
     path('D/main/dispatchDetail/', views.DispatchPage.dispatchViewDetail, name='dispatchPageDetail'),
@@ -50,6 +51,7 @@ urlpatterns = [
     path('D/main/getItinerary/', views.DispatchPage.getItinerary, name='getItinerary'),
     path('D/main/dispatchUpdate/', views.DispatchPage.dispatchUpdate, name='dispatchUpdate'),
     # path('D/main/sendEmail/', views.DispatchPage.sendEmail, name='sendEmail'),
+
     # --------------------------Warehouse Personnel------------------------
     path('WHP/main/', views.warehousePage.warehouseView, name='whpPage'),
     path('WHP/main/processOrder/', views.warehousePage.orderProcess, name='whpProcessOrder'),
