@@ -625,23 +625,17 @@ class DispatchPage(View):
                         minimum = d
                 location_id = temp
                 order_id2 = order_ids.copy()
-                current_priority = 3  # lowest priority.
+                current_priority = "3"  # lowest priority.
                 for order_id in order_ids:
                     # erase all order with same location as the current location
                     order_location = Order.objects.get(id=order_id).ordering_clinic_id
                     if order_location == location_id:
                         priority = Order.objects.get(id=order_id).priority
-                        if priority == "Low":
-                            priority = 3
-                        elif priority == "High":
-                            priority = 1
-                        else:
-                            priority = 2
                         if current_priority < priority:
                             current_priority = priority
                         order_id2.remove(order_id)
-                priority_list.append(current_priority)  # append the finalize priority of this location.
-                current_priority = 3  # reset priority
+                priority_list.append(int(current_priority))  # append the finalize priority of this location.
+                current_priority = "3"  # reset priority
                 order_ids = order_id2
                 cur_location = Location.objects.get(id=temp)
                 path_result.append(
@@ -678,6 +672,12 @@ class DispatchPage(View):
             account_name = order.ordering_account.firstname + " " + order.ordering_account.lastname
             location_name = order.ordering_clinic.name
             priority = order.priority
+            if priority == "1":
+                priority = "High"
+            elif priority == "2":
+                priority = "Medium"
+            else:
+                priority = "Low"
             # with open('shippingLabel.pdf', 'w') as buffer:
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
@@ -806,6 +806,12 @@ class warehousePage(View):
             location_name = Location.objects.get(id=order_clinic).name
             order_weight = order_selected['weight']
             priority = order_selected['priority']
+            if priority == "1":
+                priority = "High"
+            elif priority == "2":
+                priority = "Medium"
+            else:
+                priority = "Low"
             buffer = io.BytesIO()
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
