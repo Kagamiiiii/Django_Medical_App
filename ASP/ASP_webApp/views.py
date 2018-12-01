@@ -518,7 +518,7 @@ class CreateOrderPage(View):
     def orderAction(request):
         order_id = request.POST.get("orderID", "")
         if (Order.objects.get(id=order_id).status != "Queued for Processing"):
-            Order.objects.filter(id=order_id).update(status="Delivered")
+            Order.objects.filter(id=order_id).update(status="Delivered", deliveredDatetime=timezone.now())
         else:
             Order.objects.filter(id=order_id).update(status="Cancelled")
         return HttpResponse("Success")
