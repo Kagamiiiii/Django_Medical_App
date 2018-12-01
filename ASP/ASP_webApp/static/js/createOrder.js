@@ -1,7 +1,7 @@
 var items = null;
 var cart = [];
 var priority = "Low";
-var total_weight = 0;
+var total_weight = 1.2;
 
 
 function csrfSafeMethod(method) {
@@ -108,7 +108,7 @@ function strip(num, precision = 4) {
 }
 
 function updateWeight(){
-    total_weight = 0;
+    total_weight = 1.2;
     for (item in cart){
       total_weight += cart[item].quantity * cart[item].weight;
     }

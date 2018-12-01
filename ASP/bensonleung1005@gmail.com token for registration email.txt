@@ -1,0 +1,3 @@
+To: bensonleung1005@gmail.com
+From: admin@asp.com
+Go to /register/ page for registration with this token: LMDAXEXDYWR88E1NTT3C
