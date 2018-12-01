@@ -96,6 +96,9 @@
             function create() {
                 if ($('#username').val() === "" || $('#password').val() === "" || $('#firstname').val() === "" || $('#lastname').val() === "") {
                     $('#message').html('All field should not be blank<br><br>');
+				}
+				if ($('#password').val() !== $('#password2').val()) {
+                    $('#message').html('Two passwords are not the same<br><br>');				
                 } else {
                     let lastname = $('#lastname').val();
                     let firstname = $('#firstname').val();
@@ -168,6 +171,7 @@
         <br/>
         <input id="username" type="text" name="username" class="form-control" placeholder="Username" required>
         <input id="password" type="password" name="password" class="form-control" placeholder="Password" required>
+		<input id="password2" type="password" name="password2" class="form-control" placeholder="Re-enter password" required>
         <input id="firstname" type="text" name="firstname" placeholder="First name" class="form-control" required>
         <input id="lastname" type="text" name="lastname" placeholder="Last name" class="form-control" required>
 
