@@ -631,7 +631,7 @@ class DispatchPage(View):
                     order_location = Order.objects.get(id=order_id).ordering_clinic_id
                     if order_location == location_id:
                         priority = Order.objects.get(id=order_id).priority
-                        if current_priority < priority:
+                        if current_priority > priority:
                             current_priority = priority
                         order_id2.remove(order_id)
                 priority_list.append(int(current_priority))  # append the finalize priority of this location.
