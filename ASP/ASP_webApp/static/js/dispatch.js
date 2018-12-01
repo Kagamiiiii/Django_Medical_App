@@ -58,6 +58,10 @@ function updateToDispatch(){
               $.ajax({
                   type: "POST",
                   url: "./sendEmail/",
+                  data: {
+                    item: window.items,
+                  },
+                  traditional: true,
                   success: function (respond) {
                       window.location.reload(true);
                   }
