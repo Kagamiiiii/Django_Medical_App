@@ -420,7 +420,7 @@ class GenerateToken(View):
         file.close()
 
         send_mail(
-            'Password reset',
+            'Registration email',
             "Go to /register/ page for registration with this token: " +
             account.token,
             settings.EMAIL_HOST_USER,
