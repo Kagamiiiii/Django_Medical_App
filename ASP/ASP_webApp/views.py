@@ -683,14 +683,14 @@ class DispatchPage(View):
             pdf = canvas.Canvas(buffer)
             pdf.setLineWidth(.3)
             pdf.setFont('Helvetica', 16)
-
             pdf.drawString(30, 800, 'Queen Mary ')
             pdf.drawString(30, 775, 'Hospital Drone Port')
             pdf.setFont('Helvetica', 12)
-            pdf.drawString(150, 700, 'ORDER ID:')
-            pdf.drawString(250, 700, str(order_id))
+            pdf.drawString(30, 700, 'ORDER ID:')
+            pdf.drawString(140, 700, str(order_id))
 
-            pdf.line(230, 697, 330, 697)
+            pdf.line(120, 697, 220, 697)
+
 
             pdf.drawString(350, 700, 'QUANTITY:')
             pdf.drawString(500, 700, str(quantity))
@@ -701,7 +701,7 @@ class DispatchPage(View):
             pdf.drawString(120, 625, account_name)
             pdf.drawString(350, 673, 'PRIORITY:')
             pdf.drawString(500, 673, priority)
-            pdf.line(450, 670, 580, 670)
+            pdf.line(480, 670, 580, 670)
             pdf.drawString(30, 575, 'DESTINATION: ')
             pdf.line(120, 570, 580, 570)
             pdf.drawString(120, 575, location_name)
@@ -823,7 +823,7 @@ class warehousePage(View):
             pdf.drawString(30, 700, 'ORDER ID:')
             pdf.drawString(140, 700, str(order_id))
 
-            pdf.line(230, 697, 330, 697)
+            pdf.line(120, 697, 220, 697)
 
             pdf.drawString(350, 700, 'QUANTITY:')
             pdf.drawString(500, 700, str(quantity))
@@ -833,7 +833,7 @@ class warehousePage(View):
             pdf.line(120, 620, 450, 620)
             pdf.drawString(120, 625, account_name)
             pdf.drawString(350, 673, 'PRIORITY:')
-            pdf.drawString(500, 673, priority)
+            pdf.drawString(480, 673, priority)
             pdf.line(450, 670, 580, 670)
             pdf.drawString(30, 575, 'DESTINATION: ')
             pdf.line(120, 570, 580, 570)

@@ -97,6 +97,7 @@ function createOrder(){
           },
           success: function (respond) {
             orderCreated();
+            window.location.reload(true);
         }
     });
   }
@@ -183,7 +184,7 @@ function checkboxToggle(element){
                 cart.splice(i, 1);
             }
         }
-        updateCart()
+        updateCart();
         updateWeight();
     }
 }
