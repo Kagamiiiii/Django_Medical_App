@@ -438,7 +438,7 @@ class CreateOrderPage(View):
     def createOrderView(request):
         categories = Supply.objects.all().values('category').distinct()
         account_id = request.session['account_id']
-        clinic_name = Location.objects.get(id=Account.objects.get(id=account_id).worklocation_id).name
+        clinic_name = Location.objects.get(id=Account.objects.get(id=int(account_id)).worklocation_id).name
         return render(request, "CM/createOrderPage.html",
                       context={'categories': categories, 'clinic_name': clinic_name})
 

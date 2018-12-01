@@ -77,8 +77,8 @@ class Order(models.Model):
                                                       ('Dispatched', 'Dispatched'),
                                                       ('Delivered', 'Delivered'),
                                                       ('Cancelled', 'Cancelled')), default='Queued for Processing')
-    priority = models.CharField(max_length=10, choices=(('High', 1), ('Medium', 2), ('Low', 3)),
-                                default='Low')
+    priority = models.CharField(max_length=10, choices=(("1", "High"), ("2", "Medium"), ("3", "Low")),
+                                default="3")
     weight = models.FloatField()
     orderedDatetime = models.DateTimeField()
     processedDatetime = models.DateTimeField(blank=True, null=True)

@@ -54,7 +54,6 @@ function requestCategory(){
 function orderCreated(){
   items = null;
   cart = [];
-  priority = "Low";
   updateWeight();
   updateCart();
   $('#success-message').css({
@@ -76,6 +75,15 @@ function createOrder(){
   if (selected_priority == "Select priority") {
     alert("Please select a priority!");
   } else {
+    if(selected_priority == "High"){
+        selected_priority = 1;
+    }
+    if(selected_priority == "Medium"){
+        selected_priority = 2;
+    }
+    if(selected_priority == "Low"){
+        selected_priority = 3;
+    }
     let order = {
         priority: selected_priority,
         cart: cart,
